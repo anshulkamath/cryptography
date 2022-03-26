@@ -27,5 +27,15 @@ typedef struct big_uint_t {
  */
 void big_uint_init(big_uint_t *dest, uint32_t *arr, uint64_t len);
 
+/**
+ * @brief Given a (hex) string representation of a big uint, returns the number
+ *        of limbs needed to represent it. Includes all leading 0s.
+ * 
+ * TODO: Extend functionality to base 2, 8, 10
+ * 
+ * @param num A string of the number
+ * @return uint64_t 
+ */
+uint64_t big_uint_count_limbs(const char *num);
 
 #endif
