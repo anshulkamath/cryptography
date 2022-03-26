@@ -1,8 +1,3 @@
-#ifndef BIG_UINT_H
-#define BIG_UINT_H
-
-#include <stdint.h>
-
 /**
  * Welcome to the anshulkamath's big unsigned integer library!
  * This file includes the definitions for our library, but here are some
@@ -11,6 +6,35 @@
  *   - we use the term `limbs` to refer to the number of digits in a big uint
  *   - all operations are constant time with respect to the number of limbs
  */
+
+#ifndef BIG_UINT_H
+#define BIG_UINT_H
+
+#include <stdint.h>
+
+// Macros
+
+/**
+ * @brief Loads a given big uint with the number given by the string
+ *        representation `num`
+ * 
+ * @param dest  The destination big uint
+ * @param num   The (hex) string representation of the number to load
+ */
+#define big_uint_load(dest, num) _BU_HELPER_1(dest, num, __COUNTER__)
+
+#define _BU_HELPER_1(dest, num, count) \
+    _BU_HELPER_2(dest, num, CONCAT(_rsize, count), CONCAT(_rarr, count))
+
+#define _BU_HELPER_2(dest, num, s_id, a_id)  \
+    uint64_t s_id = big_uint_count_limbs(num); \
+    uint32_t a_id[s_id]; \
+    big_uint_parse(a_id, num, s_id); \
+    big_uint_init(dest, a_id, s_id);
+
+#define CONCAT(a, b) a ## b
+
+// Interface
 
 typedef struct big_uint_t {
     uint32_t   *arr;  // a pointer to the big integer

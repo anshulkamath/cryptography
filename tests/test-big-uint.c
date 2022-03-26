@@ -104,10 +104,55 @@ void test_big_uint_parse() {
     log_tests(tester);
 }
 
+void test_big_uint_load() {
+    // Define variables to be tested with
+    testing_logger_t *tester = create_tester();
+    big_uint_t res;
+
+    // Test 1
+    const uint32_t expected1[] = { 0x12345678 };
+    
+    big_uint_load(&res, "0x12345678");
+
+    expect(tester, res.arr[0] == expected1[0]);
+    expect(tester, res.len == 1);
+
+    // Test 2
+    const uint32_t expected2[] = { 0x12345678, 0x87654321 };
+
+    big_uint_load(&res, "0x87654321_12345678");
+
+    expect(tester, res.arr[0] == expected2[0]);
+    expect(tester, res.arr[1] == expected2[1]);
+    expect(tester, res.len == 2);
+
+    // Test 3
+    const uint32_t expected3[] = { 0x00000000, 0x00000000 };
+
+    big_uint_load(&res, "0x00000000_00000000");
+
+    expect(tester, res.arr[0] == expected3[0]);
+    expect(tester, res.arr[1] == expected3[1]);
+    expect(tester, res.len == 2);
+
+    // Test 4
+    const uint32_t expected4[] = { 0x00022000, 0x00011000, 0x00000000 };
+
+    big_uint_load(&res, "0x0_00011000_00022000");
+
+    expect(tester, res.arr[0] == expected4[0]);
+    expect(tester, res.arr[1] == expected4[1]);
+    expect(tester, res.arr[2] == expected4[2]);
+    expect(tester, res.len == 3);
+
+    log_tests(tester);
+}
+
 int main() {
     test_big_uint_init();
     test_big_uint_count_limbs();
     test_big_uint_parse();
+    test_big_uint_load();
 
     return 0;
 }
