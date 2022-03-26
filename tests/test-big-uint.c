@@ -46,9 +46,68 @@ void test_big_uint_count_limbs() {
     log_tests(tester);
 }
 
+void test_big_uint_parse() {
+    // Define variables to be tested with
+    testing_logger_t *tester = create_tester();
+
+    // Test 1
+    const char str1[] = "0x12345678";
+    const uint32_t expected1[] = { 0x12345678 };
+    uint32_t res1[1];
+
+    big_uint_parse(res1, str1, 1);
+
+    expect(tester, expected1[0] == res1[0]);
+
+    // Test 2
+    const char str2[] = "0x87654321_12345678";
+    const uint32_t expected2[] = { 0x12345678, 0x87654321 };
+    uint32_t res2[2];
+
+    big_uint_parse(res2, str2, 2);
+
+    expect(tester, expected2[0] == res2[0]);
+    expect(tester, expected2[1] == res2[1]);
+
+    // Test 3
+    const char str3[] = "0x00000000_00000000";
+    const uint32_t expected3[] = { 0x00000000, 0x00000000 };
+    uint32_t res3[2];
+
+    big_uint_parse(res3, str3, 2);
+
+    expect(tester, expected3[0] == res3[0]);
+    expect(tester, expected3[1] == res3[1]);
+
+    // Test 4
+    const char str4[] = "0x0_00011000_00022000";
+    const uint32_t expected4[] = { 0x00022000, 0x00011000, 0x00000000 };
+    uint32_t res4[3];
+
+    big_uint_parse(res4, str4, 3);
+
+    expect(tester, expected4[0] == res4[0]);
+    expect(tester, expected4[1] == res4[1]);
+    expect(tester, expected4[2] == res4[2]);
+
+    // Test 5 - should only copy 2 digits
+    const char str5[] = "0x1_00011000_00022000";
+    const uint32_t expected5[] = { 0x00022000, 0x00011000, 0x00000000 };
+    uint32_t res5[3] = { 0 };
+
+    big_uint_parse(res5, str5, 2);
+
+    expect(tester, expected5[0] == res5[0]);
+    expect(tester, expected5[1] == res5[1]);
+    expect(tester, expected5[2] == res5[2]);
+
+    log_tests(tester);
+}
+
 int main() {
     test_big_uint_init();
     test_big_uint_count_limbs();
+    test_big_uint_parse();
 
     return 0;
 }

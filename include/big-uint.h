@@ -38,4 +38,14 @@ void big_uint_init(big_uint_t *dest, uint32_t *arr, uint64_t len);
  */
 uint64_t big_uint_count_limbs(const char *num);
 
+/**
+ * @brief Creates an array of uint32_ts from a (hex) string representation
+ * 
+ * @param dest  Where to store the resulting big uint
+ * @param arr   Where to store our big integer
+ * @param num   A string that represents our big integer
+ * @param len   The number of limbs in our big integer
+ */
+void big_uint_parse(uint32_t *dest, const char *num, uint64_t len);
+
 #endif
