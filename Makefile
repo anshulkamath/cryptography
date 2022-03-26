@@ -4,7 +4,7 @@ LIBS = -Llib -lhex -ltesting-logger
 # CFLAGS = -Ofast -pedantic -std=c17 -std=c17 $(INCLUDES) $(LIBS) # use for benchmarking purposes
 CFLAGS = -g -Wall -Wextra -pedantic -std=c17 -Wno-unused-command-line-argument -std=c17 $(INCLUDES) $(LIBS)
 
-SRC_FILES = sha256
+SRC_FILES = sha256 big-uint
 OBJ_FILES = $(addprefix obj/,$(SRC_FILES:=.o))
 
 CYAN =\x1b[36m
