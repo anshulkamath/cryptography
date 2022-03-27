@@ -1,6 +1,8 @@
 #include "big-uint.h"
 #include "testing-logger.h"
 
+#include <string.h>
+
 void test_big_uint_init() {
     // Define variables to be tested with
     testing_logger_t *tester = create_tester();
@@ -148,11 +150,48 @@ void test_big_uint_load() {
     log_tests(tester);
 }
 
+void test_big_uint_sprint() {
+    // Define variables to be tested with
+    testing_logger_t *tester = create_tester();
+    big_uint_t value;
+
+    // 0 digit number
+    big_uint_load(&value, "0x0");
+    char str1[1] = { 0 };
+    big_uint_sprint(str1, &value);
+
+    expect(tester, !strcmp(str1, "00000000"));
+
+    // 1 digit number
+    big_uint_load(&value, "0x12345678");
+    char str2[9] = { 0 };
+    big_uint_sprint(str2, &value);
+
+    expect(tester, !strcmp(str2, "12345678"));
+
+    // 2 digit number
+    big_uint_load(&value, "0x12345678_87654321");
+    char str3[18] = { 0 };
+    big_uint_sprint(str3, &value);
+
+    expect(tester, !strcmp(str3, "12345678 87654321"));
+
+    // all 0s
+    big_uint_load(&value, "0x00000000_00000000");
+    char str4[18] = { 0 };
+    big_uint_sprint(str4, &value);
+
+    expect(tester, !strcmp(str4, "00000000 00000000"));
+
+    log_tests(tester);
+}
+
 int main() {
     test_big_uint_init();
     test_big_uint_count_limbs();
     test_big_uint_parse();
     test_big_uint_load();
+    test_big_uint_sprint();
 
     return 0;
 }

@@ -1,6 +1,7 @@
 #include "big-uint.h"
 
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -76,5 +77,15 @@ void big_uint_parse(uint32_t *dest, const char *num, uint64_t size) {
     
     if (ind < (int8_t) MAX_IDX) {
         dest[digit] = strtoul(&buf[ind + 1], NULL, 16);
+    }
+}
+
+void big_uint_sprint(char *dest, const big_uint_t *value) {
+    uint64_t len = value->len;
+    const uint32_t *arr = value->arr;
+
+    for (uint64_t i = len - 1; i < len; i--) {
+        if (i == len - 1) sprintf(&dest[0], "%08x", arr[i]);
+        else        sprintf(&dest[9 * (len - 1 - i) - 1], " %08x", arr[i]);
     }
 }
