@@ -97,6 +97,13 @@ void big_uint_print_helper(const big_uint_t *value) {
 }
 
 uint8_t big_uint_equals(const big_uint_t *a, const big_uint_t *b) {
+    // if they are the same pointer, they are the same
+    if (a == b) return 1;
+
+    // if they contain the same elements, they are the same
+    if (a->arr == b->arr && a->len == b->len)
+        return 1;
+    
     uint64_t len_a = a->len;
     uint64_t len_b = b->len;
 

@@ -212,6 +212,9 @@ void test_big_uint_equals() {
 
     expect(tester, !big_uint_equals(&a, &b));
 
+    expect(tester, big_uint_equals(&a, &a));
+    expect(tester, big_uint_equals(&b, &b));
+
     log_tests(tester);
 }
 
