@@ -89,3 +89,9 @@ void big_uint_sprint(char *dest, const big_uint_t *value) {
         else        sprintf(&dest[9 * (len - 1 - i) - 1], " %08x", arr[i]);
     }
 }
+
+void big_uint_print_helper(const big_uint_t *value) {
+    char str[9 * value->len];
+    big_uint_sprint(str, value);
+    printf("%s\n", str);
+}
