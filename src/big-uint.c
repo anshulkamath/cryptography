@@ -110,16 +110,14 @@ uint8_t big_uint_equals(const big_uint_t *a, const big_uint_t *b) {
     uint64_t max = len_a > len_b ? len_a : len_b;
     uint64_t min = max == len_a ? len_b : len_a;
     
-    uint64_t counter = 0;
+    uint8_t res = 1;  // use res to maintain constant time for fixed length
 
-    while (counter < max) {
-        if ((counter >= len_a && b->arr[counter] != 0) ||
-            (counter >= len_b && a->arr[counter] != 0) ||
-            (counter < min && a->arr[counter] != b->arr[counter]))
-            return 0;
-
-        ++counter;
+    for (uint64_t i = 0; i < max; i++) {
+        if ((i >= len_a && b->arr[i] != 0) ||
+            (i >= len_b && a->arr[i] != 0) ||
+            (i < min && a->arr[i] != b->arr[i]))
+            res = 0;
     }
 
-    return 1;
+    return res;
 }
