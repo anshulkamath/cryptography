@@ -34,6 +34,9 @@
 
 #define CONCAT(a, b) a ## b
 
+// alias for big_uint_print_helper to allow passing of literal big_uint_t
+#define big_uint_print(x) big_uint_print_helper(&x)
+
 // Interface
 
 typedef struct big_uint_t {
@@ -79,5 +82,14 @@ void big_uint_parse(uint32_t *dest, const char *num, uint64_t len);
  * @param value A pointer to the big-uint
  */
 void big_uint_sprint(char *dest, const big_uint_t *value);
+
+/**
+ * @brief Prints out the hex representation of the big integer in big endian.
+ * NOTE:  Prefer calling big_uint_print() instead of this function
+ * TODO:  Add support for little endianness
+ * 
+ * @param value The big integer to print
+ */
+void big_uint_print_helper(const big_uint_t *value);
 
 #endif
