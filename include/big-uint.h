@@ -92,4 +92,13 @@ void big_uint_sprint(char *dest, const big_uint_t *value);
  */
 void big_uint_print_helper(const big_uint_t *value);
 
+/**
+ * @brief Returns true if and only if the two big uints are equal
+ * 
+ * @param a Pointer to the first big uint to compare
+ * @param b Pointer to the second big uint to compare
+ * @return int
+ */
+uint8_t big_uint_equals(const big_uint_t *a, const big_uint_t *b);
+
 #endif
