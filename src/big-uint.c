@@ -95,3 +95,24 @@ void big_uint_print_helper(const big_uint_t *value) {
     big_uint_sprint(str, value);
     printf("%s\n", str);
 }
+
+uint8_t big_uint_equals(const big_uint_t *a, const big_uint_t *b) {
+    uint64_t len_a = a->len;
+    uint64_t len_b = b->len;
+
+    uint64_t max = len_a > len_b ? len_a : len_b;
+    uint64_t min = max == len_a ? len_b : len_a;
+    
+    uint64_t counter = 0;
+
+    while (counter < max) {
+        if ((counter >= len_a && b->arr[counter] != 0) ||
+            (counter >= len_b && a->arr[counter] != 0) ||
+            (counter < min && a->arr[counter] != b->arr[counter]))
+            return 0;
+
+        ++counter;
+    }
+
+    return 1;
+}

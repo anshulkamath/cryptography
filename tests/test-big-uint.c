@@ -186,12 +186,42 @@ void test_big_uint_sprint() {
     log_tests(tester);
 }
 
+void test_big_uint_equals() {
+    // Define variables to be tested with
+    testing_logger_t *tester = create_tester();
+    big_uint_t a;
+    big_uint_t b;
+
+    big_uint_load(&a, "0x10");
+    big_uint_load(&b, "0x10");
+
+    expect(tester, big_uint_equals(&a, &b));
+
+    big_uint_load(&a, "0x0_00000010");
+    big_uint_load(&b, "0x10");
+
+    expect(tester, big_uint_equals(&a, &b));
+
+    big_uint_load(&a, "0x10_20000000_ff03abcd");
+    big_uint_load(&b, "0x10_20000000_ff03abcd");
+
+    expect(tester, big_uint_equals(&a, &b));
+
+    big_uint_load(&a, "0x10_20000000_ff03abcd");
+    big_uint_load(&b, "0x10_20000000_ff03abce");
+
+    expect(tester, !big_uint_equals(&a, &b));
+
+    log_tests(tester);
+}
+
 int main() {
     test_big_uint_init();
     test_big_uint_count_limbs();
     test_big_uint_parse();
     test_big_uint_load();
     test_big_uint_sprint();
+    test_big_uint_equals();
 
     return 0;
 }
