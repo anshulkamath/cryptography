@@ -218,6 +218,225 @@ void test_big_uint_equals() {
     log_tests(tester);
 }
 
+void test_big_uint_cmp() {
+    // Define variables to be tested with
+    testing_logger_t *tester = create_tester();
+    big_uint_t a;
+    big_uint_t b;
+
+    big_uint_load(&a, "0x00000000");
+    big_uint_load(&b, "0x00000000");
+
+    expect(tester, big_uint_cmp(&a, &b) == 0);
+
+    big_uint_load(&a, "0x12345678");
+    big_uint_load(&b, "0xffffffff");
+
+    expect(tester, big_uint_cmp(&a, &b) == -1);
+
+    big_uint_load(&a, "0xffffffff");
+    big_uint_load(&b, "0xfffffffe");
+
+    expect(tester, big_uint_cmp(&a, &b) == 1);
+
+    big_uint_load(&a, "0x00000000_12345678");
+    big_uint_load(&b, "0x00000000_ffffffff");
+
+    expect(tester, big_uint_cmp(&a, &b) == -1);
+
+    big_uint_load(&a, "0x00000000_12345678");
+    big_uint_load(&b, "0xffffffff");
+
+    expect(tester, big_uint_cmp(&a, &b) == -1);
+
+    big_uint_load(&a, "0xffffffff_fffffffe");
+    big_uint_load(&b, "0xffffffff_ffffffff");
+
+    expect(tester, big_uint_cmp(&a, &b) == -1);
+
+    big_uint_load(&a, "0xffffffff_ffffffff_ffffffff_fffffffe");
+    big_uint_load(&b, "0xffffffff_ffffffff_ffffffff_ffffffff");
+
+    expect(tester, big_uint_cmp(&a, &b) == -1);
+
+    big_uint_load(&a, "0xffffffff_ffffffff_ffffffff_fffffffe");
+    big_uint_load(&b, "0x00000000_00000000_00000000_ffffffff");
+
+    expect(tester, big_uint_cmp(&a, &b) == 1);
+
+    big_uint_load(&a, "0x00000000_00000000_00000000_00000002");
+    big_uint_load(&b, "0x00000000_00000000_00000000_00000001");
+
+    expect(tester, big_uint_cmp(&a, &b) == 1);
+
+    big_uint_load(&a, "0x00000000_00000000_00000000_00000001");
+    big_uint_load(&b, "0x00000000_00000000_00000000_00000001");
+
+    expect(tester, big_uint_cmp(&a, &b) == 0);
+
+    log_tests(tester);
+}
+
+void test_big_uint_max() {
+    // Define variables to be tested with
+    testing_logger_t *tester = create_tester();
+    big_uint_t a;
+    big_uint_t b;
+    big_uint_t res;
+
+    big_uint_load(&a, "0x00000000");
+    big_uint_load(&b, "0x00000000");
+
+    res = big_uint_max(&a, &b);
+
+    expect(tester, big_uint_equals(&a, &res));
+
+    big_uint_load(&a, "0x12345678");
+    big_uint_load(&b, "0xffffffff");
+
+    res = big_uint_max(&a, &b);
+
+    expect(tester, big_uint_equals(&b, &res));
+
+    big_uint_load(&a, "0xffffffff");
+    big_uint_load(&b, "0xfffffffe");
+
+    res = big_uint_max(&a, &b);
+
+    expect(tester, big_uint_equals(&a, &res));
+
+    big_uint_load(&a, "0x00000000_12345678");
+    big_uint_load(&b, "0x00000000_ffffffff");
+
+    res = big_uint_max(&a, &b);
+
+    expect(tester, big_uint_equals(&b, &res));
+
+    big_uint_load(&a, "0x00000000_12345678");
+    big_uint_load(&b, "0xffffffff");
+
+    res = big_uint_max(&a, &b);
+
+    expect(tester, big_uint_equals(&b, &res));
+
+    big_uint_load(&a, "0xffffffff_fffffffe");
+    big_uint_load(&b, "0xffffffff_ffffffff");
+
+    res = big_uint_max(&a, &b);
+
+    expect(tester, big_uint_equals(&b, &res));
+
+    big_uint_load(&a, "0xffffffff_ffffffff_ffffffff_fffffffe");
+    big_uint_load(&b, "0xffffffff_ffffffff_ffffffff_ffffffff");
+
+    res = big_uint_max(&a, &b);
+
+    expect(tester, big_uint_equals(&b, &res));
+
+    big_uint_load(&a, "0xffffffff_ffffffff_ffffffff_fffffffe");
+    big_uint_load(&b, "0x00000000_00000000_00000000_ffffffff");
+
+    res = big_uint_max(&a, &b);
+
+    expect(tester, big_uint_equals(&a, &res));
+
+    big_uint_load(&a, "0x00000000_00000000_00000000_00000002");
+    big_uint_load(&b, "0x00000000_00000000_00000000_00000001");
+
+    res = big_uint_max(&a, &b);
+
+    expect(tester, big_uint_equals(&a, &res));
+
+    big_uint_load(&a, "0x00000000_00000000_00000000_00000001");
+    big_uint_load(&b, "0x00000000_00000000_00000000_00000001");
+
+    res = big_uint_max(&a, &b);
+
+    expect(tester, big_uint_equals(&a, &res));
+
+    log_tests(tester);
+}
+
+void test_big_uint_min() {
+    // Define variables to be tested with
+    testing_logger_t *tester = create_tester();
+    big_uint_t a;
+    big_uint_t b;
+    big_uint_t res;
+
+    big_uint_load(&a, "0x00000000");
+    big_uint_load(&b, "0x00000000");
+
+    res = big_uint_min(&a, &b);
+
+    expect(tester, big_uint_equals(&a, &res));
+
+    big_uint_load(&a, "0x12345678");
+    big_uint_load(&b, "0xffffffff");
+
+    res = big_uint_min(&a, &b);
+
+    expect(tester, big_uint_equals(&a, &res));
+
+    big_uint_load(&a, "0xffffffff");
+    big_uint_load(&b, "0xfffffffe");
+
+    res = big_uint_min(&a, &b);
+
+    expect(tester, big_uint_equals(&b, &res));
+
+    big_uint_load(&a, "0x00000000_12345678");
+    big_uint_load(&b, "0x00000000_ffffffff");
+
+    res = big_uint_min(&a, &b);
+
+    expect(tester, big_uint_equals(&a, &res));
+
+    big_uint_load(&a, "0x00000000_12345678");
+    big_uint_load(&b, "0xffffffff");
+
+    res = big_uint_min(&a, &b);
+
+    expect(tester, big_uint_equals(&a, &res));
+
+    big_uint_load(&a, "0xffffffff_fffffffe");
+    big_uint_load(&b, "0xffffffff_ffffffff");
+
+    res = big_uint_min(&a, &b);
+
+    expect(tester, big_uint_equals(&a, &res));
+
+    big_uint_load(&a, "0xffffffff_ffffffff_ffffffff_fffffffe");
+    big_uint_load(&b, "0xffffffff_ffffffff_ffffffff_ffffffff");
+
+    res = big_uint_min(&a, &b);
+
+    expect(tester, big_uint_equals(&a, &res));
+
+    big_uint_load(&a, "0xffffffff_ffffffff_ffffffff_fffffffe");
+    big_uint_load(&b, "0x00000000_00000000_00000000_ffffffff");
+
+    res = big_uint_min(&a, &b);
+
+    expect(tester, big_uint_equals(&b, &res));
+
+    big_uint_load(&a, "0x00000000_00000000_00000000_00000002");
+    big_uint_load(&b, "0x00000000_00000000_00000000_00000001");
+
+    res = big_uint_min(&a, &b);
+
+    expect(tester, big_uint_equals(&b, &res));
+
+    big_uint_load(&a, "0x00000000_00000000_00000000_00000001");
+    big_uint_load(&b, "0x00000000_00000000_00000000_00000001");
+
+    res = big_uint_max(&a, &b);
+
+    expect(tester, big_uint_equals(&a, &res));
+
+    log_tests(tester);
+}
+
 int main() {
     test_big_uint_init();
     test_big_uint_count_limbs();
@@ -225,6 +444,9 @@ int main() {
     test_big_uint_load();
     test_big_uint_sprint();
     test_big_uint_equals();
+    test_big_uint_cmp();
+    test_big_uint_max();
+    test_big_uint_min();
 
     return 0;
 }
