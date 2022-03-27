@@ -101,4 +101,34 @@ void big_uint_print_helper(const big_uint_t *value);
  */
 uint8_t big_uint_equals(const big_uint_t *a, const big_uint_t *b);
 
+/**
+ * @brief Computes a > b. Returns 1, 0, or -1 if a > b, a == b, or a < b,
+ *        respectively
+ * 
+ * @param a Pointer to the first big uint to compare
+ * @param b Pointer to the second big uint to compare
+ * @return uint8_t 
+ */
+int8_t big_uint_cmp(const big_uint_t *a, const big_uint_t *b);
+
+/**
+ * @brief Returns a struct-copy of max(a, b).
+ *        In the event of equality, defers to a.
+ * 
+ * @param a Pointer to the first big uint to compare
+ * @param b Pointer to the second big uint to compare
+ * @return uint8_t 
+ */
+big_uint_t big_uint_max(const big_uint_t *a, const big_uint_t *b);
+
+/**
+ * @brief Returns a struct-copy of min(a, b).
+ *        In the event of equality, defers to a.
+ * 
+ * @param a Pointer to the first big uint to compare
+ * @param b Pointer to the second big uint to compare
+ * @return uint8_t 
+ */
+big_uint_t big_uint_min(const big_uint_t *a, const big_uint_t *b);
+
 #endif
