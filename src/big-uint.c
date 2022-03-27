@@ -121,3 +121,40 @@ uint8_t big_uint_equals(const big_uint_t *a, const big_uint_t *b) {
 
     return res;
 }
+
+int8_t big_uint_cmp(const big_uint_t *a, const big_uint_t *b) {
+    uint64_t len_a = a->len;
+    uint64_t len_b = b->len;
+
+    uint64_t max = len_a > len_b ? len_a : len_b;
+    uint64_t min = max == len_a ? len_b : len_a;
+
+    int8_t res = 0;  // use res to maintain constant time for fixed length
+
+    for (uint64_t i = max - 1; i < max; i--) {
+        // if the comparison has already been determined, continue
+        if (res) continue;
+
+        // a has more (non-zero) limbs
+        else if (i >= len_b && a->arr[i] != 0)
+            res = 1;
+
+        // b has more (non-zero) limbs
+        else if (i >= len_a && b->arr[i] != 0)
+            res = -1;
+        
+        // corresponding limb is different between a and b
+        else if (i < min && a->arr[i] != b->arr[i])
+            res = a->arr[i] > b->arr[i] ? 1 : -1;
+    }
+
+    return res;
+}
+
+big_uint_t big_uint_max(const big_uint_t *a, const big_uint_t *b) {
+    return big_uint_cmp(a, b) >= 0 ? *a : *b;
+}
+
+big_uint_t big_uint_min(const big_uint_t *a, const big_uint_t *b) {
+    return big_uint_cmp(a, b) <= 0 ? *a : *b;
+}
