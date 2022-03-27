@@ -72,4 +72,12 @@ uint64_t big_uint_count_limbs(const char *num);
  */
 void big_uint_parse(uint32_t *dest, const char *num, uint64_t len);
 
+/**
+ * @brief Writes the hex representation of the given value to the given char*
+ * 
+ * @param dest  Where to store the string representation
+ * @param value A pointer to the big-uint
+ */
+void big_uint_sprint(char *dest, const big_uint_t *value);
+
 #endif
