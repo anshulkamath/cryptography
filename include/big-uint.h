@@ -238,4 +238,13 @@ void big_uint_add(big_uint_t *result, const big_uint_t *a, const big_uint_t *b);
  */
 void big_uint_sub(big_uint_t *result, const big_uint_t *a, const big_uint_t *b);
 
+/**
+ * @brief Computes a * b and stores the product in `result`
+ * 
+ * @param result Where to store the product
+ * @param a      The first number to multiply
+ * @param b      The second number to multiply
+ */
+void big_uint_mult(big_uint_t *result, const big_uint_t *a, const big_uint_t *b);
+
 #endif

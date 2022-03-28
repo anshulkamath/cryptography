@@ -1094,6 +1094,114 @@ void test_big_uint_sub() {
     log_tests(tester);
 }
 
+void test_big_uint_mult() {
+    // Define variables to be tested with
+    testing_logger_t *tester = create_tester();
+    big_uint_t a;
+    big_uint_t b;
+    big_uint_t exp;
+    big_uint_t res;
+
+    // Single digit test (no carry, no overflow)
+    big_uint_load(&a, "0x00000020");
+    big_uint_load(&b, "0x00000005");
+    big_uint_load(&exp, "0x000000a0");
+    big_uint_load(&res, "0x00000000");
+    big_uint_mult(&res, &a, &b);
+
+    expect(tester, big_uint_equals(&res, &exp));
+
+    // Single digit test (no carry, no overflow)
+    big_uint_load(&a, "0x00000012");
+    big_uint_load(&b, "0x00000015");
+    big_uint_load(&exp, "0x0000017a");
+    big_uint_load(&res, "0x00000000");
+    big_uint_mult(&res, &a, &b);
+
+    expect(tester, big_uint_equals(&res, &exp));
+
+    // Multiple digit test (no carry, no overflow)
+    big_uint_load(&a, "0x00000030_00000025");
+    big_uint_load(&b, "0x00000000_00000015");
+    big_uint_load(&exp, "0x000003f0_00000309");
+    big_uint_load(&res, "0x00000000_00000000");
+    big_uint_mult(&res, &a, &b);
+
+    expect(tester, big_uint_equals(&res, &exp));
+
+    // Multiple digit test (carry, no overflow)
+    big_uint_load(&a, "0x00000000_10000000");
+    big_uint_load(&b, "0x00000000_00000050");
+    big_uint_load(&exp, "0x00000005_00000000");
+    big_uint_load(&res, "0x00000000_00000000");
+    big_uint_mult(&res, &a, &b);
+
+    expect(tester, big_uint_equals(&res, &exp));
+
+     // Multiple digit test (no carry, overflow)
+    big_uint_load(&a, "0x00020000_00000000");
+    big_uint_load(&b, "0x00000000_00021112");
+    big_uint_load(&exp, "0x22240000_00000000");
+    big_uint_load(&res, "0x00000000_00000000");
+    big_uint_mult(&res, &a, &b);
+
+    expect(tester, big_uint_equals(&res, &exp));
+
+    // Multiple digit test (no carry, overflow)
+    big_uint_load(&a, "0x00000025_00000000");
+    big_uint_load(&b, "0x00000013_11000000");
+    big_uint_load(&exp, "0x75000000_00000000");
+    big_uint_load(&res, "0x00000000_00000000");
+    big_uint_mult(&res, &a, &b);
+
+    expect(tester, big_uint_equals(&res, &exp));
+
+    // Multiple digit test (carry, overflow)
+    big_uint_load(&a, "0x00000000_10000000");
+    big_uint_load(&b, "0x00001100_f0025000");
+    big_uint_load(&exp, "0x0f002500_00000000");
+    big_uint_load(&res, "0x00000000_00000000");
+    big_uint_mult(&res, &a, &b);
+
+    expect(tester, big_uint_equals(&res, &exp));
+
+    // Misc. tests
+    big_uint_load(&a, "0x00000000_31f596dc");
+    big_uint_load(&b, "0x00000000_0000fedc");
+    big_uint_load(&exp, "0x000031bc_9abbed10");
+    big_uint_load(&res, "0x00000000_00000000");
+    big_uint_mult(&res, &a, &b);
+
+    expect(tester, big_uint_equals(&res, &exp));
+
+    // operator assignment
+    big_uint_load(&a, "0x00000000_31f596dc");
+    big_uint_load(&b, "0x00000000_0000fedc");
+    big_uint_load(&exp, "0x000031bc_9abbed10");
+    big_uint_load(&res, "0x00000000_00000000");
+    big_uint_mult(&a, &a, &b);
+
+    expect(tester, big_uint_equals(&a, &exp));
+
+    // different lengths
+    big_uint_load(&a, "0x00000000_31f596dc");
+    big_uint_load(&b, "0x0000fedc");
+    big_uint_load(&exp, "0x9abbed10");
+    big_uint_mult(&b, &a, &b);
+
+    expect(tester, big_uint_equals(&b, &exp));
+
+    // different lengths
+    big_uint_load(&a, "0x00000000_31f596dc");
+    big_uint_load(&b, "0x0000fedc");
+    big_uint_load(&exp, "0x000031bc_9abbed10");
+    big_uint_mult(&a, &a, &b);
+
+    expect(tester, big_uint_equals(&a, &exp));
+    
+    log_tests(tester);
+}
+
 int main() {
     test_big_uint_init();
     test_big_uint_count_limbs();
@@ -1116,6 +1224,7 @@ int main() {
 
     test_big_uint_add();
     test_big_uint_sub();
+    test_big_uint_mult();
 
     return 0;
 }
