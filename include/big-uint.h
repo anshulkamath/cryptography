@@ -12,7 +12,10 @@
 
 #include <stdint.h>
 
-// Macros
+
+/****************************************/
+/*                MACROS                */
+/****************************************/
 
 /**
  * @brief Loads a given big uint with the number given by the string
@@ -43,6 +46,10 @@ typedef struct big_uint_t {
     uint32_t   *arr;  // a pointer to the big integer
     uint64_t    len;  // the number of limbs in the big integer
 } big_uint_t;
+
+/****************************************/
+/*       BIG UINT INITIALIZATION        */
+/****************************************/
 
 /**
  * @brief Initializes a big uint from an array and a length, storing the big uint
@@ -75,6 +82,10 @@ uint64_t big_uint_count_limbs(const char *num);
  */
 void big_uint_parse(uint32_t *dest, const char *num, uint64_t len);
 
+/****************************************/
+/*           PRINT OPERATIONS           */
+/****************************************/
+
 /**
  * @brief Writes the hex representation of the given value to the given char*
  * 
@@ -91,6 +102,10 @@ void big_uint_sprint(char *dest, const big_uint_t *value);
  * @param value The big integer to print
  */
 void big_uint_print_helper(const big_uint_t *value);
+
+/****************************************/
+/*        COMPARISON OPERATIONS         */
+/****************************************/
 
 /**
  * @brief Returns true if and only if the two big uints are equal
@@ -130,5 +145,19 @@ big_uint_t big_uint_max(const big_uint_t *a, const big_uint_t *b);
  * @return uint8_t 
  */
 big_uint_t big_uint_min(const big_uint_t *a, const big_uint_t *b);
+
+/****************************************/
+/*          BITWISE OPERATIONS          */
+/****************************************/
+
+/**
+ * @brief Performs a bitwise OR operation on `a` and `b` and stores the result in result
+ * NOTE:  Big integer should already be initialized to use this function
+ * 
+ * @param res Where the result is stored
+ * @param a   The first number to OR
+ * @param b   The second number to OR
+ */
+void big_uint_or(big_uint_t *result, const big_uint_t *a, const big_uint_t *b);
 
 #endif

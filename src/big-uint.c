@@ -158,3 +158,15 @@ big_uint_t big_uint_max(const big_uint_t *a, const big_uint_t *b) {
 big_uint_t big_uint_min(const big_uint_t *a, const big_uint_t *b) {
     return big_uint_cmp(a, b) <= 0 ? *a : *b;
 }
+
+void big_uint_or(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) {
+    uint32_t a_val = 0;
+    uint32_t b_val = 0;
+
+    for (uint64_t i = 0; i < result->len; i++) {
+        a_val = i < a->len ? a->arr[i] : 0;
+        b_val = i < b->len ? b->arr[i] : 0;
+
+        result->arr[i] = a_val | b_val;
+    }
+}

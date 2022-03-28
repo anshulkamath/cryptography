@@ -437,16 +437,105 @@ void test_big_uint_min() {
     log_tests(tester);
 }
 
+void test_big_uint_or() {
+    // Define variables to be tested with
+    testing_logger_t *tester = create_tester();
+    big_uint_t a;
+    big_uint_t b;
+    big_uint_t exp;
+    big_uint_t res;
+
+    // Single digit test (no carry, no underflow)
+    big_uint_load(&a, "0x11110000");
+    big_uint_load(&b, "0x00002222");
+    big_uint_load(&exp, "0x11112222");
+    big_uint_load(&res, "0x00000000");
+    big_uint_or(&res, &a, &b);
+
+    expect(tester, big_uint_equals(&res, &exp));
+
+    big_uint_load(&a, "0xffffffff");
+    big_uint_load(&b, "0x00000000");
+    big_uint_load(&exp, "0xffffffff");
+    big_uint_load(&res, "0x00000000");
+    big_uint_or(&res, &a, &b);
+
+    expect(tester, big_uint_equals(&res, &exp));
+
+    big_uint_load(&a, "0x00000000");
+    big_uint_load(&b, "0xffffffff");
+    big_uint_load(&exp, "0xffffffff");
+    big_uint_load(&res, "0x00000000");
+    big_uint_or(&res, &a, &b);
+
+    expect(tester, big_uint_equals(&res, &exp));
+
+    big_uint_load(&a, "0xffffffff_00000000");
+    big_uint_load(&b, "0x00000000_ffffffff");
+    big_uint_load(&exp, "0xffffffff_ffffffff");
+    big_uint_load(&res, "0x00000000_00000000");
+    big_uint_or(&res, &a, &b);
+
+    expect(tester, big_uint_equals(&res, &exp));
+
+    big_uint_load(&a, "0xffff0000_ffff0000");
+    big_uint_load(&b,  "0x0000ffff");
+    big_uint_load(&exp, "0xffff0000_ffffffff");
+    big_uint_load(&res, "0x00000000_00000000");
+    big_uint_or(&res, &a, &b);
+
+    expect(tester, big_uint_equals(&res, &exp));
+
+    big_uint_load(&a, "0x12345678_12345678");
+    big_uint_load(&b, "0x12345678_12345678");
+    big_uint_load(&exp, "0x12345678_12345678");
+    big_uint_load(&res, "0x00000000_00000000");
+    big_uint_or(&res, &a, &b);
+
+    expect(tester, big_uint_equals(&res, &exp));
+
+    // arg1 or-equals
+    big_uint_load(&a, "0xffff0000_ffff0000");
+    big_uint_load(&b, "0x0000ffff_0000ffff");
+    big_uint_load(&exp, "0xffffffff_ffffffff");
+    big_uint_or(&a, &a, &b);
+
+    expect(tester, big_uint_equals(&a, &exp));
+
+    // arg2 or-equals
+    big_uint_load(&a, "0xffff0000_ffff0000");
+    big_uint_load(&b, "0x0000ffff_0000ffff");
+    big_uint_load(&exp, "0xffffffff_ffffffff");
+    big_uint_or(&b, &a, &b);
+
+    expect(tester, big_uint_equals(&b, &exp));
+
+    // different sizes
+    big_uint_load(&a, "0xffffffff_00000000");
+    big_uint_load(&b, "0x00000000_12345678");
+    big_uint_load(&exp, "0x12345678");
+    big_uint_load(&res, "0x00000000");
+    big_uint_or(&res, &a, &b);
+
+    expect(tester, big_uint_equals(&res, &exp));
+
+    log_tests(tester);
+}
+
 int main() {
     test_big_uint_init();
     test_big_uint_count_limbs();
     test_big_uint_parse();
     test_big_uint_load();
+
     test_big_uint_sprint();
     test_big_uint_equals();
+    
     test_big_uint_cmp();
     test_big_uint_max();
     test_big_uint_min();
+    
+    test_big_uint_or();
 
     return 0;
 }
