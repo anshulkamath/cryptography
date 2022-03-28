@@ -221,12 +221,21 @@ void big_uint_shl(big_uint_t *result, const big_uint_t *x, uint64_t n, uint8_t s
 /****************************************/
 
 /**
- * @brief Computes a + b and stores the result in result
+ * @brief Computes a + b and stores the sum in `result`
  * 
  * @param result Where to store the sum
  * @param a      The first number to add
  * @param b      The second number to add
  */
 void big_uint_add(big_uint_t *result, const big_uint_t *a, const big_uint_t *b);
+
+/**
+ * @brief Computes a - b and stores the difference in `result`
+ * 
+ * @param result Where to store the difference
+ * @param a      The first number to subtract
+ * @param b      The amount to subtract from the first
+ */
+void big_uint_sub(big_uint_t *result, const big_uint_t *a, const big_uint_t *b);
 
 #endif
