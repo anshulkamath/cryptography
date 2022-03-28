@@ -160,4 +160,14 @@ big_uint_t big_uint_min(const big_uint_t *a, const big_uint_t *b);
  */
 void big_uint_or(big_uint_t *result, const big_uint_t *a, const big_uint_t *b);
 
+/**
+ * @brief Performs a bitwise AND operation on `a` and `b` and stores the result in result
+ * NOTE:  Big integer should already be initialized to use this function
+ * 
+ * @param res Where the result is stored
+ * @param a   The first number to AND
+ * @param b   The second number to AND
+ */
+void big_uint_and(big_uint_t *result, const big_uint_t *a, const big_uint_t *b);
+
 #endif
