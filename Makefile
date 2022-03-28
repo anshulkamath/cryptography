@@ -1,8 +1,12 @@
 CC = /usr/local/opt/llvm/bin/clang
 INCLUDES = -Iinclude -Iconstants
 LIBS = -Llib -lhex -ltesting-logger
-# CFLAGS = -Ofast -pedantic -std=c17 -std=c17 $(INCLUDES) $(LIBS) # use for benchmarking purposes
-CFLAGS = -g -Wall -Wextra -pedantic -std=c17 -Wno-unused-command-line-argument -std=c17 $(INCLUDES) $(LIBS)
+
+# use for testing purposes
+# CFLAGS = -g -Wall -Wextra -pedantic -std=c17 -Wno-unused-command-line-argument -std=c17 $(INCLUDES) $(LIBS)
+
+# use for benchmarking purposes
+CFLAGS = -Ofast -pedantic -std=c17 -std=c17 $(INCLUDES) $(LIBS)
 
 SRC_FILES = sha256 big-uint
 OBJ_FILES = $(addprefix obj/,$(SRC_FILES:=.o))
@@ -10,7 +14,7 @@ OBJ_FILES = $(addprefix obj/,$(SRC_FILES:=.o))
 CYAN =\x1b[36m
 WHITE=\x1b[0m
 
-MAIN = sha2 main
+MAIN = sha2 main benchmark
 MAIN_BINS = $(addprefix bin/, $(MAIN))
 TEST_BINS = $(addprefix bin/test-, $(SRC_FILES))
 
