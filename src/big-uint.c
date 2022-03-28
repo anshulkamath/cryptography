@@ -247,19 +247,6 @@ void big_uint_add(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) 
     uint32_t a_val, b_val;
     uint8_t carry = 0;
 
-    // optimize out conditionals for same length big integers
-    if (a->len == b->len) {
-        for (uint64_t i = 0; i < result->len; i++) {
-            a_val = a->arr[i];
-            b_val = b->arr[i];
-            
-            result->arr[i] = a_val + b_val + carry;
-            carry = ((uint64_t) a_val + b_val + carry) > UINT32_MAX;
-        }
-
-        return;
-    }
-
     // allow for different length integers to be summed
     for (uint64_t i = 0; i < result->len; i++) {
         a_val = i < a->len ? a->arr[i] : 0;
@@ -274,19 +261,6 @@ void big_uint_sub(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) 
     uint32_t a_val, b_val;
     uint8_t carry = 0;
 
-    // optimize out conditionals for same length big integers
-    if (a->len == b->len) {
-        for (uint64_t i = 0; i < result->len; i++) {
-            a_val = a->arr[i];
-            b_val = b->arr[i];
-
-            result->arr[i] = a_val - b_val - carry;
-            carry =(uint64_t) a_val - b_val - carry > UINT32_MAX;
-        }
-
-        return;
-    }
-
     // allow for different length integers to be summed
     for (uint64_t i = 0; i < result->len; i++) {
         a_val = i < a->len ? a->arr[i] : 0;
@@ -295,4 +269,32 @@ void big_uint_sub(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) 
         result->arr[i] = a_val - b_val - carry;
         carry =(uint64_t) a_val - b_val - carry > UINT32_MAX;
     }
+}
+
+void big_uint_mult(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) {
+    uint64_t a_val, b_val, product;
+
+    uint32_t res[result->len];
+    memset(res, 0, result->len * UINT_SIZE);
+
+    for (uint64_t i = 0; i < a->len; i++) {
+        for (uint64_t j = 0; j < b->len; j++) {
+            // do not write outside of result
+            if (i + j >= result->len) break;
+
+            a_val = a->arr[i];
+            b_val = b->arr[j];
+            product = a_val * b_val;
+
+            // store lower 32 bits of product in current limb
+            res[i + j] += product & (~1ll >> UINT_BITS);
+
+            // store upper 32 bits of product in next limb (if within range)
+            if (i + j + 1 < result->len)
+                res[i + j + 1] += product >> UINT_BITS;
+        }
+    }
+
+    // copy the result to our destination
+    memcpy(result->arr, res, result->len * UINT_SIZE);
 }
