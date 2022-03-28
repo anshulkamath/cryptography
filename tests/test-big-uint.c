@@ -607,6 +607,93 @@ void test_big_uint_and() {
     log_tests(tester);
 }
 
+void test_big_uint_xor() {
+    // Define variables to be tested with
+    testing_logger_t *tester = create_tester();
+    big_uint_t a;
+    big_uint_t b;
+    big_uint_t exp;
+    big_uint_t res;
+
+    // Single digit test (no carry, no underflow)
+    big_uint_load(&a, "0xffff0000");
+    big_uint_load(&b, "0x0000ffff");
+    big_uint_load(&exp, "0xffffffff");
+    big_uint_load(&res, "0x00000000");
+    big_uint_xor(&res, &a, &b);
+
+    expect(tester, big_uint_equals(&res, &exp));
+
+    big_uint_load(&a, "0xffffffff");
+    big_uint_load(&b, "0x00000000");
+    big_uint_load(&exp, "0xffffffff");
+    big_uint_load(&res, "0x00000000");
+    big_uint_xor(&res, &a, &b);
+
+    expect(tester, big_uint_equals(&res, &exp));
+
+    big_uint_load(&a, "0x00000000");
+    big_uint_load(&b, "0x00000000");
+    big_uint_load(&exp, "0x00000000");
+    big_uint_load(&res, "0xffffffff");
+    big_uint_xor(&res, &a, &b);
+
+    expect(tester, big_uint_equals(&res, &exp));
+
+    big_uint_load(&a, "0xffffffff_00000000");
+    big_uint_load(&b, "0x00000000_ffffffff");
+    big_uint_load(&exp, "0xffffffff_ffffffff");
+    big_uint_load(&res, "0x00000000_00000000");
+    big_uint_xor(&res, &a, &b);
+
+    expect(tester, big_uint_equals(&res, &exp));
+
+    big_uint_load(&a, "0xffff0000_ffffffff");
+    big_uint_load(&b, "0xffffffff_0000ffff");
+    big_uint_load(&exp, "0x0000ffff_ffff0000");
+    big_uint_load(&res, "0x00000000_00000000");
+    big_uint_xor(&res, &a, &b);
+
+    expect(tester, big_uint_equals(&res, &exp));
+
+    big_uint_load(&a, "0x12345678_12345678");
+    big_uint_load(&b, "0x12345678_12345678");
+    big_uint_load(&exp, "0x00000000_00000000");
+    big_uint_load(&res, "0xffffffff_ffffffff");
+    big_uint_xor(&res, &a, &b);
+
+    expect(tester, big_uint_equals(&res, &exp));
+
+    // arg1 xor-equals
+    big_uint_load(&a, "0xffff0000_ffffffff");
+    big_uint_load(&b, "0xffffffff_0000ffff");
+    big_uint_load(&exp, "0x0000ffff_ffff0000");
+    big_uint_load(&res, "0x00000000_00000000");
+    big_uint_xor(&a, &a, &b);
+
+    expect(tester, big_uint_equals(&a, &exp));
+
+    // arg2 xor-equals
+    big_uint_load(&a, "0xffff0000_ffffffff");
+    big_uint_load(&b, "0xffffffff_0000ffff");
+    big_uint_load(&exp, "0x0000ffff_ffff0000");
+    big_uint_load(&res, "0x00000000_00000000");
+    big_uint_xor(&b, &a, &b);
+
+    expect(tester, big_uint_equals(&b, &exp));
+
+    // different sizes
+    big_uint_load(&a, "0xffffffff_12340000");
+    big_uint_load(&b, "0x00000000_12345678");
+    big_uint_load(&exp, "0x00005678");
+    big_uint_load(&res, "0x00000000");
+    big_uint_xor(&res, &a, &b);
+
+    expect(tester, big_uint_equals(&res, &exp));
+
+    log_tests(tester);
+}
+
 int main() {
     test_big_uint_init();
     test_big_uint_count_limbs();
@@ -622,6 +709,7 @@ int main() {
     
     test_big_uint_or();
     test_big_uint_and();
+    test_big_uint_xor();
 
     return 0;
 }
