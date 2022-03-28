@@ -694,6 +694,85 @@ void test_big_uint_xor() {
     log_tests(tester);
 }
 
+void test_big_uint_shr() {
+    // Define variables to be tested with
+    testing_logger_t *tester = create_tester();
+    big_uint_t x;
+    big_uint_t exp;
+    big_uint_t res;
+
+    // Test 1 - shift to 0
+    big_uint_load(&x, "0x00000001");
+    big_uint_load(&exp, "0x00000000");
+    big_uint_load(&res, "0xffffffff");
+
+    big_uint_shr(&res, &x, 1, SHIFT_BIT);
+    expect(tester, big_uint_equals(&res, &exp));
+
+    big_uint_shr(&res, &x, 1, SHIFT_LIMB);
+    expect(tester, big_uint_equals(&res, &exp));
+
+    // Test 2 - normal shift
+    big_uint_load(&x, "0x00001000");
+    big_uint_load(&exp, "0x00000010");
+    big_uint_load(&res, "0xffffffff");
+
+    big_uint_shr(&res, &x, 8, SHIFT_BIT);
+    expect(tester, big_uint_equals(&res, &exp));
+
+    // Test 3 - partial shift across boundary
+    big_uint_load(&x, "0x0000000f_00000000");
+    big_uint_load(&exp, "0x00000003_c0000000");
+    big_uint_load(&res, "0x00000000_00000000");
+
+    big_uint_shr(&res, &x, 2, SHIFT_BIT);
+    expect(tester, big_uint_equals(&res, &exp));
+
+    big_uint_load(&exp, "0x00000000_0000000f");
+    big_uint_shr(&res, &x, 1, SHIFT_LIMB);
+    expect(tester, big_uint_equals(&res, &exp));
+
+    big_uint_load(&exp, "0x00000000_00000007");
+    big_uint_shr(&res, &x, 33, SHIFT_BIT);
+    expect(tester, big_uint_equals(&res, &exp));
+
+    // Test 4 - overshift should be 0
+    big_uint_load(&x, "0x12345678_12345678");
+    big_uint_load(&exp, "0x00000000_00000000");
+    big_uint_load(&res, "0xffffffff_ffffffff");
+
+    big_uint_shr(&res, &x, 100, SHIFT_BIT);
+    expect(tester, big_uint_equals(&res, &exp));
+
+    big_uint_shr(&res, &x, 5, SHIFT_LIMB);
+    expect(tester, big_uint_equals(&res, &exp));
+
+    // Test 5 - no shift
+    big_uint_load(&x, "0x12345678_12345678");
+    big_uint_load(&exp, "0x12345678_12345678");
+    big_uint_load(&res, "0xffffffff_ffffffff");
+
+    big_uint_shr(&res, &x, 0, SHIFT_BIT);
+    expect(tester, big_uint_equals(&res, &exp));
+
+    big_uint_load(&res, "0xffffffff_ffffffff");
+    big_uint_shr(&res, &x, 0, SHIFT_LIMB);
+    expect(tester, big_uint_equals(&res, &exp));
+
+    // Test 6 - operator assignment
+    big_uint_load(&x, "0x0000000f_00000000");
+    big_uint_load(&exp, "0x00000003_c0000000");
+    big_uint_shr(&x, &x, 2, SHIFT_BIT);
+    expect(tester, big_uint_equals(&x, &exp));
+
+    big_uint_load(&x, "0x0000000f_00000000");
+    big_uint_load(&exp, "0x00000000_0000000f");
+    big_uint_shr(&x, &x, 1, SHIFT_LIMB);
+    expect(tester, big_uint_equals(&x, &exp));
+
+    log_tests(tester);
+}
+
 int main() {
     test_big_uint_init();
     test_big_uint_count_limbs();
@@ -710,6 +789,8 @@ int main() {
     test_big_uint_or();
     test_big_uint_and();
     test_big_uint_xor();
+
+    test_big_uint_shr();
 
     return 0;
 }
