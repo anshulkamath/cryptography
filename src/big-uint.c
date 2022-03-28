@@ -242,3 +242,30 @@ void big_uint_shl(big_uint_t *result, const big_uint_t *x, uint64_t n, uint8_t s
         shift = (elem >> (UINT_BITS - bits)) * !!bits;
     }
 }
+
+void big_uint_add(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) {
+    uint32_t a_val, b_val;
+    uint8_t carry = 0;
+
+    // optimize out conditionals for same length big integers
+    if (a->len == b->len) {
+        for (uint64_t i = 0; i < result->len; i++) {
+            a_val = a->arr[i];
+            b_val = b->arr[i];
+            
+            result->arr[i] = a_val + b_val + carry;
+            carry = ((uint64_t) a_val + b_val + carry) > UINT32_MAX;
+        }
+
+        return;
+    }
+
+    // allow for different length integers to be summed
+    for (uint64_t i = 0; i < result->len; i++) {
+        a_val = i < a->len ? a->arr[i] : 0;
+        b_val = i < b->len ? b->arr[i] : 0;
+
+        result->arr[i] = a_val + b_val + carry;
+        carry = ((uint64_t) a_val + b_val + carry) > UINT32_MAX;
+    }
+}

@@ -199,8 +199,8 @@ void big_uint_xor(big_uint_t *result, const big_uint_t *a, const big_uint_t *b);
  *        Can either shift by limbs or bits (determined by shift_t argument)
  * 
  * @param result    Where to store the result of the shift
- * @param x         The big integer `x` to shift
- * @param n         The uinteger `n` to shift by
+ * @param x         The big uinteger `x` to shift
+ * @param n         The big uinteger `n` to shift by
  * @param shift_t   The type of shift (eitherr SHIFT_BIT [0] or SHIFT_LIMB [1])
  */
 void big_uint_shr(big_uint_t *result, const big_uint_t *x, uint64_t n, uint8_t shift_t);
@@ -210,10 +210,23 @@ void big_uint_shr(big_uint_t *result, const big_uint_t *x, uint64_t n, uint8_t s
  *        Can either shift by limbs or bits (determined by shift_t argument)
  * 
  * @param result    Where to store the result of the shift
- * @param x         The big integer `x` to shift
- * @param n         The uinteger `n` to shift by
- * @param shift_t   The type of shift (eitherr SHIFT_BIT [0] or SHIFT_LIMB [1])
+ * @param x         The big uinteger `x` to shift
+ * @param n         The big uinteger `n` to shift by
+ * @param shift_t   The type of shift (either SHIFT_BIT [0] or SHIFT_LIMB [1])
  */
 void big_uint_shl(big_uint_t *result, const big_uint_t *x, uint64_t n, uint8_t shift_t);
+
+/****************************************/
+/*        ARITHMETIC OPERATIONS         */
+/****************************************/
+
+/**
+ * @brief Computes a + b and stores the result in result
+ * 
+ * @param result Where to store the sum
+ * @param a      The first number to add
+ * @param b      The second number to add
+ */
+void big_uint_add(big_uint_t *result, const big_uint_t *a, const big_uint_t *b);
 
 #endif
