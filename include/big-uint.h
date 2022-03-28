@@ -12,6 +12,20 @@
 
 #include <stdint.h>
 
+/****************************************/
+/*            HELPER MACROS             */
+/****************************************/
+
+#define _BU_HELPER_1(dest, num, count) \
+    _BU_HELPER_2(dest, num, CONCAT(_rsize, count), CONCAT(_rarr, count))
+
+#define _BU_HELPER_2(dest, num, s_id, a_id)  \
+    uint64_t s_id = big_uint_count_limbs(num); \
+    uint32_t a_id[s_id]; \
+    big_uint_parse(a_id, num, s_id); \
+    big_uint_init(dest, a_id, s_id);
+
+#define CONCAT(a, b) a ## b
 
 /****************************************/
 /*                MACROS                */
@@ -26,21 +40,21 @@
  */
 #define big_uint_load(dest, num) _BU_HELPER_1(dest, num, __COUNTER__)
 
-#define _BU_HELPER_1(dest, num, count) \
-    _BU_HELPER_2(dest, num, CONCAT(_rsize, count), CONCAT(_rarr, count))
-
-#define _BU_HELPER_2(dest, num, s_id, a_id)  \
-    uint64_t s_id = big_uint_count_limbs(num); \
-    uint32_t a_id[s_id]; \
-    big_uint_parse(a_id, num, s_id); \
-    big_uint_init(dest, a_id, s_id);
-
-#define CONCAT(a, b) a ## b
-
 // alias for big_uint_print_helper to allow passing of literal big_uint_t
 #define big_uint_print(x) big_uint_print_helper(&x)
 
-// Interface
+/****************************************/
+/*               CONSTANTS              */
+/****************************************/
+
+#define UINT_SIZE   sizeof(uint32_t)
+#define UINT_BITS   32
+#define SHIFT_BIT   0
+#define SHIFT_LIMB  1
+
+/****************************************/
+/*              INTERFACE               */
+/****************************************/
 
 typedef struct big_uint_t {
     uint32_t   *arr;  // a pointer to the big integer
@@ -179,5 +193,16 @@ void big_uint_and(big_uint_t *result, const big_uint_t *a, const big_uint_t *b);
  * @param b   The second number to XOR
  */
 void big_uint_xor(big_uint_t *result, const big_uint_t *a, const big_uint_t *b);
+
+/**
+ * @brief Performs a right shift on the big uint `x` by `n.`
+ *        Can either shift by limbs or bits (determined by shift_t argument)
+ * 
+ * @param result    Where to store the result of the shift
+ * @param x         The big integer `x` to shift
+ * @param n         The uinteger `n` to shift by
+ * @param shift_t   The type of shift (eitherr SHIFT_BIT [0] or SHIFT_LIMB [1])
+ */
+void big_uint_shr(big_uint_t *result, const big_uint_t *x, uint64_t n, uint8_t shift_t);
 
 #endif
