@@ -209,13 +209,36 @@ void big_uint_shr(big_uint_t *result, const big_uint_t *x, uint64_t n, uint8_t s
     
     // temporary variable to allow for operator assignment
     uint32_t res[result->len];
+    
+    // move offset x limb in result array, shift to account for sub-limb shifts
     uint32_t shift = 0;
     for (uint64_t i = result->len - 1; i < result->len; i--) {
         uint32_t elem = (i + limbs) < x->len ? x->arr[i + limbs] : 0;
-        res[i] = (elem >> bits) | shift;
-        shift = elem << (UINT_BITS - bits);
+        res[i] = shift | (elem >> bits);
+        shift = (elem << (UINT_BITS - bits)) * !!bits;
     }
 
     // copy the result into the destination
     memcpy(result->arr, res, result->len * UINT_SIZE);    
+}
+
+void big_uint_shl(big_uint_t *result, const big_uint_t *x, uint64_t n, uint8_t shift_t) {
+    // calculate how many bits to shift
+    uint64_t total_bits = n * (1 - shift_t) + n * shift_t * UINT_BITS;
+    uint64_t limbs = total_bits / UINT_BITS;
+    uint64_t bits  = total_bits % UINT_BITS;
+
+    // prevent overshifting
+    if (total_bits >= result->len * UINT_BITS) {
+        memset(result->arr, 0, result->len * UINT_SIZE);
+        return;
+    }
+    
+    // move offset x limb in result array, shift to account for sub-limb shifts
+    uint32_t shift = 0;
+    for (uint64_t i = result->len - 1; i < result->len; i--) {
+        uint32_t elem = (i - limbs) < x->len ? x->arr[i - limbs] : 0;
+        result->arr[i] = (elem << bits) | shift;
+        shift = (elem >> (UINT_BITS - bits)) * !!bits;
+    }
 }
