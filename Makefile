@@ -3,10 +3,10 @@ INCLUDES = -Iinclude -Iconstants
 LIBS = -Llib -lhex -ltesting-logger
 
 # use for testing purposes
-# CFLAGS = -g -Wall -Wextra -pedantic -std=c17 -Wno-unused-command-line-argument -std=c17 $(INCLUDES) $(LIBS)
+CFLAGS = -g -Wall -Wextra -pedantic -std=c17 -Wno-unused-command-line-argument -std=c17 $(INCLUDES) $(LIBS)
 
 # use for benchmarking purposes
-CFLAGS = -Ofast -pedantic -std=c17 -std=c17 $(INCLUDES) $(LIBS)
+# CFLAGS = -Ofast -pedantic -std=c17 -std=c17 $(INCLUDES) $(LIBS)
 
 SRC_FILES = sha256 big-uint
 OBJ_FILES = $(addprefix obj/,$(SRC_FILES:=.o))
