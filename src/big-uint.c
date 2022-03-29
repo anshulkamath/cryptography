@@ -287,7 +287,6 @@ void big_uint_sub(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) 
 
             result->arr[i] = c_val & (~1ull >> UINT_BITS);
             underflow = !!(c_val >> UINT_BITS);
-
         }
         
         return;
