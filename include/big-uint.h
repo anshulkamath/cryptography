@@ -223,30 +223,33 @@ void big_uint_shl(big_uint_t *result, const big_uint_t *x, uint64_t n, uint8_t s
 /****************************************/
 
 /**
- * @brief Computes a + b and stores the sum in `result`
+ * @brief Computes a + b and stores the sum in `c`
+ * NOTE:  We only retain the limbs of the sum that fit within c
  * 
- * @param result Where to store the sum
+ * @param c Where to store the sum
  * @param a      The first number to add
  * @param b      The second number to add
  */
-void big_uint_add(big_uint_t *result, const big_uint_t *a, const big_uint_t *b);
+void big_uint_add(big_uint_t *c, const big_uint_t *a, const big_uint_t *b);
 
 /**
- * @brief Computes a - b and stores the difference in `result`
+ * @brief Computes a - b and stores the difference in `c`
+ * NOTE:  We only retain the limbs of the difference that fit within c
  * 
- * @param result Where to store the difference
- * @param a      The first number to subtract
- * @param b      The amount to subtract from the first
+ * @param c Where to store the difference
+ * @param a The first number to subtract
+ * @param b The amount to subtract from the first
  */
-void big_uint_sub(big_uint_t *result, const big_uint_t *a, const big_uint_t *b);
+void big_uint_sub(big_uint_t *c, const big_uint_t *a, const big_uint_t *b);
 
 /**
- * @brief Computes a * b and stores the product in `result`
+ * @brief Computes a * b and stores the product in `c`
+ * NOTE:  We only retain the limbs of the product that fit within c
  * 
- * @param result Where to store the product
- * @param a      The first number to multiply
- * @param b      The second number to multiply
+ * @param c Where to store the product
+ * @param a The first number to multiply
+ * @param b The second number to multiply
  */
-void big_uint_mult(big_uint_t *result, const big_uint_t *a, const big_uint_t *b);
+void big_uint_mult(big_uint_t *c, const big_uint_t *a, const big_uint_t *b);
 
 #endif

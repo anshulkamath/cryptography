@@ -331,39 +331,39 @@ static void _big_uint_sub_same(big_uint_t *result, const big_uint_t *a, const bi
 /*        ARITHMETIC OPERATIONS         */
 /****************************************/
 
-void big_uint_add(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) {
+void big_uint_add(big_uint_t *c, const big_uint_t *a, const big_uint_t *b) {
     // offers small optimization if integers are same length
     if (a->len == b->len) {
-        _big_uint_add_same(result, a, b);
+        _big_uint_add_same(c, a, b);
         return;
     } 
 
     // allow for different length integers to be summed
-    _big_uint_add_diff(result, a, b);
+    _big_uint_add_diff(c, a, b);
 }
 
-void big_uint_sub(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) {
+void big_uint_sub(big_uint_t *c, const big_uint_t *a, const big_uint_t *b) {
     // offers small optimization if integers are same length
     if (a->len == b->len) {
-        _big_uint_sub_same(result, a, b);
+        _big_uint_sub_same(c, a, b);
         return;
     }
 
     // allow for different length integers to be subtracted
-    _big_uint_sub_diff(result, a, b);
+    _big_uint_sub_diff(c, a, b);
 }
 
-void big_uint_mult(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) {
+void big_uint_mult(big_uint_t *c, const big_uint_t *a, const big_uint_t *b) {
     uint64_t a_val, b_val, product, overflow;
 
-    uint64_t res[result->len];
-    memset(res, 0, result->len * D_UINT_SIZE);
+    uint64_t res[c->len];
+    memset(res, 0, c->len * D_UINT_SIZE);
 
     for (uint64_t i = 0; i < a->len; i++) {
         overflow = 0;
         for (uint64_t j = 0; j < b->len; j++) {
-            // do not write outside of result
-            if (i + j >= result->len) break;
+            // do not write outside of c
+            if (i + j >= c->len) break;
 
             a_val = a->arr[i];
             b_val = b->arr[j];
@@ -379,20 +379,20 @@ void big_uint_mult(big_uint_t *result, const big_uint_t *a, const big_uint_t *b)
             overflow = product >> UINT_BITS;
         }
 
-        // if result can store the previous overflow, put it in
-        if (i + b->len < result->len)
+        // if c can store the previous overflow, put it in
+        if (i + b->len < c->len)
             res[i + b->len] += overflow;
     }
 
-    // if result can store the previous overflow, put it in
-    if (a->len + b->len < result->len)
+    // if c can store the previous overflow, put it in
+    if (a->len + b->len < c->len)
         res[a->len + b->len] += overflow;
 
     // flatten array of `uint64_t`s into `uint32_t`s, accounting for overflow
     uint64_t val, carry = 0;
-    for (uint64_t i = 0; i < result->len; i++) {
+    for (uint64_t i = 0; i < c->len; i++) {
         val = res[i] + carry;
-        result->arr[i] = val;
+        c->arr[i] = val;
         carry = val >> UINT_BITS;
     }
 }
