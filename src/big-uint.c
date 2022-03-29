@@ -5,6 +5,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+/****************************************/
+/*       BIG UINT INITIALIZATION        */
+/****************************************/
+
 void big_uint_init(big_uint_t *dest, uint32_t *arr, uint64_t len) {
     dest->arr = arr;
     dest->len = len;
@@ -80,6 +84,10 @@ void big_uint_parse(uint32_t *dest, const char *num, uint64_t size) {
     }
 }
 
+/****************************************/
+/*           PRINT OPERATIONS           */
+/****************************************/
+
 void big_uint_sprint(char *dest, const big_uint_t *value) {
     uint64_t len = value->len;
     const uint32_t *arr = value->arr;
@@ -122,6 +130,10 @@ uint8_t big_uint_equals(const big_uint_t *a, const big_uint_t *b) {
     return res;
 }
 
+/****************************************/
+/*        COMPARISON OPERATIONS         */
+/****************************************/
+
 int8_t big_uint_cmp(const big_uint_t *a, const big_uint_t *b) {
     uint64_t len_a = a->len;
     uint64_t len_b = b->len;
@@ -158,6 +170,10 @@ big_uint_t big_uint_max(const big_uint_t *a, const big_uint_t *b) {
 big_uint_t big_uint_min(const big_uint_t *a, const big_uint_t *b) {
     return big_uint_cmp(a, b) <= 0 ? *a : *b;
 }
+
+/****************************************/
+/*          BITWISE OPERATIONS          */
+/****************************************/
 
 void big_uint_or(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) {
     uint32_t a_val = 0;
@@ -243,27 +259,16 @@ void big_uint_shl(big_uint_t *result, const big_uint_t *x, uint64_t n, uint8_t s
     }
 }
 
-void big_uint_add(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) {
+/****************************************/
+/*    ARITHMETIC OPERATIONS HELPERS     */
+/****************************************/
+
+/* performs addition for different length integers */
+static void _big_uint_add_diff(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) {
     uint64_t a_val, b_val, c_val;
     uint64_t overflow = 0;
-
-    // inner conditional is unnecessary if lengths are the same
-    if (a->len == b->len) {
-        for (uint64_t i = 0; i < result->len; i++) {
-            a_val = a->arr[i];
-            b_val = b->arr[i];
-            c_val = a_val + b_val + overflow;
-
-            result->arr[i] = c_val & (~1ull >> UINT_BITS);
-            overflow = !!(c_val >> UINT_BITS);
-        }
-
-        return;
-    } 
-
-    // allow for different length integers to be summed
+    
     for (uint64_t i = 0; i < result->len; i++) {
-        // if out of range for a or b, use 0 instead
         a_val = i < a->len ? a->arr[i] : 0;
         b_val = i < b->len ? b->arr[i] : 0;
         c_val = a_val + b_val + overflow;
@@ -273,25 +278,26 @@ void big_uint_add(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) 
     }
 }
 
-void big_uint_sub(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) {
+/* performs addition for same length integers */
+static void _big_uint_add_same(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) {
+    uint64_t a_val, b_val, c_val;
+    uint64_t overflow = 0;
+
+    for (uint64_t i = 0; i < result->len; i++) {
+        a_val = a->arr[i];
+        b_val = b->arr[i];
+        c_val = a_val + b_val + overflow;
+
+        result->arr[i] = c_val & (~1ull >> UINT_BITS);
+        overflow = !!(c_val >> UINT_BITS);
+    }
+}
+
+/* performs subtraction for different length integers */
+static void _big_uint_sub_diff(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) {
     uint64_t a_val, b_val, c_val;
     uint64_t underflow = 0;
-
-    if (a->len == b->len) {
-        // allow for different length integers to be subtracted
-        for (uint64_t i = 0; i < result->len; i++) {
-            // if out of range for a or b, use 0 instead
-            a_val = a->arr[i];
-            b_val = b->arr[i];
-            c_val = a_val - b_val - underflow;
-
-            result->arr[i] = c_val & (~1ull >> UINT_BITS);
-            underflow = !!(c_val >> UINT_BITS);
-        }
-        
-        return;
-    }
-
+    
     // allow for different length integers to be subtracted
     for (uint64_t i = 0; i < result->len; i++) {
         // if out of range for a or b, use 0 instead
@@ -302,6 +308,49 @@ void big_uint_sub(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) 
         result->arr[i] = c_val & (~1ull >> UINT_BITS);
         underflow = !!(c_val >> UINT_BITS);
     }
+}
+
+/* performs subtraction for same length integers */
+static void _big_uint_sub_same(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) {
+    uint64_t a_val, b_val, c_val;
+    uint64_t underflow = 0;
+
+    // allow for different length integers to be subtracted
+    for (uint64_t i = 0; i < result->len; i++) {
+        // if out of range for a or b, use 0 instead
+        a_val = a->arr[i];
+        b_val = b->arr[i];
+        c_val = a_val - b_val - underflow;
+
+        result->arr[i] = c_val & (~1ull >> UINT_BITS);
+        underflow = !!(c_val >> UINT_BITS);
+    }
+}
+
+/****************************************/
+/*        ARITHMETIC OPERATIONS         */
+/****************************************/
+
+void big_uint_add(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) {
+    // offers small optimization if integers are same length
+    if (a->len == b->len) {
+        _big_uint_add_same(result, a, b);
+        return;
+    } 
+
+    // allow for different length integers to be summed
+    _big_uint_add_diff(result, a, b);
+}
+
+void big_uint_sub(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) {
+    // offers small optimization if integers are same length
+    if (a->len == b->len) {
+        _big_uint_sub_same(result, a, b);
+        return;
+    }
+
+    // allow for different length integers to be subtracted
+    _big_uint_sub_diff(result, a, b);
 }
 
 void big_uint_mult(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) {
