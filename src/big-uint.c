@@ -197,7 +197,7 @@ void big_uint_xor(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) 
 
 void big_uint_shr(big_uint_t *result, const big_uint_t *x, uint64_t n, uint8_t shift_t) {
     // calculate how many bits to shift
-    uint64_t total_bits = n * (1 - shift_t) + n * shift_t * UINT_BITS;
+    uint64_t total_bits = n * !shift_t + n * shift_t * UINT_BITS;
     uint64_t limbs = total_bits / UINT_BITS;
     uint64_t bits  = total_bits % UINT_BITS;
 
@@ -224,7 +224,7 @@ void big_uint_shr(big_uint_t *result, const big_uint_t *x, uint64_t n, uint8_t s
 
 void big_uint_shl(big_uint_t *result, const big_uint_t *x, uint64_t n, uint8_t shift_t) {
     // calculate how many bits to shift
-    uint64_t total_bits = n * (1 - shift_t) + n * shift_t * UINT_BITS;
+    uint64_t total_bits = n * !shift_t + n * shift_t * UINT_BITS;
     uint64_t limbs = total_bits / UINT_BITS;
     uint64_t bits  = total_bits % UINT_BITS;
 
@@ -244,40 +244,75 @@ void big_uint_shl(big_uint_t *result, const big_uint_t *x, uint64_t n, uint8_t s
 }
 
 void big_uint_add(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) {
-    uint32_t a_val, b_val;
-    uint8_t carry = 0;
+    uint64_t a_val, b_val, c_val;
+    uint64_t overflow = 0;
+
+    // inner conditional is unnecessary if lengths are the same
+    if (a->len == b->len) {
+        for (uint64_t i = 0; i < result->len; i++) {
+            a_val = a->arr[i];
+            b_val = b->arr[i];
+            c_val = a_val + b_val + overflow;
+
+            result->arr[i] = c_val & (~1ull >> UINT_BITS);
+            overflow = !!(c_val >> UINT_BITS);
+        }
+
+        return;
+    } 
 
     // allow for different length integers to be summed
     for (uint64_t i = 0; i < result->len; i++) {
+        // if out of range for a or b, use 0 instead
         a_val = i < a->len ? a->arr[i] : 0;
         b_val = i < b->len ? b->arr[i] : 0;
+        c_val = a_val + b_val + overflow;
 
-        result->arr[i] = a_val + b_val + carry;
-        carry = ((uint64_t) a_val + b_val + carry) > UINT32_MAX;
+        result->arr[i] = c_val & (~1ull >> UINT_BITS);
+        overflow = !!(c_val >> UINT_BITS);
     }
 }
 
 void big_uint_sub(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) {
-    uint32_t a_val, b_val;
-    uint8_t carry = 0;
+    uint64_t a_val, b_val, c_val;
+    uint64_t underflow = 0;
 
-    // allow for different length integers to be summed
+    if (a->len == b->len) {
+        // allow for different length integers to be subtracted
+        for (uint64_t i = 0; i < result->len; i++) {
+            // if out of range for a or b, use 0 instead
+            a_val = a->arr[i];
+            b_val = b->arr[i];
+            c_val = a_val - b_val - underflow;
+
+            result->arr[i] = c_val & (~1ull >> UINT_BITS);
+            underflow = !!(c_val >> UINT_BITS);
+
+        }
+        
+        return;
+    }
+
+    // allow for different length integers to be subtracted
     for (uint64_t i = 0; i < result->len; i++) {
+        // if out of range for a or b, use 0 instead
         a_val = i < a->len ? a->arr[i] : 0;
         b_val = i < b->len ? b->arr[i] : 0;
+        c_val = a_val - b_val - underflow;
 
-        result->arr[i] = a_val - b_val - carry;
-        carry =(uint64_t) a_val - b_val - carry > UINT32_MAX;
+        result->arr[i] = c_val & (~1ull >> UINT_BITS);
+        underflow = !!(c_val >> UINT_BITS);
     }
 }
 
 void big_uint_mult(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) {
-    uint64_t a_val, b_val, product;
+    uint64_t a_val, b_val, product, overflow;
 
     uint32_t res[result->len];
     memset(res, 0, result->len * UINT_SIZE);
 
     for (uint64_t i = 0; i < a->len; i++) {
+        overflow = 0;
         for (uint64_t j = 0; j < b->len; j++) {
             // do not write outside of result
             if (i + j >= result->len) break;
@@ -287,13 +322,23 @@ void big_uint_mult(big_uint_t *result, const big_uint_t *a, const big_uint_t *b)
             product = a_val * b_val;
 
             // store lower 32 bits of product in current limb
-            res[i + j] += product & (~1ll >> UINT_BITS);
+            res[i + j] += product & (~1ull >> UINT_BITS);
+            
+            // add overflow from previous partial product
+            res[i + j] += overflow;
 
-            // store upper 32 bits of product in next limb (if within range)
-            if (i + j + 1 < result->len)
-                res[i + j + 1] += product >> UINT_BITS;
+            // store upper 32 bits (overflow) of product in next limb
+            overflow = product >> UINT_BITS;
         }
+
+        // if result can store the previous overflow, put it in
+        if (i + b->len < result->len)
+            res[i + b->len] += overflow;
     }
+
+    // if result can store the previous overflow, put it in
+    if (a->len + b->len < result->len)
+        res[a->len + b->len] += overflow;
 
     // copy the result to our destination
     memcpy(result->arr, res, result->len * UINT_SIZE);

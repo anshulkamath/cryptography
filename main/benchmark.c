@@ -4,90 +4,54 @@
 
 #include "big-uint.h"
 
-void benchmark_big_uint_add() {
-    clock_t start = clock();
-    int count = 0;
-    big_uint_t a;
-    big_uint_t b;
-    big_uint_t c;
+big_uint_t A;
+big_uint_t B;
+big_uint_t C;
 
-    big_uint_load(&a, "0x"
-        "12341234_12341234_12341234_12341234_"
-        "12341234_12341234_12341234_12341234_"
-    );
+#define STRINGIFY(x) #x
+#define BENCHMARK(func, aux, batch) benchmark(STRINGIFY(func), func, aux, batch)
 
-    big_uint_load(&b, "0x"
-        "56785678_56785678_56785678_56785678_"
-        "56785678_56785678_56785678_56785678_"
-    );
+void benchmark(const char *name, void (*func)(void*), void* aux, size_t batch) {
+    size_t count = 0;
 
-    big_uint_load(&c, "0x"
-        "00000000_00000000_00000000_00000000"
-        "00000000_00000000_00000000_00000000"
-    );
-
-    while(clock() - start < CLOCKS_PER_SEC) {
-        big_uint_add(&c, &a, &b);
-        count += 1;
+    time_t start = clock();
+    while (1) {
+        for (size_t i = 0; i < batch; i++) func(aux);
+        time_t end = clock();
+        count += batch;
+        
+        if (end - start > CLOCKS_PER_SEC) {
+            size_t ops = count * CLOCKS_PER_SEC / (end - start);
+            printf("%s: %lu\n", name, ops);
+            break;
+        }
     }
+}
 
-    printf("big_uint_add: %d\n", count);
+void benchmark_big_uint_add() {
+    big_uint_add(&C, &A, &B);
 }
 
 void benchmark_big_uint_sub() {
-    clock_t start = clock();
-    int count = 0;
-    big_uint_t a;
-    big_uint_t b;
-    big_uint_t c;
-
-    big_uint_load(&a, "0x"
-        "12341234_12341234_12341234_12341234_"
-        "12341234_12341234_12341234_12341234_"
-    );
-
-    big_uint_load(&b, "0x"
-        "56785678_56785678_56785678_56785678_"
-        "56785678_56785678_56785678_56785678_"
-    );
-
-    while(clock() - start < CLOCKS_PER_SEC) {
-        big_uint_sub(&c, &a, &b);
-        count += 1;
-    }
-
-    printf("big_uint_sub: %d\n", count);
+    big_uint_sub(&C, &A, &B);
 }
 
 void benchmark_big_uint_mult() {
-    clock_t start = clock();
-    int count = 0;
-    big_uint_t a;
-    big_uint_t b;
-    big_uint_t c;
-
-    big_uint_load(&a, "0x"
-        "12341234_12341234_12341234_12341234_"
-        "12341234_12341234_12341234_12341234_"
-    );
-
-    big_uint_load(&b, "0x"
-        "56785678_56785678_56785678_56785678_"
-        "56785678_56785678_56785678_56785678_"
-    );
-
-    while(clock() - start < CLOCKS_PER_SEC) {
-        big_uint_mult(&c, &a, &b);
-        count += 1;
-    }
-
-    printf("big_uint_mult: %d\n", count);
+    big_uint_mult(&C, &A, &B);
 }
 
 int main() {
-    benchmark_big_uint_add();
-    benchmark_big_uint_sub();
-    benchmark_big_uint_mult();
+    // initialize global variables
+    big_uint_load(&A, "0x6409b613_c5e7c7e9_27f9d2c4_1b56af5e_a49ec282_77c71eb1_2223a2cf_f01135d7");
+    big_uint_load(&B, "0x1a74c20e_80b9aa12_2b748f72_3ad25ba0_6018dd1d_7933c61d_3df4ec16_860c5a0f");
+    big_uint_load(&C, "0x00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000");
 
+    // arithmetic benchmark
+    printf("Running benchmarks on arithmetic operations:")
+    BENCHMARK(benchmark_big_uint_add, NULL, 100);
+    BENCHMARK(benchmark_big_uint_sub, NULL, 100);
+    BENCHMARK(benchmark_big_uint_mult, NULL, 100);
+
+    printf("\n");
     return 0;
 }
