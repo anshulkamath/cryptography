@@ -308,8 +308,8 @@ void big_uint_sub(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) 
 void big_uint_mult(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) {
     uint64_t a_val, b_val, product, overflow;
 
-    uint32_t res[result->len];
-    memset(res, 0, result->len * UINT_SIZE);
+    uint64_t res[result->len];
+    memset(res, 0, result->len * D_UINT_SIZE);
 
     for (uint64_t i = 0; i < a->len; i++) {
         overflow = 0;
@@ -340,6 +340,11 @@ void big_uint_mult(big_uint_t *result, const big_uint_t *a, const big_uint_t *b)
     if (a->len + b->len < result->len)
         res[a->len + b->len] += overflow;
 
-    // copy the result to our destination
-    memcpy(result->arr, res, result->len * UINT_SIZE);
+    // flatten array of `uint64_t`s into `uint32_t`s, accounting for overflow
+    uint64_t val, carry = 0;
+    for (uint64_t i = 0; i < result->len; i++) {
+        val = res[i] + carry;
+        result->arr[i] = val;
+        carry = val >> UINT_BITS;
+    }
 }

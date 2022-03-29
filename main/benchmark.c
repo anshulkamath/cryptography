@@ -47,7 +47,7 @@ int main() {
     big_uint_load(&C, "0x00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000");
 
     // arithmetic benchmark
-    printf("Running benchmarks on arithmetic operations:")
+    printf("Running benchmarks on arithmetic operations:\n");
     BENCHMARK(benchmark_big_uint_add, NULL, 100);
     BENCHMARK(benchmark_big_uint_sub, NULL, 100);
     BENCHMARK(benchmark_big_uint_mult, NULL, 100);

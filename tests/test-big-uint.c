@@ -1199,6 +1199,15 @@ void test_big_uint_mult() {
 
     expect(tester, big_uint_equals(&a, &exp));
     
+    // cascading overflow
+    big_uint_load(&a, "0xffffffff_ffffffff_ffffffff");
+    big_uint_load(&b, "0xffffffff_ffffffff_ffffffff");
+    big_uint_load(&exp, "0xffffffff_ffffffff_fffffffe_00000000_00000000_00000001");
+    big_uint_load(&res, "0x00000000_00000000_00000000_00000000_00000000_00000000");
+    big_uint_mult(&res, &a, &b);
+
+    expect(tester, big_uint_equals(&res, &exp));
+
     log_tests(tester);
 }
 

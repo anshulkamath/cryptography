@@ -49,6 +49,8 @@
 
 #define UINT_SIZE   sizeof(uint32_t)
 #define UINT_BITS   32
+#define D_UINT_SIZE sizeof(uint64_t)
+#define D_UINT_BITS 64
 #define SHIFT_BIT   0
 #define SHIFT_LIMB  1
 
