@@ -144,10 +144,21 @@
  * 
  * @param dest  The destination big uint
  * @param a     The number to subtract from
- * @param num   The immediate uint32_t to add with
+ * @param num   The immediate uint32_t to subtract with
  */
 #define big_uint_subi(dest, a, num) \
     _BU_HELPER_7(dest, a, num, big_uint_sub, __COUNTER__)
+
+/**
+ * @brief Multiply immediate. Multiply a given big uint with the value
+ *        given. The value must be a uint32_t
+ * 
+ * @param dest  The destination big uint
+ * @param a     The number to multiply to
+ * @param num   The immediate uint32_t to multiply with
+ */
+#define big_uint_multi(dest, a, num) \
+    _BU_HELPER_7(dest, a, num, big_uint_mult, __COUNTER__)
 
 /****************************************/
 /*               CONSTANTS              */

@@ -1649,7 +1649,71 @@ void test_big_uint_subi() {
     big_uint_subi(&res, &a, 0x1);
 
     expect(tester, big_uint_equals(&res, &exp));
+    
+    log_tests(tester);
+}
 
+void test_big_uint_multi() {
+    // Define variables to be tested with
+    testing_logger_t *tester = create_tester();
+    big_uint_t a;
+    big_uint_t exp;
+    big_uint_t res;
+
+    // Single digit test (no carry, no overflow)
+    big_uint_load(&a, "0x00000020");
+    big_uint_load(&exp, "0x000000a0");
+    big_uint_load(&res, "0x00000000");
+    big_uint_multi(&res, &a, 0x5);
+
+    expect(tester, big_uint_equals(&res, &exp));
+
+    // Single digit test (no carry, no overflow)
+    big_uint_load(&a, "0x00000012");
+    big_uint_load(&exp, "0x0000017a");
+    big_uint_load(&res, "0x00000000");
+    big_uint_multi(&res, &a, 0x15);
+
+    expect(tester, big_uint_equals(&res, &exp));
+
+    // Multiple digit test (no carry, no overflow)
+    big_uint_load(&a, "0x00000030_00000025");
+    big_uint_load(&exp, "0x000003f0_00000309");
+    big_uint_load(&res, "0x00000000_00000000");
+    big_uint_multi(&res, &a, 0x15);
+
+    expect(tester, big_uint_equals(&res, &exp));
+
+    // Multiple digit test (carry, no overflow)
+    big_uint_load(&a, "0x00000000_10000000");
+    big_uint_load(&exp, "0x00000005_00000000");
+    big_uint_load(&res, "0x00000000_00000000");
+    big_uint_multi(&res, &a, 0x50);
+
+    expect(tester, big_uint_equals(&res, &exp));
+
+     // Multiple digit test (no carry, overflow)
+    big_uint_load(&a, "0x00020000_00000000");
+    big_uint_load(&exp, "0x22240000_00000000");
+    big_uint_load(&res, "0x00000000_00000000");
+    big_uint_multi(&res, &a, 0x21112);
+
+    expect(tester, big_uint_equals(&res, &exp));
+
+    // Misc. tests
+    big_uint_load(&a, "0x00000000_31f596dc");
+    big_uint_load(&exp, "0x000031bc_9abbed10");
+    big_uint_load(&res, "0x00000000_00000000");
+    big_uint_multi(&res, &a, 0xfedc);
+
+    expect(tester, big_uint_equals(&res, &exp));
+
+    // operator assignment
+    big_uint_load(&a, "0x00000000_31f596dc");
+    big_uint_load(&exp, "0x000031bc_9abbed10");
+    big_uint_multi(&a, &a, 0xfedc);
+
+    expect(tester, big_uint_equals(&a, &exp));
     
     log_tests(tester);
 }
@@ -1688,6 +1752,7 @@ int main() {
 
     test_big_uint_addi();
     test_big_uint_subi();
+    test_big_uint_multi();
 
     return 0;
 }
