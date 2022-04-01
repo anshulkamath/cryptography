@@ -7,6 +7,7 @@
 big_uint_t A;
 big_uint_t B;
 big_uint_t C;
+big_uint_t D;
 
 #define STRINGIFY(x) #x
 #define BENCHMARK(func, aux, batch) benchmark(STRINGIFY(func), func, aux, batch)
@@ -40,6 +41,10 @@ void benchmark_big_uint_mult() {
     big_uint_mult(&C, &A, &B);
 }
 
+void benchmark_big_uint_div() {
+    big_uint_div(&C, &D, &A, &B);
+}
+
 int main() {
     // initialize global variables
     big_uint_load(&A, "0x6409b613_c5e7c7e9_27f9d2c4_1b56af5e_a49ec282_77c71eb1_2223a2cf_f01135d7");
@@ -51,6 +56,7 @@ int main() {
     BENCHMARK(benchmark_big_uint_add, NULL, 100);
     BENCHMARK(benchmark_big_uint_sub, NULL, 100);
     BENCHMARK(benchmark_big_uint_mult, NULL, 100);
+    BENCHMARK(benchmark_big_uint_div, NULL, 100);
 
     printf("\n");
     return 0;
