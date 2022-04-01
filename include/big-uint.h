@@ -44,6 +44,14 @@
     a_id[0] = num; \
     big_uint_init(dest, a_id, size);
 
+#define _BU_HELPER_7(dest, a, num, func, count) \
+    _BU_HELPER_8(dest, a, num, func, CONCAT(r_imm, count))
+
+#define _BU_HELPER_8(dest, a, num, func, int_id) \
+    big_uint_t int_id; \
+    big_uint_loadi(&int_id, num, 1); \
+    func(dest, a, &int_id);
+
 /****************************************/
 /*                MACROS                */
 /****************************************/
@@ -74,6 +82,39 @@
  * @param size  The number of limbs in the big uint
  */
 #define big_uint_loadi(dest, num, size) _BU_HELPER_5(dest, num, size, __COUNTER__)
+
+/**
+ * @brief Or immediate. Creates a big uint with the given number of limbs
+ *        with the value given. The value must be a uint32_t
+ * 
+ * @param dest  The destination big uint
+ * @param a     The number to or
+ * @param num   The immediate uint32_t to or with
+ */
+#define big_uint_ori(dest, a, num) \
+    _BU_HELPER_7(dest, a, num, big_uint_or, __COUNTER__)
+
+/**
+ * @brief And immediate. Creates a big uint with the given number of limbs
+ *        with the value given. The value must be a uint32_t
+ * 
+ * @param dest  The destination big uint
+ * @param a     The number to and
+ * @param num   The immediate uint32_t to and with
+ */
+#define big_uint_andi(dest, a, num) \
+    _BU_HELPER_7(dest, a, num, big_uint_and, __COUNTER__)
+
+/**
+ * @brief Xor immediate. Creates a big uint with the given number of limbs
+ *        with the value given. The value must be a uint32_t
+ * 
+ * @param dest  The destination big uint
+ * @param a     The number to xor
+ * @param num   The immediate uint32_t to xor with
+ */
+#define big_uint_xori(dest, a, num) \
+    _BU_HELPER_7(dest, a, num, big_uint_xor, __COUNTER__)
 
 // alias for big_uint_print_helper to allow passing of literal big_uint_t
 #define big_uint_print(x) big_uint_print_helper(&x)
