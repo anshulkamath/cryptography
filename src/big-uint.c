@@ -94,7 +94,7 @@ void big_uint_sprint(char *dest, const big_uint_t *value) {
 
     for (uint64_t i = len - 1; i < len; i--) {
         if (i == len - 1) sprintf(&dest[0], "%08x", arr[i]);
-        else        sprintf(&dest[9 * (len - 1 - i) - 1], " %08x", arr[i]);
+        else              sprintf(&dest[9 * (len - 1 - i) - 1], " %08x", arr[i]);
     }
 }
 
@@ -121,10 +121,11 @@ uint8_t big_uint_equals(const big_uint_t *a, const big_uint_t *b) {
     uint8_t res = 1;  // use res to maintain constant time for fixed length
 
     for (uint64_t i = 0; i < max; i++) {
-        if ((i >= len_a && b->arr[i] != 0) ||
-            (i >= len_b && a->arr[i] != 0) ||
-            (i < min && a->arr[i] != b->arr[i]))
-            res = 0;
+        res &= !(
+                (i >= len_a && b->arr[i] != 0) ||
+                (i >= len_b && a->arr[i] != 0) ||
+                (i < min && a->arr[i] != b->arr[i])
+            );
     }
 
     return res;
@@ -169,6 +170,15 @@ big_uint_t big_uint_max(const big_uint_t *a, const big_uint_t *b) {
 
 big_uint_t big_uint_min(const big_uint_t *a, const big_uint_t *b) {
     return big_uint_cmp(a, b) <= 0 ? *a : *b;
+}
+
+uint8_t big_uint_is_zero(const big_uint_t *a) {
+    uint8_t res = 1;
+    for (uint64_t i = 0; i < a->len; i++) {
+        res &= a->arr[i] == 0;
+    }
+
+    return res;
 }
 
 /****************************************/
@@ -249,14 +259,18 @@ void big_uint_shl(big_uint_t *result, const big_uint_t *x, uint64_t n, uint8_t s
         memset(result->arr, 0, result->len * UINT_SIZE);
         return;
     }
+
+    uint32_t res[result->len];
     
     // move offset x limb in result array, shift to account for sub-limb shifts
-    uint32_t shift = 0;
-    for (uint64_t i = result->len - 1; i < result->len; i--) {
-        uint32_t elem = (i - limbs) < x->len ? x->arr[i - limbs] : 0;
-        result->arr[i] = (elem << bits) | shift;
+    uint32_t shift = 0, elem;
+    for (uint64_t i = 0; i < result->len; i++) {
+        elem = (i - limbs) < x->len ? x->arr[i - limbs] : 0;
+        res[i] = (elem << bits) | shift;
         shift = (elem >> (UINT_BITS - bits)) * !!bits;
     }
+
+    memcpy(result->arr, res, result->len * UINT_SIZE);
 }
 
 /****************************************/
@@ -327,43 +341,53 @@ static void _big_uint_sub_same(big_uint_t *result, const big_uint_t *a, const bi
     }
 }
 
+/* returns the i-th bit of x */
+static uint8_t _get_bit(big_uint_t *x, uint64_t i) {
+    uint64_t limb = i / UINT_BITS;
+    uint8_t  bit  = i % UINT_BITS;
+
+    if (i > x->len * UINT_BITS) return 0;
+
+    return (x->arr[limb] >> bit) & 1;
+}
+
 /****************************************/
 /*        ARITHMETIC OPERATIONS         */
 /****************************************/
 
-void big_uint_add(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) {
+void big_uint_add(big_uint_t *c, const big_uint_t *a, const big_uint_t *b) {
     // offers small optimization if integers are same length
     if (a->len == b->len) {
-        _big_uint_add_same(result, a, b);
+        _big_uint_add_same(c, a, b);
         return;
     } 
 
     // allow for different length integers to be summed
-    _big_uint_add_diff(result, a, b);
+    _big_uint_add_diff(c, a, b);
 }
 
-void big_uint_sub(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) {
+void big_uint_sub(big_uint_t *c, const big_uint_t *a, const big_uint_t *b) {
     // offers small optimization if integers are same length
     if (a->len == b->len) {
-        _big_uint_sub_same(result, a, b);
+        _big_uint_sub_same(c, a, b);
         return;
     }
 
     // allow for different length integers to be subtracted
-    _big_uint_sub_diff(result, a, b);
+    _big_uint_sub_diff(c, a, b);
 }
 
-void big_uint_mult(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) {
+void big_uint_mult(big_uint_t *c, const big_uint_t *a, const big_uint_t *b) {
     uint64_t a_val, b_val, product, overflow;
 
-    uint64_t res[result->len];
-    memset(res, 0, result->len * D_UINT_SIZE);
+    uint64_t res[c->len];
+    memset(res, 0, c->len * D_UINT_SIZE);
 
     for (uint64_t i = 0; i < a->len; i++) {
         overflow = 0;
         for (uint64_t j = 0; j < b->len; j++) {
-            // do not write outside of result
-            if (i + j >= result->len) break;
+            // do not write outside of c
+            if (i + j >= c->len) break;
 
             a_val = a->arr[i];
             b_val = b->arr[j];
@@ -379,20 +403,69 @@ void big_uint_mult(big_uint_t *result, const big_uint_t *a, const big_uint_t *b)
             overflow = product >> UINT_BITS;
         }
 
-        // if result can store the previous overflow, put it in
-        if (i + b->len < result->len)
+        // if c can store the previous overflow, put it in
+        if (i + b->len < c->len)
             res[i + b->len] += overflow;
     }
 
-    // if result can store the previous overflow, put it in
-    if (a->len + b->len < result->len)
+    // if c can store the previous overflow, put it in
+    if (a->len + b->len < c->len)
         res[a->len + b->len] += overflow;
 
     // flatten array of `uint64_t`s into `uint32_t`s, accounting for overflow
     uint64_t val, carry = 0;
-    for (uint64_t i = 0; i < result->len; i++) {
+    for (uint64_t i = 0; i < c->len; i++) {
         val = res[i] + carry;
-        result->arr[i] = val;
+        c->arr[i] = val;
         carry = val >> UINT_BITS;
     }
+}
+
+void big_uint_div(big_uint_t *q, big_uint_t *r, big_uint_t *u, big_uint_t *v) {
+    uint64_t len = q->len > r->len ? u->len : v->len;
+    uint32_t q_cpy[len];
+    uint32_t r_cpy[len];
+    uint32_t zero[len];
+
+    big_uint_t quo_t;
+    memset(q_cpy, 0, len * UINT_SIZE);
+    big_uint_init(&quo_t, q_cpy, len);
+
+    big_uint_t rem_t;
+    memset(r_cpy, 0, len * UINT_SIZE);
+    big_uint_init(&rem_t, r_cpy, len);
+
+    big_uint_t zero_t;
+    memset(zero, 0, len * UINT_SIZE);
+    big_uint_init(&zero_t, zero, len);
+
+    // if divide by 0, do nothing
+    if (big_uint_is_zero(v)) {
+        return;
+    }
+
+    const uint64_t NUM_BITS = UINT_BITS * len;
+    for (uint64_t i = NUM_BITS - 1; i < NUM_BITS ; i--) {
+        // q <<= 1
+        big_uint_shl(&quo_t, &quo_t, 1, SHIFT_BIT);
+
+        // (r <<= 1) |= (u >> i) & 0b1
+        big_uint_shl(&rem_t, &rem_t, 1, SHIFT_BIT);
+        r_cpy[0] |= _get_bit(u, i);
+
+        if (big_uint_cmp(&rem_t, v) < 0) {
+            // add to keep constant time
+            big_uint_add(&rem_t, &rem_t, &zero_t);
+            continue;
+        }
+
+        // q |= 1
+        q_cpy[0] |= 1;
+
+        // r -= v
+        big_uint_sub(&rem_t, &rem_t, v);
+    }
+
+    memcpy(q->arr, q_cpy, q->len * UINT_SIZE);
+    memcpy(r->arr, r_cpy, r->len * UINT_SIZE);
 }

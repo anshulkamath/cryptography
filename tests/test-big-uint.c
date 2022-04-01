@@ -437,6 +437,30 @@ void test_big_uint_min() {
     log_tests(tester);
 }
 
+void test_big_uint_is_zero() {
+    // Define variables to be tested with
+    testing_logger_t *tester = create_tester();
+    big_uint_t a;
+
+    big_uint_load(&a, "0x00000000");
+
+    expect(tester, big_uint_is_zero(&a) == 1);
+
+    big_uint_load(&a, "0x00000000_00000000");
+
+    expect(tester, big_uint_is_zero(&a) == 1);
+
+    big_uint_load(&a, "0x00010000");
+
+    expect(tester, big_uint_is_zero(&a) == 0);
+
+    big_uint_load(&a, "0x10000000_00000000");
+
+    expect(tester, big_uint_is_zero(&a) == 0);
+
+    log_tests(tester);
+}
+
 void test_big_uint_or() {
     // Define variables to be tested with
     testing_logger_t *tester = create_tester();
@@ -770,6 +794,14 @@ void test_big_uint_shr() {
     big_uint_shr(&x, &x, 1, SHIFT_LIMB);
     expect(tester, big_uint_equals(&x, &exp));
 
+    // Test 7 - misc
+    big_uint_load(&x, "0x00000004_80000000");
+    big_uint_load(&exp, "0x00000000_90000000");
+    big_uint_load(&res, "0xffffffff_ffffffff");
+
+    big_uint_shr(&res, &x, 3, SHIFT_BIT);
+    expect(tester, big_uint_equals(&res, &exp));
+
     log_tests(tester);
 }
 
@@ -853,6 +885,14 @@ void test_big_uint_shl() {
     big_uint_load(&exp, "0x0000000f_00000000");
     big_uint_shl(&x, &x, 1, SHIFT_LIMB);
     expect(tester, big_uint_equals(&x, &exp));
+
+    // Test 7 - misc
+    big_uint_load(&x, "0x00000000_90000000");
+    big_uint_load(&exp, "0x00000004_80000000");
+    big_uint_load(&res, "0xffffffff_ffffffff");
+
+    big_uint_shl(&res, &x, 3, SHIFT_BIT);
+    expect(tester, big_uint_equals(&res, &exp));
 
     log_tests(tester);
 }
@@ -1263,6 +1303,159 @@ void test_big_uint_mult() {
     log_tests(tester);
 }
 
+void test_big_uint_div() {
+    testing_logger_t *tester = create_tester();
+    big_uint_t a, b;
+    big_uint_t exp_q, exp_r;
+    big_uint_t q, r;
+
+    // Divide by 0 - do nothing
+    big_uint_load(&a, "0x00000001");
+    big_uint_load(&b, "0x00000000");
+    big_uint_load(&exp_q, "0x00000000");
+    big_uint_load(&exp_r, "0x000000000");
+    big_uint_load(&q, "0x00000000");
+    big_uint_load(&r, "0x00000000");
+    big_uint_div(&q, &r, &a, &b);
+
+    expect(tester, big_uint_equals(&q, &exp_q));
+    expect(tester, big_uint_equals(&r, &exp_r));
+
+    // 1 digit division (no truncation)
+    big_uint_load(&a, "0x00000010");
+    big_uint_load(&b, "0x00000002");
+    big_uint_load(&exp_q, "0x00000008");
+    big_uint_load(&exp_r, "0x00000000");
+    big_uint_load(&q, "0x00000000");
+    big_uint_load(&r, "0x00000000");
+    big_uint_div(&q, &r, &a, &b);
+
+    expect(tester, big_uint_equals(&q, &exp_q));
+    expect(tester, big_uint_equals(&r, &exp_r));
+
+    // padded 1 digit division (no truncation)
+    big_uint_load(&a, "0x0000000_00000010");
+    big_uint_load(&b, "0x0000000_00000002");
+    big_uint_load(&exp_q, "0x00000000_00000008");
+    big_uint_load(&exp_r, "0x00000000_00000000");
+    big_uint_load(&q, "0x00000000_00000000");
+    big_uint_load(&r, "0x00000000_00000000");
+    big_uint_div(&q, &r, &a, &b);
+
+    expect(tester, big_uint_equals(&q, &exp_q));
+    expect(tester, big_uint_equals(&r, &exp_r));
+
+    // 1 digit division (truncation)
+    big_uint_load(&a, "0x00000009");
+    big_uint_load(&b, "0x00000002");
+    big_uint_load(&exp_q, "0x00000004");
+    big_uint_load(&exp_r, "0x00000001");
+    big_uint_load(&q, "0x00000000");
+    big_uint_load(&r, "0x00000000");
+    big_uint_div(&q, &r, &a, &b);
+
+    expect(tester, big_uint_equals(&q, &exp_q));
+    expect(tester, big_uint_equals(&r, &exp_r));
+
+    // 2 digit division (no truncation)
+    big_uint_load(&a, "0x00000009_00000000");
+    big_uint_load(&b, "0x00000000_00000002");
+    big_uint_load(&exp_q, "0x00000004_80000000");
+    big_uint_load(&exp_r, "0x00000000_00000000");
+    big_uint_load(&q, "0x00000000_00000000");
+    big_uint_load(&r, "0x00000000_00000000");
+    big_uint_div(&q, &r, &a, &b);
+
+    expect(tester, big_uint_equals(&q, &exp_q));
+    expect(tester, big_uint_equals(&r, &exp_r));
+
+    // 2 digit division (no truncation)
+    big_uint_load(&a, "0x00000009_00000000");
+    big_uint_load(&b, "0x00000000_00000020");
+    big_uint_load(&exp_q, "0x00000000_48000000");
+    big_uint_load(&exp_r, "0x00000000_00000000");
+    big_uint_load(&q, "0x00000000_00000000");
+    big_uint_load(&r, "0x00000000_00000000");
+    big_uint_div(&q, &r, &a, &b);
+
+    expect(tester, big_uint_equals(&q, &exp_q));
+    expect(tester, big_uint_equals(&r, &exp_r));
+
+    // large number over itself + 1
+    big_uint_load(&a, "0xffffffff_fffffffe");
+    big_uint_load(&b, "0xffffffff_ffffffff");
+    big_uint_load(&exp_q, "0x00000000_00000000");
+    big_uint_load(&exp_r, "0xffffffff_fffffffe");
+    big_uint_load(&q, "0x00000000_00000000");
+    big_uint_load(&r, "0x00000000_00000000");
+    big_uint_div(&q, &r, &a, &b);
+
+    expect(tester, big_uint_equals(&q, &exp_q));
+    expect(tester, big_uint_equals(&r, &exp_r));
+
+    // large number over itself - 1
+    big_uint_load(&a, "0xffffffff_ffffffff");
+    big_uint_load(&b, "0xffffffff_fffffffe");
+    big_uint_load(&exp_q, "0x00000000_00000001");
+    big_uint_load(&exp_r, "0x00000000_00000001");
+    big_uint_load(&q, "0x00000000_00000000");
+    big_uint_load(&r, "0x00000000_00000000");
+    big_uint_div(&q, &r, &a, &b);
+
+    expect(tester, big_uint_equals(&q, &exp_q));
+    expect(tester, big_uint_equals(&r, &exp_r));
+
+    // 3 digit number divided by 1 digit number
+    big_uint_load(&a, "0x12345678_9abcdeff_ffffffff");
+    big_uint_load(&b, "0x00000000_0000000_0000fedc");
+    big_uint_load(&exp_q, "0x00001249_31f596dc_f30531ec");
+    big_uint_load(&exp_r, "0x00000000_0000000_0000f12f");
+    big_uint_load(&q, "0x00000000_00000000_00000000");
+    big_uint_load(&r, "0x00000000_00000000_00000000");
+    big_uint_div(&q, &r, &a, &b);
+
+    expect(tester, big_uint_equals(&q, &exp_q));
+    expect(tester, big_uint_equals(&r, &exp_r));
+
+    // random number
+    big_uint_load(&a, "0x00efa9af_3619a918");
+    big_uint_load(&b, "0x00000ee1_a8138dfe");
+    big_uint_load(&exp_q, "0x00000000_0000101a");
+    big_uint_load(&exp_r, "0x00000c42_eb3d5d4c");
+    big_uint_load(&q, "0x00000000_00000000");
+    big_uint_load(&r, "0x00000000_00000000");
+    big_uint_div(&q, &r, &a, &b);
+
+    expect(tester, big_uint_equals(&q, &exp_q));
+    expect(tester, big_uint_equals(&r, &exp_r));
+
+    // forced 1 by 2
+    big_uint_load(&a, "0x00100000_00000000");
+    big_uint_load(&b, "0x00000000_f0000000"); 
+    big_uint_load(&exp_q, "0x00000000_00111111");
+    big_uint_load(&exp_r, "0x00000000_10000000");
+    big_uint_load(&q, "0x00000000_00000000");
+    big_uint_load(&r, "0x00000000_00000000");
+    big_uint_div(&q, &r, &a, &b);
+
+    expect(tester, big_uint_equals(&q, &exp_q));
+    expect(tester, big_uint_equals(&r, &exp_r));
+
+    // misc test
+    big_uint_load(&a, "0x41763a5f_991b4b60_84285b8e");
+    big_uint_load(&b, "0x126d0ba2_278b1be0_1eb138e3");
+    big_uint_load(&exp_q, "0x00000000_00000000_00000003");
+    big_uint_load(&exp_r, "0x0a2f1779_2279f7c0_2814b0e5");
+    big_uint_load(&q, "0x00000000_00000000_00000000");
+    big_uint_load(&r, "0x00000000_00000000_00000000");
+    big_uint_div(&q, &r, &a, &b);
+
+    expect(tester, big_uint_equals(&q, &exp_q));
+    expect(tester, big_uint_equals(&r, &exp_r));
+
+    log_tests(tester);
+}
+
 int main() {
     test_big_uint_init();
     test_big_uint_count_limbs();
@@ -1275,6 +1468,7 @@ int main() {
     test_big_uint_cmp();
     test_big_uint_max();
     test_big_uint_min();
+    test_big_uint_is_zero();
     
     test_big_uint_or();
     test_big_uint_and();
@@ -1286,6 +1480,7 @@ int main() {
     test_big_uint_add();
     test_big_uint_sub();
     test_big_uint_mult();
+    test_big_uint_div();
 
     return 0;
 }
