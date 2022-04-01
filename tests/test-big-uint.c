@@ -935,6 +935,96 @@ void test_big_uint_shl() {
     log_tests(tester);
 }
 
+void test_big_uint_ori() {
+    // Define variables to be tested with
+    testing_logger_t *tester = create_tester();
+    big_uint_t a;
+    big_uint_t exp;
+    big_uint_t res;
+
+    // Single digit test (no carry, no underflow)
+    big_uint_load(&a, "0x11110000");
+    big_uint_load(&exp, "0x11111111");
+    big_uint_load(&res, "0x11111111");
+    big_uint_ori(&res, &a, 0x00001111);
+
+    expect(tester, big_uint_equals(&res, &exp));
+
+    big_uint_load(&a, "0xffffffff_0f0f0f0f");
+    big_uint_load(&exp, "0xffffffff_ffffffff");
+    big_uint_load(&res, "0x00000000_00000000");
+    big_uint_ori(&res, &a, 0xf0f0f0f0);
+
+    // arg1 and-equals
+    big_uint_load(&a, "0xffffffff_0f0f0f0f");
+    big_uint_load(&res, "0x00000000_00000000");
+    big_uint_ori(&a, &a, 0xf0f0f0f0);
+
+    expect(tester, big_uint_equals(&a, &exp));
+
+    log_tests(tester);
+}
+
+void test_big_uint_andi() {
+    // Define variables to be tested with
+    testing_logger_t *tester = create_tester();
+    big_uint_t a;
+    big_uint_t exp;
+    big_uint_t res;
+
+    // Single digit test (no carry, no underflow)
+    big_uint_load(&a, "0x11110000");
+    big_uint_load(&exp, "0x10100000");
+    big_uint_load(&res, "0x11111111");
+    big_uint_andi(&res, &a, 0x10101010);
+
+    expect(tester, big_uint_equals(&res, &exp));
+
+    big_uint_load(&a, "0xffffffff_ffffffff");
+    big_uint_load(&exp, "0x00000000_f0f0f0f0");
+    big_uint_load(&res, "0x00000000_00000000");
+    big_uint_andi(&res, &a, 0xf0f0f0f0);
+
+    // arg1 and-equals
+    big_uint_load(&a, "0xffffffff_ffffffff");
+    big_uint_load(&res, "0x00000000_00000000");
+    big_uint_andi(&a, &a, 0xf0f0f0f0);
+
+    expect(tester, big_uint_equals(&a, &exp));
+
+    log_tests(tester);
+}
+
+void test_big_uint_xori() {
+    // Define variables to be tested with
+    testing_logger_t *tester = create_tester();
+    big_uint_t a;
+    big_uint_t exp;
+    big_uint_t res;
+
+    // Single digit test (no carry, no underflow)
+    big_uint_load(&a, "0x11111111");
+    big_uint_load(&exp, "0x11000011");
+    big_uint_load(&res, "0x00000000");
+    big_uint_xori(&res, &a, 0x00111100);
+
+    expect(tester, big_uint_equals(&res, &exp));
+
+    big_uint_load(&a, "0xffffffff_ffffffff");
+    big_uint_load(&exp, "0xffffffff_f0f0f0f0");
+    big_uint_load(&res, "0x00000000_00000000");
+    big_uint_xori(&res, &a, 0x0f0f0f0f);
+
+    // arg1 and-equals
+    big_uint_load(&a, "0xffffffff_ffffffff");
+    big_uint_load(&res, "0x00000000_00000000");
+    big_uint_xori(&a, &a, 0x0f0f0f0f);
+
+    expect(tester, big_uint_equals(&a, &exp));
+
+    log_tests(tester);
+}
+
 void test_big_uint_add() {
     // Define variables to be tested with
     testing_logger_t *tester = create_tester();
@@ -1516,6 +1606,10 @@ int main() {
 
     test_big_uint_shr();
     test_big_uint_shl();
+
+    test_big_uint_andi();
+    test_big_uint_ori();
+    test_big_uint_xori();
 
     test_big_uint_add();
     test_big_uint_sub();
