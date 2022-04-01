@@ -188,6 +188,42 @@ void test_big_uint_loadi() {
     log_tests(tester);
 }
 
+void test_big_uint_copy() {
+    // Define variables to be tested with
+    testing_logger_t *tester = create_tester();
+    big_uint_t value;
+    big_uint_t copy;
+
+    big_uint_load(&value, "0x12345678");
+    big_uint_create(&copy, 1);
+    big_uint_copy(&copy, &value);
+
+    expect(tester, copy.arr[0] == value.arr[0]);
+
+    big_uint_load(&value, "0x12345678_87654321");
+    big_uint_create(&copy, 2);
+    big_uint_copy(&copy, &value);
+
+    expect(tester, copy.arr[0] == value.arr[0]);
+    expect(tester, copy.arr[1] == value.arr[1]);
+
+    big_uint_load(&value, "0x12345678_87654321");
+    big_uint_create(&copy, 1);
+    big_uint_copy(&copy, &value);
+
+    expect(tester, copy.arr[0] == value.arr[0]);
+
+    big_uint_load(&value, "0x12345678_87654321");
+    big_uint_create(&copy, 3);
+    big_uint_copy(&copy, &value);
+
+    expect(tester, copy.arr[0] == value.arr[0]);
+    expect(tester, copy.arr[1] == value.arr[1]);
+    expect(tester, copy.arr[2] == 0);
+
+    log_tests(tester);
+}
+
 void test_big_uint_sprint() {
     // Define variables to be tested with
     testing_logger_t *tester = create_tester();
@@ -1725,6 +1761,7 @@ int main() {
     test_big_uint_load();
     test_big_uint_create();
     test_big_uint_loadi();
+    test_big_uint_copy();
 
     test_big_uint_sprint();
     test_big_uint_equals();
