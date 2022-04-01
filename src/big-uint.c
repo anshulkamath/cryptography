@@ -9,7 +9,7 @@
 /*       BIG UINT INITIALIZATION        */
 /****************************************/
 
-void big_uint_init(big_uint_t *dest, uint32_t *arr, uint64_t len) {
+void big_uint_init(big_uint_t *dest, uint32_t *arr, uint16_t len) {
     dest->arr = arr;
     dest->len = len;
 }
@@ -21,14 +21,14 @@ static uint8_t is_hex_digit(char c) {
             ||  c > 102;
 }
 
-uint64_t big_uint_count_limbs(const char *num) {
-    uint64_t len = strlen(num);
-    uint64_t counter = len;
+uint16_t big_uint_count_limbs(const char *num) {
+    uint16_t len = strlen(num);
+    uint16_t counter = len;
     
     const uint8_t MAX_IDX = 7;  // should be size of (base / 2) - 1
     
     int8_t ind = MAX_IDX; 
-    uint64_t digits = 0;
+    uint16_t digits = 0;
 
     // digit counter loop
     while (counter > 1) {
@@ -49,9 +49,9 @@ uint64_t big_uint_count_limbs(const char *num) {
     return digits + (ind < (int) MAX_IDX);
 }
 
-void big_uint_parse(uint32_t *dest, const char *num, uint64_t size) {
-    uint64_t len = strlen(num);
-    uint64_t counter = len;
+void big_uint_parse(uint32_t *dest, const char *num, uint16_t size) {
+    uint16_t len = strlen(num);
+    uint16_t counter = len;
     
     const uint8_t MAX_IDX = 7;  // should be (base / 2) - 1
     
@@ -60,7 +60,7 @@ void big_uint_parse(uint32_t *dest, const char *num, uint64_t size) {
     buf[MAX_IDX + 1] = 0;
     
     int8_t ind = 7;
-    uint64_t digit = 0;
+    uint16_t digit = 0;
 
     // parsing loop
     while (counter > 1 && digit < size) {
@@ -89,10 +89,10 @@ void big_uint_parse(uint32_t *dest, const char *num, uint64_t size) {
 /****************************************/
 
 void big_uint_sprint(char *dest, const big_uint_t *value) {
-    uint64_t len = value->len;
+    uint16_t len = value->len;
     const uint32_t *arr = value->arr;
 
-    for (uint64_t i = len - 1; i < len; i--) {
+    for (uint16_t i = len - 1; i < len; i--) {
         if (i == len - 1) sprintf(&dest[0], "%08x", arr[i]);
         else              sprintf(&dest[9 * (len - 1 - i) - 1], " %08x", arr[i]);
     }
@@ -112,15 +112,15 @@ uint8_t big_uint_equals(const big_uint_t *a, const big_uint_t *b) {
     if (a->arr == b->arr && a->len == b->len)
         return 1;
     
-    uint64_t len_a = a->len;
-    uint64_t len_b = b->len;
+    uint16_t len_a = a->len;
+    uint16_t len_b = b->len;
 
-    uint64_t max = len_a > len_b ? len_a : len_b;
-    uint64_t min = max == len_a ? len_b : len_a;
+    uint16_t max = len_a > len_b ? len_a : len_b;
+    uint16_t min = max == len_a ? len_b : len_a;
     
     uint8_t res = 1;  // use res to maintain constant time for fixed length
 
-    for (uint64_t i = 0; i < max; i++) {
+    for (uint16_t i = 0; i < max; i++) {
         res &= !(
                 (i >= len_a && b->arr[i] != 0) ||
                 (i >= len_b && a->arr[i] != 0) ||
@@ -136,15 +136,15 @@ uint8_t big_uint_equals(const big_uint_t *a, const big_uint_t *b) {
 /****************************************/
 
 int8_t big_uint_cmp(const big_uint_t *a, const big_uint_t *b) {
-    uint64_t len_a = a->len;
-    uint64_t len_b = b->len;
+    uint16_t len_a = a->len;
+    uint16_t len_b = b->len;
 
-    uint64_t max = len_a > len_b ? len_a : len_b;
-    uint64_t min = max == len_a ? len_b : len_a;
+    uint16_t max = len_a > len_b ? len_a : len_b;
+    uint16_t min = max == len_a ? len_b : len_a;
 
     int8_t res = 0;  // use res to maintain constant time for fixed length
 
-    for (uint64_t i = max - 1; i < max; i--) {
+    for (uint16_t i = max - 1; i < max; i--) {
         // if the comparison has already been determined, continue
         if (res) continue;
 
@@ -174,7 +174,7 @@ big_uint_t big_uint_min(const big_uint_t *a, const big_uint_t *b) {
 
 uint8_t big_uint_is_zero(const big_uint_t *a) {
     uint8_t res = 1;
-    for (uint64_t i = 0; i < a->len; i++) {
+    for (uint16_t i = 0; i < a->len; i++) {
         res &= a->arr[i] == 0;
     }
 
@@ -189,7 +189,7 @@ void big_uint_or(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) {
     uint32_t a_val = 0;
     uint32_t b_val = 0;
 
-    for (uint64_t i = 0; i < result->len; i++) {
+    for (uint16_t i = 0; i < result->len; i++) {
         a_val = i < a->len ? a->arr[i] : 0;
         b_val = i < b->len ? b->arr[i] : 0;
 
@@ -201,7 +201,7 @@ void big_uint_and(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) 
     uint32_t a_val = 0;
     uint32_t b_val = 0;
 
-    for (uint64_t i = 0; i < result->len; i++) {
+    for (uint16_t i = 0; i < result->len; i++) {
         a_val = i < a->len ? a->arr[i] : 0;
         b_val = i < b->len ? b->arr[i] : 0;
 
@@ -213,7 +213,7 @@ void big_uint_xor(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) 
     uint32_t a_val = 0;
     uint32_t b_val = 0;
 
-    for (uint64_t i = 0; i < result->len; i++) {
+    for (uint16_t i = 0; i < result->len; i++) {
         a_val = i < a->len ? a->arr[i] : 0;
         b_val = i < b->len ? b->arr[i] : 0;
 
@@ -221,11 +221,11 @@ void big_uint_xor(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) 
     }
 }
 
-void big_uint_shr(big_uint_t *result, const big_uint_t *x, uint64_t n, uint8_t shift_t) {
+void big_uint_shr(big_uint_t *result, const big_uint_t *x, uint32_t n, uint8_t shift_t) {
     // calculate how many bits to shift
-    uint64_t total_bits = n * !shift_t + n * shift_t * UINT_BITS;
-    uint64_t limbs = total_bits / UINT_BITS;
-    uint64_t bits  = total_bits % UINT_BITS;
+    uint32_t total_bits = n * !shift_t + n * shift_t * UINT_BITS;
+    uint16_t limbs = total_bits / UINT_BITS;
+    uint16_t bits  = total_bits % UINT_BITS;
 
     // prevent overshifting
     if (total_bits >= result->len * UINT_BITS) {
@@ -238,7 +238,7 @@ void big_uint_shr(big_uint_t *result, const big_uint_t *x, uint64_t n, uint8_t s
     
     // move offset x limb in result array, shift to account for sub-limb shifts
     uint32_t shift = 0;
-    for (uint64_t i = result->len - 1; i < result->len; i--) {
+    for (uint16_t i = result->len - 1; i < result->len; i--) {
         uint32_t elem = (i + limbs) < x->len ? x->arr[i + limbs] : 0;
         res[i] = shift | (elem >> bits);
         shift = (elem << (UINT_BITS - bits)) * !!bits;
@@ -248,11 +248,11 @@ void big_uint_shr(big_uint_t *result, const big_uint_t *x, uint64_t n, uint8_t s
     memcpy(result->arr, res, result->len * UINT_SIZE);    
 }
 
-void big_uint_shl(big_uint_t *result, const big_uint_t *x, uint64_t n, uint8_t shift_t) {
+void big_uint_shl(big_uint_t *result, const big_uint_t *x, uint32_t n, uint8_t shift_t) {
     // calculate how many bits to shift
-    uint64_t total_bits = n * !shift_t + n * shift_t * UINT_BITS;
-    uint64_t limbs = total_bits / UINT_BITS;
-    uint64_t bits  = total_bits % UINT_BITS;
+    uint32_t total_bits = n * !shift_t + n * shift_t * UINT_BITS;
+    uint16_t limbs = total_bits / UINT_BITS;
+    uint16_t bits  = total_bits % UINT_BITS;
 
     // prevent overshifting
     if (total_bits >= result->len * UINT_BITS) {
@@ -264,8 +264,9 @@ void big_uint_shl(big_uint_t *result, const big_uint_t *x, uint64_t n, uint8_t s
     
     // move offset x limb in result array, shift to account for sub-limb shifts
     uint32_t shift = 0, elem;
-    for (uint64_t i = 0; i < result->len; i++) {
-        elem = (i - limbs) < x->len ? x->arr[i - limbs] : 0;
+    for (uint16_t i = 0; i < result->len; i++) {
+        // must cast due to integral promotion
+        elem = (uint16_t) (i - limbs) < x->len ? x->arr[i - limbs] : 0;
         res[i] = (elem << bits) | shift;
         shift = (elem >> (UINT_BITS - bits)) * !!bits;
     }
@@ -282,7 +283,7 @@ static void _big_uint_add_diff(big_uint_t *result, const big_uint_t *a, const bi
     uint64_t a_val, b_val, c_val;
     uint64_t overflow = 0;
     
-    for (uint64_t i = 0; i < result->len; i++) {
+    for (uint16_t i = 0; i < result->len; i++) {
         a_val = i < a->len ? a->arr[i] : 0;
         b_val = i < b->len ? b->arr[i] : 0;
         c_val = a_val + b_val + overflow;
@@ -297,7 +298,7 @@ static void _big_uint_add_same(big_uint_t *result, const big_uint_t *a, const bi
     uint64_t a_val, b_val, c_val;
     uint64_t overflow = 0;
 
-    for (uint64_t i = 0; i < result->len; i++) {
+    for (uint16_t i = 0; i < result->len; i++) {
         a_val = a->arr[i];
         b_val = b->arr[i];
         c_val = a_val + b_val + overflow;
@@ -313,7 +314,7 @@ static void _big_uint_sub_diff(big_uint_t *result, const big_uint_t *a, const bi
     uint64_t underflow = 0;
     
     // allow for different length integers to be subtracted
-    for (uint64_t i = 0; i < result->len; i++) {
+    for (uint16_t i = 0; i < result->len; i++) {
         // if out of range for a or b, use 0 instead
         a_val = i < a->len ? a->arr[i] : 0;
         b_val = i < b->len ? b->arr[i] : 0;
@@ -330,7 +331,7 @@ static void _big_uint_sub_same(big_uint_t *result, const big_uint_t *a, const bi
     uint64_t underflow = 0;
 
     // allow for different length integers to be subtracted
-    for (uint64_t i = 0; i < result->len; i++) {
+    for (uint16_t i = 0; i < result->len; i++) {
         // if out of range for a or b, use 0 instead
         a_val = a->arr[i];
         b_val = b->arr[i];
@@ -342,7 +343,7 @@ static void _big_uint_sub_same(big_uint_t *result, const big_uint_t *a, const bi
 }
 
 /* returns the i-th bit of x */
-static uint8_t _get_bit(big_uint_t *x, uint64_t i) {
+static uint8_t _get_bit(big_uint_t *x, uint16_t i) {
     uint64_t limb = i / UINT_BITS;
     uint8_t  bit  = i % UINT_BITS;
 
@@ -383,9 +384,9 @@ void big_uint_mult(big_uint_t *c, const big_uint_t *a, const big_uint_t *b) {
     uint64_t res[c->len];
     memset(res, 0, c->len * D_UINT_SIZE);
 
-    for (uint64_t i = 0; i < a->len; i++) {
+    for (uint16_t i = 0; i < a->len; i++) {
         overflow = 0;
-        for (uint64_t j = 0; j < b->len; j++) {
+        for (uint16_t j = 0; j < b->len; j++) {
             // do not write outside of c
             if (i + j >= c->len) break;
 
@@ -414,7 +415,7 @@ void big_uint_mult(big_uint_t *c, const big_uint_t *a, const big_uint_t *b) {
 
     // flatten array of `uint64_t`s into `uint32_t`s, accounting for overflow
     uint64_t val, carry = 0;
-    for (uint64_t i = 0; i < c->len; i++) {
+    for (uint16_t i = 0; i < c->len; i++) {
         val = res[i] + carry;
         c->arr[i] = val;
         carry = val >> UINT_BITS;
@@ -423,35 +424,28 @@ void big_uint_mult(big_uint_t *c, const big_uint_t *a, const big_uint_t *b) {
 
 void big_uint_div(big_uint_t *q, big_uint_t *r, big_uint_t *u, big_uint_t *v) {
     uint64_t len = q->len > r->len ? u->len : v->len;
-    uint32_t q_cpy[len];
-    uint32_t r_cpy[len];
-    uint32_t zero[len];
-
+    
     big_uint_t quo_t;
-    memset(q_cpy, 0, len * UINT_SIZE);
-    big_uint_init(&quo_t, q_cpy, len);
-
     big_uint_t rem_t;
-    memset(r_cpy, 0, len * UINT_SIZE);
-    big_uint_init(&rem_t, r_cpy, len);
-
     big_uint_t zero_t;
-    memset(zero, 0, len * UINT_SIZE);
-    big_uint_init(&zero_t, zero, len);
+
+    big_uint_create(&quo_t, len);
+    big_uint_create(&rem_t, len);
+    big_uint_create(&zero_t, len);
 
     // if divide by 0, do nothing
     if (big_uint_is_zero(v)) {
         return;
     }
 
-    const uint64_t NUM_BITS = UINT_BITS * len;
-    for (uint64_t i = NUM_BITS - 1; i < NUM_BITS ; i--) {
+    const uint32_t NUM_BITS = UINT_BITS * len;
+    for (uint16_t i = NUM_BITS - 1; i < NUM_BITS ; i--) {
         // q <<= 1
         big_uint_shl(&quo_t, &quo_t, 1, SHIFT_BIT);
 
         // (r <<= 1) |= (u >> i) & 0b1
         big_uint_shl(&rem_t, &rem_t, 1, SHIFT_BIT);
-        r_cpy[0] |= _get_bit(u, i);
+        rem_t.arr[0] |= _get_bit(u, i);
 
         if (big_uint_cmp(&rem_t, v) < 0) {
             // add to keep constant time
@@ -460,12 +454,12 @@ void big_uint_div(big_uint_t *q, big_uint_t *r, big_uint_t *u, big_uint_t *v) {
         }
 
         // q |= 1
-        q_cpy[0] |= 1;
+        quo_t.arr[0] |= 1;
 
         // r -= v
         big_uint_sub(&rem_t, &rem_t, v);
     }
 
-    memcpy(q->arr, q_cpy, q->len * UINT_SIZE);
-    memcpy(r->arr, r_cpy, r->len * UINT_SIZE);
+    memcpy(q->arr, quo_t.arr, q->len * UINT_SIZE);
+    memcpy(r->arr, rem_t.arr, r->len * UINT_SIZE);
 }

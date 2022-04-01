@@ -150,6 +150,44 @@ void test_big_uint_load() {
     log_tests(tester);
 }
 
+void test_big_uint_create() {
+    // Define variables to be tested with
+    testing_logger_t *tester = create_tester();
+    big_uint_t value;
+
+    big_uint_create(&value, 1);
+
+    expect(tester, value.len == 1);
+    expect(tester, value.arr[0] == 0);
+
+    big_uint_create(&value, 2);
+
+    expect(tester, value.len == 2);
+    expect(tester, value.arr[0] == 0);
+    expect(tester, value.arr[1] == 0);
+
+    log_tests(tester);
+}
+
+void test_big_uint_loadi() {
+    // Define variables to be tested with
+    testing_logger_t *tester = create_tester();
+    big_uint_t value;
+
+    big_uint_loadi(&value, 2, 1);
+
+    expect(tester, value.len == 1);
+    expect(tester, value.arr[0] == 2);
+
+    big_uint_loadi(&value, 1 << 20, 2);
+
+    expect(tester, value.len == 2);
+    expect(tester, value.arr[0] == 1 << 20);
+    expect(tester, value.arr[1] == 0);
+
+    log_tests(tester);
+}
+
 void test_big_uint_sprint() {
     // Define variables to be tested with
     testing_logger_t *tester = create_tester();
@@ -1461,6 +1499,8 @@ int main() {
     test_big_uint_count_limbs();
     test_big_uint_parse();
     test_big_uint_load();
+    test_big_uint_create();
+    test_big_uint_loadi();
 
     test_big_uint_sprint();
     test_big_uint_equals();
