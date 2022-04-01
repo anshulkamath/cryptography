@@ -25,6 +25,14 @@
     big_uint_parse(a_id, num, s_id); \
     big_uint_init(dest, a_id, s_id);
 
+#define _BU_HELPER_3(dest, size, count)  \
+    _BU_HELPER_4(dest, size, CONCAT(_rarr, count))
+
+#define _BU_HELPER_4(dest, size, a_id)  \
+    uint32_t a_id[size]; \
+    memset(a_id, 0, size * UINT_SIZE); \
+    big_uint_init(dest, a_id, size);
+
 #define CONCAT(a, b) a ## b
 
 /****************************************/
@@ -39,6 +47,14 @@
  * @param num   The (hex) string representation of the number to load
  */
 #define big_uint_load(dest, num) _BU_HELPER_1(dest, num, __COUNTER__)
+
+/**
+ * @brief Creates an empty big uint with the given size
+ * 
+ * @param dest The destination big uint
+ * @param size The number of limbs in the big uint
+ */
+#define big_uint_create(dest, size) _BU_HELPER_3(dest, size, __COUNTER__)
 
 // alias for big_uint_print_helper to allow passing of literal big_uint_t
 #define big_uint_print(x) big_uint_print_helper(&x)
