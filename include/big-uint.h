@@ -162,6 +162,14 @@ big_uint_t big_uint_max(const big_uint_t *a, const big_uint_t *b);
  */
 big_uint_t big_uint_min(const big_uint_t *a, const big_uint_t *b);
 
+/**
+ * @brief Returns 1 if and only if a == 0
+ * 
+ * @param a The candidate to check if it is 0
+ * @return uint8_t 
+ */
+uint8_t big_uint_is_zero(const big_uint_t *a);
+
 /****************************************/
 /*          BITWISE OPERATIONS          */
 /****************************************/
@@ -251,5 +259,16 @@ void big_uint_sub(big_uint_t *c, const big_uint_t *a, const big_uint_t *b);
  * @param b The second number to multiply
  */
 void big_uint_mult(big_uint_t *c, const big_uint_t *a, const big_uint_t *b);
+
+/**
+ * @brief Computes u / v and stores the quotient in `q` and remainder in `r.`
+ * NOTE:  We only retain the limbs of the quotient/remainder that fit within c
+ * 
+ * @param q Where to store the quotient
+ * @param r Where to store the remainder
+ * @param u Where the dividend is stored
+ * @param v Where the divisor is stored
+ */
+void big_uint_div(big_uint_t *q, big_uint_t *r, big_uint_t *u, big_uint_t *v);
 
 #endif
