@@ -126,16 +126,28 @@
 /****************************************/
 /*          ARITHMETIC MACROS           */
 /****************************************/
+
 /**
  * @brief Add immediate. Adds a given big uint with the value
  *        given. The value must be a uint32_t
  * 
  * @param dest  The destination big uint
- * @param a     The number to add
+ * @param a     The number to add to
  * @param num   The immediate uint32_t to add with
  */
 #define big_uint_addi(dest, a, num) \
     _BU_HELPER_7(dest, a, num, big_uint_add, __COUNTER__)
+
+/**
+ * @brief Subtract immediate. Subtracts a given big uint with the value
+ *        given. The value must be a uint32_t
+ * 
+ * @param dest  The destination big uint
+ * @param a     The number to subtract from
+ * @param num   The immediate uint32_t to add with
+ */
+#define big_uint_subi(dest, a, num) \
+    _BU_HELPER_7(dest, a, num, big_uint_sub, __COUNTER__)
 
 /****************************************/
 /*               CONSTANTS              */

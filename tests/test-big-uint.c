@@ -1608,10 +1608,47 @@ void test_big_uint_addi() {
 
     big_uint_load(&a, "0x00000001_80000000");
     big_uint_load(&exp, "0x00000002_00000000");
-    big_uint_load(&res, "0x00000000");
     big_uint_addi(&a, &a, 0x80000000);
 
     expect(tester, big_uint_equals(&a, &exp));
+
+    
+    log_tests(tester);
+}
+
+void test_big_uint_subi() {
+    // Define variables to be tested with
+    testing_logger_t *tester = create_tester();
+    big_uint_t a;
+    big_uint_t exp;
+    big_uint_t res;
+
+    big_uint_load(&a, "0x00000010");
+    big_uint_load(&exp, "0x00000008");
+    big_uint_load(&res, "0x00000000");
+    big_uint_subi(&res, &a, 0x8);
+
+    expect(tester, big_uint_equals(&res, &exp));
+
+    big_uint_load(&a, "0x00000002_00000000");
+    big_uint_load(&exp, "0x00000001_80000000");
+    big_uint_load(&res, "0x00000000_00000000");
+    big_uint_subi(&res, &a, 0x80000000);
+
+    expect(tester, big_uint_equals(&res, &exp));
+
+    big_uint_load(&a, "0x00000002_00000000");
+    big_uint_load(&exp, "0x00000001_80000000");
+    big_uint_subi(&a, &a, 0x80000000);
+
+    expect(tester, big_uint_equals(&a, &exp));
+
+    big_uint_load(&a, "0x00000000_00000000");
+    big_uint_load(&exp, "0xffffffff_ffffffff");
+    big_uint_load(&res, "0x00000000_00000000");
+    big_uint_subi(&res, &a, 0x1);
+
+    expect(tester, big_uint_equals(&res, &exp));
 
     
     log_tests(tester);
@@ -1650,6 +1687,7 @@ int main() {
     test_big_uint_div();
 
     test_big_uint_addi();
+    test_big_uint_subi();
 
     return 0;
 }
