@@ -16,6 +16,8 @@
 /*            HELPER MACROS             */
 /****************************************/
 
+#define CONCAT(a, b) a ## b
+
 #define _BU_HELPER_1(dest, num, count) \
     _BU_HELPER_2(dest, num, CONCAT(_rsize, count), CONCAT(_rarr, count))
 
@@ -33,7 +35,14 @@
     memset(a_id, 0, size * UINT_SIZE); \
     big_uint_init(dest, a_id, size);
 
-#define CONCAT(a, b) a ## b
+#define _BU_HELPER_5(dest, num, size, count)  \
+    _BU_HELPER_6(dest, num, size, CONCAT(_rarr, count))
+
+#define _BU_HELPER_6(dest, num, size, a_id)  \
+    uint32_t a_id[size]; \
+    memset(a_id, 0, size * UINT_SIZE); \
+    a_id[0] = num; \
+    big_uint_init(dest, a_id, size);
 
 /****************************************/
 /*                MACROS                */
@@ -55,6 +64,16 @@
  * @param size The number of limbs in the big uint
  */
 #define big_uint_create(dest, size) _BU_HELPER_3(dest, size, __COUNTER__)
+
+/**
+ * @brief Load immediate. Creates a big uint with the given number of limbs
+ *        with the value given. The value must be a uint32_t
+ * 
+ * @param dest  The destination big uint
+ * @param num   The immediate uint32_t to load
+ * @param size  The number of limbs in the big uint
+ */
+#define big_uint_loadi(dest, num, size) _BU_HELPER_5(dest, num, size, __COUNTER__)
 
 // alias for big_uint_print_helper to allow passing of literal big_uint_t
 #define big_uint_print(x) big_uint_print_helper(&x)
