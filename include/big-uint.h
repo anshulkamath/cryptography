@@ -22,7 +22,7 @@
     _BU_HELPER_2(dest, num, CONCAT(_rsize, count), CONCAT(_rarr, count))
 
 #define _BU_HELPER_2(dest, num, s_id, a_id)  \
-    uint64_t s_id = big_uint_count_limbs(num); \
+    uint16_t s_id = big_uint_count_limbs(num); \
     uint32_t a_id[s_id]; \
     big_uint_parse(a_id, num, s_id); \
     big_uint_init(dest, a_id, s_id);
@@ -95,7 +95,7 @@
 
 typedef struct big_uint_t {
     uint32_t   *arr;  // a pointer to the big integer
-    uint64_t    len;  // the number of limbs in the big integer
+    uint16_t    len;  // the number of limbs in the big integer
 } big_uint_t;
 
 /****************************************/
@@ -110,7 +110,7 @@ typedef struct big_uint_t {
  * @param arr  The address of the big uint
  * @param len  The number of limbs in our big uint
  */
-void big_uint_init(big_uint_t *dest, uint32_t *arr, uint64_t len);
+void big_uint_init(big_uint_t *dest, uint32_t *arr, uint16_t len);
 
 /**
  * @brief Given a (hex) string representation of a big uint, returns the number
@@ -119,9 +119,9 @@ void big_uint_init(big_uint_t *dest, uint32_t *arr, uint64_t len);
  * TODO: Extend functionality to base 2, 8, 10
  * 
  * @param num A string of the number
- * @return uint64_t 
+ * @return uint16_t 
  */
-uint64_t big_uint_count_limbs(const char *num);
+uint16_t big_uint_count_limbs(const char *num);
 
 /**
  * @brief Creates an array of uint32_ts from a (hex) string representation
@@ -131,7 +131,7 @@ uint64_t big_uint_count_limbs(const char *num);
  * @param num   A string that represents our big integer
  * @param len   The number of limbs in our big integer
  */
-void big_uint_parse(uint32_t *dest, const char *num, uint64_t len);
+void big_uint_parse(uint32_t *dest, const char *num, uint16_t len);
 
 /****************************************/
 /*           PRINT OPERATIONS           */
@@ -248,7 +248,7 @@ void big_uint_xor(big_uint_t *result, const big_uint_t *a, const big_uint_t *b);
  * @param n         The big uinteger `n` to shift by
  * @param shift_t   The type of shift (eitherr SHIFT_BIT [0] or SHIFT_LIMB [1])
  */
-void big_uint_shr(big_uint_t *result, const big_uint_t *x, uint64_t n, uint8_t shift_t);
+void big_uint_shr(big_uint_t *result, const big_uint_t *x, uint32_t n, uint8_t shift_t);
 
 /**
  * @brief Performs a left shift on the big uint `x` by `n.`
@@ -259,7 +259,7 @@ void big_uint_shr(big_uint_t *result, const big_uint_t *x, uint64_t n, uint8_t s
  * @param n         The big uinteger `n` to shift by
  * @param shift_t   The type of shift (either SHIFT_BIT [0] or SHIFT_LIMB [1])
  */
-void big_uint_shl(big_uint_t *result, const big_uint_t *x, uint64_t n, uint8_t shift_t);
+void big_uint_shl(big_uint_t *result, const big_uint_t *x, uint32_t n, uint8_t shift_t);
 
 /****************************************/
 /*        ARITHMETIC OPERATIONS         */
