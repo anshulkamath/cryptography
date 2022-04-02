@@ -468,3 +468,30 @@ void big_uint_div(big_uint_t *q, big_uint_t *r, big_uint_t *u, big_uint_t *v) {
     big_uint_copy(q, &quo_t);
     big_uint_copy(r, &rem_t);
 }
+
+static uint32_t _log2_bit(const big_uint_t *x) {
+    uint32_t curr = 0;
+    uint32_t res  = 0;
+    for (uint16_t i = 0; i < x->len; i++) {
+        curr = x->arr[i];
+        for (uint16_t j = 0; j < UINT_BITS; j++) {
+            if (curr >> j) res = (i * UINT_BITS + j);
+        }
+    }
+
+    return res;
+}
+
+static uint32_t _log2_limb(const big_uint_t *x) {
+    uint32_t res = 0;
+    for (uint16_t i = 0; i < x->len; i++) {
+        if (x->arr[i]) res = i;
+    }
+
+    return res;
+}
+
+uint32_t big_uint_log2(const big_uint_t *x, uint8_t log_t) {
+    if (log_t)  return _log2_limb(x);
+    else        return _log2_bit(x);
+}

@@ -170,6 +170,8 @@
 #define D_UINT_BITS 64
 #define SHIFT_BIT   0
 #define SHIFT_LIMB  1
+#define LOG_2_BIT   0
+#define LOG_2_LIMB  1
 
 /****************************************/
 /*              INTERFACE               */
@@ -397,5 +399,13 @@ void big_uint_mult(big_uint_t *c, const big_uint_t *a, const big_uint_t *b);
  * @param v Where the divisor is stored
  */
 void big_uint_div(big_uint_t *q, big_uint_t *r, big_uint_t *u, big_uint_t *v);
+
+/**
+ * @brief Calculates floor(log_2(x))
+ * 
+ * @param x Pointer to the big uint to log
+ * @return uint32_t 
+ */
+uint32_t big_uint_log2(const big_uint_t *x, uint8_t log_bit);
 
 #endif

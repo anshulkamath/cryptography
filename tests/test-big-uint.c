@@ -1754,6 +1754,65 @@ void test_big_uint_multi() {
     log_tests(tester);
 }
 
+void test_big_uint_log2() {
+     // Define variables to be tested with
+    testing_logger_t *tester = create_tester();
+    big_uint_t x;
+    uint32_t expected;
+
+    // Log_2 bit tests
+    // Test 1
+    big_uint_load(&x, "0x00000001");
+    expected = 0;
+
+    expect(tester, big_uint_log2(&x, LOG_2_BIT) == expected);
+
+    // Test 2
+    big_uint_load(&x, "0x0000000f");
+    expected = 3;
+
+    expect(tester, big_uint_log2(&x, LOG_2_BIT) == expected);
+
+    // Test 3
+    big_uint_load(&x, "0x00000001_00000000");
+    expected = 32;
+
+    expect(tester, big_uint_log2(&x, LOG_2_BIT) == expected);
+
+    // Test 4
+    big_uint_load(&x, "0x10000001_10000000");
+    expected = 60;
+
+    expect(tester, big_uint_log2(&x, LOG_2_BIT) == expected);
+
+    // Log_2 byte tests
+    // Test 1
+    big_uint_load(&x, "0x00000001");
+    expected = 0;
+
+    expect(tester, big_uint_log2(&x, LOG_2_LIMB) == expected);
+
+    // Test 2
+    big_uint_load(&x, "0x0000000f");
+    expected = 0;
+
+    expect(tester, big_uint_log2(&x, LOG_2_LIMB) == expected);
+
+    // Test 3
+    big_uint_load(&x, "0x00000001_00000000");
+    expected = 1;
+
+    expect(tester, big_uint_log2(&x, LOG_2_LIMB) == expected);
+
+    // Test 4
+    big_uint_load(&x, "0x00000000_10000001_10000000");
+    expected = 1;
+
+    expect(tester, big_uint_log2(&x, LOG_2_LIMB) == expected);
+
+    log_tests(tester);
+}
+
 int main() {
     test_big_uint_init();
     test_big_uint_count_limbs();
@@ -1790,6 +1849,8 @@ int main() {
     test_big_uint_addi();
     test_big_uint_subi();
     test_big_uint_multi();
+
+    test_big_uint_log2();
 
     return 0;
 }
