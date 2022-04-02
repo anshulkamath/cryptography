@@ -160,18 +160,6 @@
 #define big_uint_multi(dest, a, num) \
     _BU_HELPER_7(dest, a, num, big_uint_mult, __COUNTER__)
 
-/**
- * @brief Divide immediate. Divides a given big uint with the value
- *        given. The value must be a uint32_t
- * 
- * @param quo   The destination big uint for the quotient
- * @param rem   The destination big uint for the remainder
- * @param a     The number to multiply to
- * @param num   The immediate uint32_t to multiply with
- */
-#define big_uint_divi(quo, rem, a, num) \
-    _BU_HELPER_9(quo, rem, a, num, big_uint_div, __COUNTER__)
-
 /****************************************/
 /*               CONSTANTS              */
 /****************************************/
