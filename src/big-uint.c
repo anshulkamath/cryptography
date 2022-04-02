@@ -84,6 +84,11 @@ void big_uint_parse(uint32_t *dest, const char *num, uint16_t size) {
     }
 }
 
+void big_uint_copy(big_uint_t *dest, const big_uint_t *src) {
+    for (uint16_t i = 0; i < dest->len; i++)
+        dest->arr[i] = i < src->len ? src->arr[i] : 0;
+}
+
 /****************************************/
 /*           PRINT OPERATIONS           */
 /****************************************/
@@ -460,6 +465,6 @@ void big_uint_div(big_uint_t *q, big_uint_t *r, big_uint_t *u, big_uint_t *v) {
         big_uint_sub(&rem_t, &rem_t, v);
     }
 
-    memcpy(q->arr, quo_t.arr, q->len * UINT_SIZE);
-    memcpy(r->arr, rem_t.arr, r->len * UINT_SIZE);
+    big_uint_copy(q, &quo_t);
+    big_uint_copy(r, &rem_t);
 }

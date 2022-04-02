@@ -53,7 +53,7 @@
     func(dest, a, &int_id);
 
 /****************************************/
-/*                MACROS                */
+/*             INIT MACROS              */
 /****************************************/
 
 /**
@@ -83,9 +83,16 @@
  */
 #define big_uint_loadi(dest, num, size) _BU_HELPER_5(dest, num, size, __COUNTER__)
 
+// alias for big_uint_print_helper to allow passing of literal big_uint_t
+#define big_uint_print(x) big_uint_print_helper(&x)
+
+/****************************************/
+/*            BITWISE MACROS            */
+/****************************************/
+
 /**
- * @brief Or immediate. Creates a big uint with the given number of limbs
- *        with the value given. The value must be a uint32_t
+ * @brief Or immediate. `Or`s a given big uint with the value
+ *        given. The value must be a uint32_t
  * 
  * @param dest  The destination big uint
  * @param a     The number to or
@@ -95,8 +102,8 @@
     _BU_HELPER_7(dest, a, num, big_uint_or, __COUNTER__)
 
 /**
- * @brief And immediate. Creates a big uint with the given number of limbs
- *        with the value given. The value must be a uint32_t
+ * @brief Or immediate. `And`s a given big uint with the value
+ *        given. The value must be a uint32_t
  * 
  * @param dest  The destination big uint
  * @param a     The number to and
@@ -106,8 +113,8 @@
     _BU_HELPER_7(dest, a, num, big_uint_and, __COUNTER__)
 
 /**
- * @brief Xor immediate. Creates a big uint with the given number of limbs
- *        with the value given. The value must be a uint32_t
+ * @brief Xor immediate. Xor immediate. `Xor`s a given big uint with the value
+ *        given. The value must be a uint32_t
  * 
  * @param dest  The destination big uint
  * @param a     The number to xor
@@ -116,8 +123,42 @@
 #define big_uint_xori(dest, a, num) \
     _BU_HELPER_7(dest, a, num, big_uint_xor, __COUNTER__)
 
-// alias for big_uint_print_helper to allow passing of literal big_uint_t
-#define big_uint_print(x) big_uint_print_helper(&x)
+/****************************************/
+/*          ARITHMETIC MACROS           */
+/****************************************/
+
+/**
+ * @brief Add immediate. Adds a given big uint with the value
+ *        given. The value must be a uint32_t
+ * 
+ * @param dest  The destination big uint
+ * @param a     The number to add to
+ * @param num   The immediate uint32_t to add with
+ */
+#define big_uint_addi(dest, a, num) \
+    _BU_HELPER_7(dest, a, num, big_uint_add, __COUNTER__)
+
+/**
+ * @brief Subtract immediate. Subtracts a given big uint with the value
+ *        given. The value must be a uint32_t
+ * 
+ * @param dest  The destination big uint
+ * @param a     The number to subtract from
+ * @param num   The immediate uint32_t to subtract with
+ */
+#define big_uint_subi(dest, a, num) \
+    _BU_HELPER_7(dest, a, num, big_uint_sub, __COUNTER__)
+
+/**
+ * @brief Multiply immediate. Multiply a given big uint with the value
+ *        given. The value must be a uint32_t
+ * 
+ * @param dest  The destination big uint
+ * @param a     The number to multiply to
+ * @param num   The immediate uint32_t to multiply with
+ */
+#define big_uint_multi(dest, a, num) \
+    _BU_HELPER_7(dest, a, num, big_uint_mult, __COUNTER__)
 
 /****************************************/
 /*               CONSTANTS              */
@@ -173,6 +214,15 @@ uint16_t big_uint_count_limbs(const char *num);
  * @param len   The number of limbs in our big integer
  */
 void big_uint_parse(uint32_t *dest, const char *num, uint16_t len);
+
+/**
+ * @brief Copies a big uint `src` into `dest.` If dest len is larger
+ *        then src len, pad with 0s
+ * 
+ * @param dest  Where to store the copy of src
+ * @param src   The address of the big uint to copy
+ */
+void big_uint_copy(big_uint_t *dest, const big_uint_t *src);
 
 /****************************************/
 /*           PRINT OPERATIONS           */
@@ -339,6 +389,7 @@ void big_uint_mult(big_uint_t *c, const big_uint_t *a, const big_uint_t *b);
 /**
  * @brief Computes u / v and stores the quotient in `q` and remainder in `r.`
  * NOTE:  We only retain the limbs of the quotient/remainder that fit within c
+ * NOTE:  The number of limbs between u and v must be the same
  * 
  * @param q Where to store the quotient
  * @param r Where to store the remainder
