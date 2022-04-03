@@ -398,14 +398,28 @@ void big_uint_mult(big_uint_t *c, const big_uint_t *a, const big_uint_t *b);
  * @param u Where the dividend is stored
  * @param v Where the divisor is stored
  */
-void big_uint_div(big_uint_t *q, big_uint_t *r, big_uint_t *u, big_uint_t *v);
+void big_uint_div(big_uint_t *q, big_uint_t *r, const big_uint_t *u, const big_uint_t *v);
 
 /**
  * @brief Calculates floor(log_2(x))
  * 
- * @param x Pointer to the big uint to log
+ * @param x         Pointer to the big uint to log
+ * @param log_bit   LOG_2_BIT or LOG_2_LIMB to shift by bits or limbs
  * @return uint32_t 
  */
 uint32_t big_uint_log2(const big_uint_t *x, uint8_t log_bit);
+
+// -------------------------------- //
+//         Number Theory Ops        //
+// -------------------------------- //
+
+/**
+ * @brief Calculates the gcd of big uints a and b as gcd(a, b) = d
+ * 
+ * @param d A pointer to the big uint d to write to
+ * @param a A pointer to the big uint a as defined above
+ * @param b A pointer to the big uint b as defined above
+ */
+void big_uint_gcd(big_uint_t* d, const big_uint_t *a, const big_uint_t*b);
 
 #endif
