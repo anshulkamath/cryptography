@@ -348,7 +348,7 @@ static void _big_uint_sub_same(big_uint_t *result, const big_uint_t *a, const bi
 }
 
 /* returns the i-th bit of x */
-static uint8_t _get_bit(big_uint_t *x, uint16_t i) {
+static uint8_t _get_bit(const big_uint_t *x, uint16_t i) {
     uint64_t limb = i / UINT_BITS;
     uint8_t  bit  = i % UINT_BITS;
 
@@ -427,7 +427,7 @@ void big_uint_mult(big_uint_t *c, const big_uint_t *a, const big_uint_t *b) {
     }
 }
 
-void big_uint_div(big_uint_t *q, big_uint_t *r, big_uint_t *u, big_uint_t *v) {
+void big_uint_div(big_uint_t *q, big_uint_t *r, const big_uint_t *u, const big_uint_t *v) {
     uint64_t len = q->len > r->len ? u->len : v->len;
     
     big_uint_t quo_t;
@@ -494,4 +494,33 @@ static uint32_t _log2_limb(const big_uint_t *x) {
 uint32_t big_uint_log2(const big_uint_t *x, uint8_t log_t) {
     if (log_t)  return _log2_limb(x);
     else        return _log2_bit(x);
+}
+
+static void _big_uint_gcd_helper(big_uint_t *d, const big_uint_t *a, const big_uint_t *b, uint16_t len) {
+    big_uint_t quotient, remainder;
+    big_uint_create(&quotient, len);
+    big_uint_create(&remainder, len);
+
+    big_uint_div(&quotient, &remainder, a, b);
+
+    if (big_uint_is_zero(&remainder)) {
+        big_uint_copy(d, b);
+        return;
+    }
+
+    _big_uint_gcd_helper(d, b, &remainder, len);
+}
+
+void big_uint_gcd(big_uint_t *d, const big_uint_t *a, const big_uint_t *b) {
+    big_uint_t max, min;
+    uint16_t len = a->len > b->len ? a->len : b->len;
+
+    big_uint_create(&max, len);
+    big_uint_create(&min, len);
+
+    uint8_t cmp = big_uint_cmp(a, b);
+    big_uint_copy(&max, cmp >= 0 ? a : b);
+    big_uint_copy(&min, cmp < 0 ? a : b);
+
+    _big_uint_gcd_helper(d, &max, &min, len);
 }
