@@ -1910,6 +1910,135 @@ void test_big_uint_gcd() {
     log_tests(tester);
 }
 
+void test_big_uint_gcd_extended() {
+	testing_logger_t *tester = create_tester();
+    big_uint_t a, b;
+	big_uint_t exp_x, exp_y;
+    big_uint_t res_x, res_y;
+
+	big_uint_load(&a, "0x0000008f");
+	big_uint_load(&b, "0x000000ea");
+	big_uint_load(&exp_x, "0xfffffffd");
+	big_uint_load(&exp_y, "0x00000005");
+    big_uint_load(&res_x, "0x00000000");
+	big_uint_load(&res_y, "0x00000000");
+
+	big_uint_gcd_extended(&res_x, &res_y, &a, &b);
+
+	expect(tester, big_uint_equals(&res_x, &exp_x));
+	expect(tester, big_uint_equals(&res_y, &exp_y));
+
+	big_uint_load(&a, "0x2b487392");
+	big_uint_load(&b, "0xd2c60104");
+	big_uint_load(&exp_x, "0x0564f14f");
+	big_uint_load(&exp_y, "0xe5bb484b");
+    big_uint_load(&res_x, "0x00000000");
+	big_uint_load(&res_y, "0x00000000");
+
+    big_uint_gcd_extended(&res_x, &res_y, &a, &b);
+
+	expect(tester, big_uint_equals(&res_x, &exp_x));
+	expect(tester, big_uint_equals(&res_y, &exp_y));
+
+	big_uint_load(&a, "0x00000000_30bfb01a");
+	big_uint_load(&b, "0x00000000_987de21e");
+	big_uint_load(&exp_x, "0xffffffff_f6bd5ebe");
+	big_uint_load(&exp_y, "0x00000000_1cf7999b");
+    big_uint_load(&res_x, "0x00000000_00000000");
+	big_uint_load(&res_y, "0x00000000_00000000");
+
+	big_uint_gcd_extended(&res_x, &res_y, &a, &b);
+
+	expect(tester, big_uint_equals(&res_x, &exp_x));
+	expect(tester, big_uint_equals(&res_y, &exp_y));
+
+	big_uint_load(&a, "0x0e8b90bd_220b8c80");
+	big_uint_load(&b, "0x6ec46fd6_e7ee1360");
+	big_uint_load(&exp_x, "0x0021b929_43ebb88f");
+	big_uint_load(&exp_y, "0xfeff2f07_f8541193");
+    big_uint_load(&res_x, "0x00000000_00000000");
+	big_uint_load(&res_y, "0x00000000_00000000");
+
+	big_uint_gcd_extended(&res_x, &res_y, &a, &b);
+
+	expect(tester, big_uint_equals(&res_x, &exp_x));
+	expect(tester, big_uint_equals(&res_y, &exp_y));
+
+	big_uint_load(&a, "0x00000000_cec6b8e4");
+	big_uint_load(&b, "0x7bec5ab5_e87e8fcf");
+	big_uint_load(&exp_x, "0xffffffff_f2e4bc35");
+	big_uint_load(&exp_y, "0x07dad8bf_603c39da");
+    big_uint_load(&res_x, "0x00000000_00000000");
+	big_uint_load(&res_y, "0x00000000_00000000");
+
+	big_uint_gcd_extended(&res_x, &res_y, &a, &b);
+
+	expect(tester, big_uint_equals(&res_x, &exp_x));
+	expect(tester, big_uint_equals(&res_y, &exp_y));
+
+	big_uint_load(&a, "0x0ab1a3c2_f61a4999");
+	big_uint_load(&b, "0x00000000_083a6d6c");
+	big_uint_load(&exp_x, "0x00000000_0336ce65");
+	big_uint_load(&exp_y, "0xfbd2a1ae_9bcddfcb");
+    big_uint_load(&res_x, "0x00000000_00000000");
+	big_uint_load(&res_y, "0x00000000_00000000");
+
+	big_uint_gcd_extended(&res_x, &res_y, &a, &b);
+
+	expect(tester, big_uint_equals(&res_x, &exp_x));
+	expect(tester, big_uint_equals(&res_y, &exp_y));
+
+	big_uint_load(&a, "0xd6cfbac0_f2dcfe01_ab2a4b8d");
+	big_uint_load(&b, "0x41763a5f_991b4b60_84285b8e");
+	big_uint_load(&exp_x, "0x016c1fa8_ee5ca7b3_8afa8433");
+	big_uint_load(&exp_y, "0xfb552303_6be085f9_ea8238e3");
+    big_uint_load(&res_x, "0x00000000_00000000_00000000");
+	big_uint_load(&res_y, "0x00000000_00000000_00000000");
+
+	big_uint_gcd_extended(&res_x, &res_y, &a, &b);
+
+	expect(tester, big_uint_equals(&res_x, &exp_x));
+	expect(tester, big_uint_equals(&res_y, &exp_y));
+
+	big_uint_load(&a, "0x5eda613c_268411c6_987e7270");
+	big_uint_load(&b, "0xc6f11378_4d56c2b4_a2799234");
+	big_uint_load(&exp_x, "0xfd1ea5e9_3a87833e_0f5901bd");
+	big_uint_load(&exp_y, "0x060a7f7c_08577482_d35e08b6");
+    big_uint_load(&res_x, "0x00000000_00000000_00000000");
+	big_uint_load(&res_y, "0x00000000_00000000_00000000");
+
+	big_uint_gcd_extended(&res_x, &res_y, &a, &b);
+
+	expect(tester, big_uint_equals(&res_x, &exp_x));
+	expect(tester, big_uint_equals(&res_y, &exp_y));
+
+	big_uint_load(&a, "0x00000000_00000000_2adaa46f");
+	big_uint_load(&b, "0x00000000_daff9a2e_7f6758e3");
+	big_uint_load(&exp_x, "0x00000000_00000000_09c35db4");
+	big_uint_load(&exp_y, "0xffffffff_ce1b6a35_19c3216b");
+    big_uint_load(&res_x, "0x00000000_00000000_00000000");
+	big_uint_load(&res_y, "0x00000000_00000000_00000000");
+
+	big_uint_gcd_extended(&res_x, &res_y, &a, &b);
+
+	expect(tester, big_uint_equals(&res_x, &exp_x));
+	expect(tester, big_uint_equals(&res_y, &exp_y));
+
+	big_uint_load(&a, "0x00000000_00000000_fcb90859");
+	big_uint_load(&b, "0x00000000_00000000_8221014d");
+	big_uint_load(&exp_x, "0xffffffff_ffffffff_e5e6a3b3");
+	big_uint_load(&exp_y, "0x00000000_00000000_32afd6de");
+    big_uint_load(&res_x, "0x00000000_00000000_00000000");
+	big_uint_load(&res_y, "0x00000000_00000000_00000000");
+
+	big_uint_gcd_extended(&res_x, &res_y, &a, &b);
+
+	expect(tester, big_uint_equals(&res_x, &exp_x));
+	expect(tester, big_uint_equals(&res_y, &exp_y));
+
+	log_tests(tester);
+}
+
 int main() {
     test_big_uint_init();
     test_big_uint_count_limbs();
@@ -1950,6 +2079,7 @@ int main() {
     test_big_uint_log2();
 
     test_big_uint_gcd();
+    test_big_uint_gcd_extended();
 
     return 0;
 }
