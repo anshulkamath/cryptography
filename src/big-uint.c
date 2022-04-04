@@ -518,9 +518,55 @@ void big_uint_gcd(big_uint_t *d, const big_uint_t *a, const big_uint_t *b) {
     big_uint_create(&max, len);
     big_uint_create(&min, len);
 
-    uint8_t cmp = big_uint_cmp(a, b);
+    int8_t cmp = big_uint_cmp(a, b);
     big_uint_copy(&max, cmp >= 0 ? a : b);
     big_uint_copy(&min, cmp < 0 ? a : b);
 
     _big_uint_gcd_helper(d, &max, &min, len);
+}
+
+static void _big_uint_gcd_extended_helper(big_uint_t *x, big_uint_t *y, const big_uint_t *a, const big_uint_t *b, uint16_t len) {
+    big_uint_t quotient, remainder;
+    big_uint_create(&quotient, len);
+    big_uint_create(&remainder, len);
+
+    big_uint_div(&quotient, &remainder, a, b);
+
+    // base case: if the remainder is 0, initialize x = 0, y = 1
+    if (big_uint_is_zero(&remainder)) {
+        memset(x->arr, 0, x->len * UINT_SIZE);
+        y->arr[0] = 1;
+        return;
+    }
+
+    // get x, y values from successive definition
+    _big_uint_gcd_extended_helper(x, y, b, &remainder, len);
+
+    big_uint_t temp;
+    big_uint_create(&temp, len);
+
+    // calculate temp = x - (y * quotient)
+    big_uint_mult(&temp, y, &quotient);
+    big_uint_sub(&temp, x, &temp);
+
+    // x_new = y_old
+    big_uint_copy(x, y);
+    
+    // y_new = temp
+    big_uint_copy(y, &temp);
+}
+
+void big_uint_gcd_extended(big_uint_t *x, big_uint_t *y, const big_uint_t *a, const big_uint_t *b) {
+    big_uint_t max, min;
+    uint16_t len = a->len > b->len ? a->len : b->len;
+
+    big_uint_create(&max, len);
+    big_uint_create(&min, len);
+
+    // ensure that a > b when algorithm starts
+    int8_t cmp = big_uint_cmp(a, b);
+    big_uint_copy(&max, cmp >= 0 ? a : b);
+    big_uint_copy(&min, cmp < 0 ? a : b);
+
+    _big_uint_gcd_extended_helper(x, y, &max, &min, len);
 }

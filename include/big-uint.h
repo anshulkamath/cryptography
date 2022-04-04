@@ -422,4 +422,16 @@ uint32_t big_uint_log2(const big_uint_t *x, uint8_t log_bit);
  */
 void big_uint_gcd(big_uint_t* d, const big_uint_t *a, const big_uint_t*b);
 
+/**
+ * @brief Finds Bezout's identity for the given big uints `a` and `b.` Bezout's identity is
+ *        defined to be the values x, y in the natural numbers such that:
+ *                                  ax + by = gcd(a, b)
+ * 
+ * @param x Where to store the resulting value of x
+ * @param y Where to store the resulting value of y
+ * @param a Pointer to the big uint `a` from above
+ * @param b Pointer to the big uint `b` from above
+ */
+void big_uint_gcd_extended(big_uint_t* x, big_uint_t *y, const big_uint_t *a, const big_uint_t *b);
+
 #endif
