@@ -1,5 +1,5 @@
 # cryptography
-A Minimal Dependency Library for Crypotgraphy Written in C
+A Minimal Dependency Library for Cryptography Written in C
 
 ## Introduction
 Welcome to the `anshulkamath`'s big unsigned integer library! This library is the second iteration of such a library. The original repository can be found on anshulkamath's GitHub [here](https://github.com/anshulkamath/big-uint-dep)!
