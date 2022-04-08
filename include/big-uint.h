@@ -1,4 +1,15 @@
 /**
+ * @file big-uint.h
+ * @author Anshul Kamath (anshulkam@gmail.com)
+ * @brief A big unsigned integer library
+ * @version 0.1
+ * @date 2022-04-08
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
+
+/**
  * Welcome to the anshulkamath's big unsigned integer library!
  * This file includes the definitions for our library, but here are some
  * important notes:
