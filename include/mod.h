@@ -24,4 +24,14 @@
  */
 void mod_big_uint(big_uint_t *res, const big_uint_t *x, const big_uint_t *p);
 
+/**
+ * @brief Takes in big integers `a` and `b` and stores `a + b mod p` in `res`
+ * 
+ * @param res Where to store the sum
+ * @param a   Pointer to the first big int to add
+ * @param b   Pointer to the second big int to add
+ * @param p   Pointer to the prime to mod by
+ */
+void mod_add(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const big_uint_t *p);
+
 #endif
