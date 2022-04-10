@@ -38,3 +38,25 @@ void mod_sub(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const bi
 
 	big_uint_add(res, res, &ZERO);
 }
+
+/* Performs Barrett reduction and populates the given mod_t struct */
+void _barrett_reduction(mod_t *res) {
+	uint32_t k = big_uint_log2(res->p, LOG_2_LIMB) + 1;
+	res->k = k;
+
+	big_uint_t temp, quo;
+	big_uint_create(&temp, 2 * k + 1);
+	big_uint_create(&quo, 2 * k + 1);
+
+	temp.arr[2 * k] = 1;
+
+	big_uint_div(&quo, NULL, &temp, res->p);
+	big_uint_copy(res->r, &quo);
+}
+
+void mod_init(mod_t *res, const big_uint_t *p, big_uint_t *r) {
+	res->p = p;
+	res->r = r;
+
+	_barrett_reduction(res);
+}

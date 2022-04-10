@@ -15,6 +15,23 @@
 #include "big-uint.h"
 #include <stdint.h>
 
+#define _MOD_HELPER_1(dest, p, count) \
+    _MOD_HELPER_2(dest, p, CONCAT(_r, count));
+
+#define _MOD_HELPER_2(dest, p, r_id) \
+    big_uint_t r_id; \
+    big_uint_create(&r_id, 2 * (big_uint_log2(p, LOG_2_LIMB) + 1) + 1); \
+    mod_init(dest, p, &r_id);
+
+#define mod_create(dest, p) \
+    _MOD_HELPER_1(dest, p, __COUNTER__)
+    
+typedef struct mod {
+    const big_uint_t *p;  // pointer to the prime number
+    big_uint_t *r;        // r-value in barrett reduction
+    uint32_t    k;        // k-value in barrett reduction
+} mod_t;
+
 /**
  * @brief Takes in a big integer `x` and puts `x mod p` into res
  * 
@@ -43,5 +60,14 @@ void mod_add(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const bi
  * @param p   Pointer to the prime to mod by
  */
 void mod_sub(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const big_uint_t *p);
+
+/**
+ * @brief Creates a mod type with the precomputed factor `r` using Barrett Reduction
+ * 
+ * @param res Where to store the resulting mod type
+ * @param p   Pointer to the prime `p`
+ * @param r   Pointer to the precomputed factor `r`
+ */
+void mod_init(mod_t *res, const big_uint_t *p, big_uint_t *r);
 
 #endif
