@@ -1617,6 +1617,15 @@ void test_big_uint_div() {
     expect(tester, big_uint_equals(&q, &exp_q));
     expect(tester, big_uint_equals(&r, &exp_r));
 
+    // different lengths
+    big_uint_load(&a, "0x12345678_9abcdeff_ffffffff");
+    big_uint_load(&b, "0x0000fedc");
+    big_uint_load(&exp_q, "0x00001249_31f596dc_f30531ec");
+    big_uint_load(&exp_r, "0x0000f12f");
+    big_uint_load(&q, "0x00000000_00000000_00000000");
+    big_uint_load(&r, "0x00000000");
+    big_uint_div(&q, &r, &a, &b);
+
     log_tests(tester);
 }
 

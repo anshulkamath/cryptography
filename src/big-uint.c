@@ -434,8 +434,8 @@ void big_uint_div(big_uint_t *q, big_uint_t *r, const big_uint_t *u, const big_u
     big_uint_t rem_t;
     big_uint_t zero_t;
 
-    big_uint_create(&quo_t, len);
-    big_uint_create(&rem_t, len);
+    big_uint_create(&quo_t, u->len);
+    big_uint_create(&rem_t, v->len + 1);
     big_uint_create(&zero_t, len);
 
     // if divide by 0, do nothing
