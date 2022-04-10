@@ -43,7 +43,7 @@
 
 #define _BU_HELPER_4(dest, size, a_id)  \
     uint32_t a_id[size]; \
-    memset(a_id, 0, size * UINT_SIZE); \
+    memset(a_id, 0, (size) * UINT_SIZE); \
     big_uint_init(dest, a_id, size);
 
 #define _BU_HELPER_5(dest, num, size, count)  \
@@ -51,7 +51,7 @@
 
 #define _BU_HELPER_6(dest, num, size, a_id)  \
     uint32_t a_id[size]; \
-    memset(a_id, 0, size * UINT_SIZE); \
+    memset(a_id, 0, (size) * UINT_SIZE); \
     a_id[0] = num; \
     big_uint_init(dest, a_id, size);
 

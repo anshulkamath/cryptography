@@ -3,6 +3,7 @@
 #include "big-uint.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "testing-logger.h"
 
 void test_mod_big_uint() {
@@ -381,11 +382,153 @@ void test_mod_sub() {
 	log_tests(tester);
 }
 
+void test_mod_init() {
+	testing_logger_t *tester = create_tester();
+	big_uint_t p;
+	big_uint_t exp_r;
+	mod_t res;
+
+	// Test 1
+	big_uint_load(&p, "0x0000000d");
+	big_uint_load(&exp_r, "0x00000000_13b13b13_b13b13b1");
+
+	mod_create(&res, &p);
+
+	expect(tester, 
+		res.p == &p &&
+		big_uint_equals(res.r, &exp_r) &&
+		res.r->len == 2 * res.k + 1
+	);
+
+	// Test 2
+	big_uint_load(&p, "0x00000000_0000000d");
+	big_uint_load(&exp_r, "0x00000000_00000000_00000000_13b13b13_b13b13b1");
+
+	mod_create(&res, &p);
+
+	expect(tester, 
+		res.p == &p &&
+		big_uint_equals(res.r, &exp_r) &&
+		res.r->len == 2 * res.k + 1
+	);
+
+	// Test 3
+	big_uint_load(&p, "0x00000000_00000000_0000000d");
+	big_uint_load(&exp_r, "0x00000000_00000000_00000000_00000000_00000000_13b13b13_b13b13b1");
+
+	mod_create(&res, &p);
+
+	expect(tester, 
+		res.p == &p &&
+		big_uint_equals(res.r, &exp_r) &&
+		res.r->len == 2 * res.k + 1
+	);
+
+	// Test 4
+	big_uint_load(&p, "0x3cfaf13b_4c3eb41f");
+	big_uint_load(&exp_r, "0x00000000_00000000_00000004_32b56f64_2c6cf995");
+
+	mod_create(&res, &p);
+
+	expect(tester, 
+		res.p == &p &&
+		big_uint_equals(res.r, &exp_r) &&
+		res.r->len == 2 * res.k + 1
+	);
+
+	// Test 5
+	big_uint_load(&p, "0x00000000_3cfaf13b_4c3eb41f");
+	big_uint_load(&exp_r, "0x00000000_00000000_00000000_00000000_00000004_32b56f64_2c6cf995");
+
+	mod_create(&res, &p);
+
+	expect(tester, 
+		res.p == &p &&
+		big_uint_equals(res.r, &exp_r) &&
+		res.r->len == 2 * res.k + 1
+	);
+
+	// Test 6
+	big_uint_load(&p, "0x00000000_3cfaf13b_4c3eb41f");
+	big_uint_load(&exp_r, "0x00000000_00000000_00000000_00000000_00000004_32b56f64_2c6cf995");
+
+	mod_create(&res, &p);
+
+	expect(tester, 
+		res.p == &p &&
+		big_uint_equals(res.r, &exp_r) &&
+		res.r->len == 2 * res.k + 1
+	);
+
+	// Test 7
+	big_uint_load(&p, "0x00000000_00000000_3cfaf13b_4c3eb41f");
+	big_uint_load(&exp_r, "0x00000000_00000000_00000000_00000000_00000000_00000000_00000004_32b56f64_2c6cf995");
+
+	mod_create(&res, &p);
+
+	expect(tester, 
+		res.p == &p &&
+		big_uint_equals(res.r, &exp_r) &&
+		res.r->len == 2 * res.k + 1
+	);
+
+	// Test 8
+	big_uint_load(&p, "0x72ff2c08_4822fae5");
+	big_uint_load(&exp_r, "0x00000000_00000000_00000002_39e4f021_bb40ef66");
+
+	mod_create(&res, &p);
+
+	expect(tester, 
+		res.p == &p &&
+		big_uint_equals(res.r, &exp_r) &&
+		res.r->len == 2 * res.k + 1
+	);
+
+	// Test 9
+	big_uint_load(&p, "0x00000000_72ff2c08_4822fae5");
+	big_uint_load(&exp_r, "0x00000000_00000000_00000000_00000000_00000002_39e4f021_bb40ef66");
+
+	mod_create(&res, &p);
+
+	expect(tester, 
+		res.p == &p &&
+		big_uint_equals(res.r, &exp_r) &&
+		res.r->len == 2 * res.k + 1
+	);
+
+	// Test 10
+	big_uint_load(&p, "0x00000000_72ff2c08_4822fae5");
+	big_uint_load(&exp_r, "0x00000000_00000000_00000000_00000000_00000002_39e4f021_bb40ef66");
+
+	mod_create(&res, &p);
+
+	expect(tester, 
+		res.p == &p &&
+		big_uint_equals(res.r, &exp_r) &&
+		res.r->len == 2 * res.k + 1
+	);
+
+	// Test 11
+	big_uint_load(&p, "0x00000000_00000000_72ff2c08_4822fae5");
+	big_uint_load(&exp_r, "0x00000000_00000000_00000000_00000000_00000000_00000000_00000002_39e4f021_bb40ef66");
+
+	mod_create(&res, &p);
+
+	expect(tester, 
+		res.p == &p &&
+		big_uint_equals(res.r, &exp_r) &&
+		res.r->len == 2 * res.k + 1
+	);
+
+	log_tests(tester);
+}
+
 int main() {
 	// Calling all tests:
 	test_mod_big_uint();
 	test_mod_add();
 	test_mod_sub();
+	test_mod_init();
 
 	return 1;
 }
