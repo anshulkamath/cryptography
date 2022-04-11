@@ -64,7 +64,7 @@ void big_div(char *u_str, char *v_str) {
     big_uint_spprint(q_str, &q);
     big_uint_spprint(r_str, &r);
 
-    fprintf(stdout, "%s / %s = %s remainder %s\n", u_str, v_str, q_str, r_str);
+    fprintf(stdout, "%s remainder %s\n", q_str, r_str);
 }
 
 int well_formatted(char *argv[]) {
