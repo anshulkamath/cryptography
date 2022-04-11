@@ -99,15 +99,56 @@ void big_uint_sprint(char *dest, const big_uint_t *value) {
 
     for (uint16_t i = len - 1; i < len; i--) {
         if (i == len - 1) sprintf(&dest[0], "%08x", arr[i]);
-        else              sprintf(&dest[9 * (len - 1 - i) - 1], " %08x", arr[i]);
+        else              sprintf(&dest[9 * (len - 1 - i) - 1], "_%08x", arr[i]);
     }
 }
 
-void big_uint_print_helper(const big_uint_t *value) {
+void big_uint_print(const big_uint_t *value) {
     char str[9 * value->len];
     big_uint_sprint(str, value);
     printf("%s\n", str);
 }
+
+void big_uint_spprint(char *dest, const big_uint_t *value) {
+    uint16_t len = value->len;
+    
+    char str[9 * len];
+    big_uint_sprint(str, value);
+
+    uint32_t i = 0;
+
+    while (str[i] != 0 && (str[i] == '0' || str[i] == '_')) {
+        i++;
+    }
+
+    dest[0] = '0';
+    dest[1] = 'x';
+
+    // if the first digit is non-zero, then return the full string
+    if (i == 0) {
+        memcpy(&dest[2], str, 9 * len);
+        return;
+    }
+
+    // if all the characters are leading 0s, return "0x0"
+    if (str[i] == 0) {
+        dest[2] = '0';
+        dest[3] = 0;
+        return;
+    }
+
+    memcpy(&dest[2], &str[i], 9 * len - i);
+}
+
+void big_uint_pprint(const big_uint_t *value) {
+    char str[9 * value->len];
+    big_uint_spprint(str, value);
+    printf("%s\n", str);
+}
+
+/****************************************/
+/*        COMPARISON OPERATIONS         */
+/****************************************/
 
 uint8_t big_uint_equals(const big_uint_t *a, const big_uint_t *b) {
     // if they are the same pointer, they are the same
@@ -135,10 +176,6 @@ uint8_t big_uint_equals(const big_uint_t *a, const big_uint_t *b) {
 
     return res;
 }
-
-/****************************************/
-/*        COMPARISON OPERATIONS         */
-/****************************************/
 
 int8_t big_uint_cmp(const big_uint_t *a, const big_uint_t *b) {
     uint16_t len_a = a->len;

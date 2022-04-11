@@ -1,6 +1,7 @@
 #include "big-uint.h"
 #include "testing-logger.h"
 
+#include <stdio.h>
 #include <string.h>
 
 void test_big_uint_init() {
@@ -248,14 +249,77 @@ void test_big_uint_sprint() {
     char str3[18] = { 0 };
     big_uint_sprint(str3, &value);
 
-    expect(tester, !strcmp(str3, "12345678 87654321"));
+    expect(tester, !strcmp(str3, "12345678_87654321"));
 
     // all 0s
     big_uint_load(&value, "0x00000000_00000000");
     char str4[18] = { 0 };
     big_uint_sprint(str4, &value);
 
-    expect(tester, !strcmp(str4, "00000000 00000000"));
+    expect(tester, !strcmp(str4, "00000000_00000000"));
+
+    log_tests(tester);
+}
+
+
+void test_big_uint_spprint() {
+    // Define variables to be tested with
+    testing_logger_t *tester = create_tester();
+    big_uint_t value;
+
+    // 0 digit number
+    big_uint_load(&value, "0x0");
+    char str1[4] = { 0 };
+    big_uint_spprint(str1, &value);
+
+    expect(tester, !strcmp(str1, "0x0"));
+
+    // 1 digit number
+    big_uint_load(&value, "0x12345678");
+    char str2[11] = { 0 };
+    big_uint_spprint(str2, &value);
+
+    expect(tester, !strcmp(str2, "0x12345678"));
+
+    // 2 digit number
+    big_uint_load(&value, "0x12345678_87654321");
+    char str3[20] = { 0 };
+    big_uint_spprint(str3, &value);
+
+    expect(tester, !strcmp(str3, "0x12345678_87654321"));
+
+    // all 0s
+    big_uint_load(&value, "0x00000000_00000000");
+    char str4[4] = { 0 };
+    big_uint_spprint(str4, &value);
+
+    expect(tester, !strcmp(str4, "0x0"));
+
+    // leading 0s
+    big_uint_load(&value, "0x0000000_12345678");
+    char str5[11] = { 0 };
+    big_uint_spprint(str5, &value);
+
+    expect(tester, !strcmp(str5, "0x12345678"));
+
+    big_uint_load(&value, "0x00000001_23456789");
+    char str6[13] = { 0 };
+    big_uint_spprint(str6, &value);
+
+    expect(tester, !strcmp(str6, "0x1_23456789"));
+
+    big_uint_load(&value, "0x00000000_00000001");
+    char str7[2] = { 0 };
+    big_uint_spprint(str7, &value);
+
+    expect(tester, !strcmp(str7, "0x1"));
+
+    // big buffer
+    big_uint_load(&value, "0x00000000_00000001");
+    char str8[100];
+    big_uint_spprint(str8, &value);
+
+    expect(tester, !strcmp(str8, "0x1"));
 
     log_tests(tester);
 }
@@ -2094,8 +2158,9 @@ int main() {
     test_big_uint_copy();
 
     test_big_uint_sprint();
+    test_big_uint_spprint();
+
     test_big_uint_equals();
-    
     test_big_uint_cmp();
     test_big_uint_max();
     test_big_uint_min();
