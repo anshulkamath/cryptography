@@ -70,4 +70,14 @@ void mod_sub(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const bi
  */
 void mod_init(mod_t *res, const big_uint_t *p, big_uint_t *r);
 
+/**
+ * @brief Computes `a * b mod p` and stores the result in `res`
+ * 
+ * @param res Where to store the resulting product
+ * @param a   Pointer to the first number to multiply
+ * @param b   Pointer to the second number to multiply
+ * @param mod Pointer to the mod type that contains the Barrett precomputed factor for `p`
+ */
+void mod_mult(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const mod_t *mod);
+
 #endif

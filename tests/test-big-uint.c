@@ -1464,6 +1464,15 @@ void test_big_uint_mult() {
 
     expect(tester, big_uint_equals(&res, &exp));
 
+    // misc test
+    big_uint_load(&a, "0x0fd229d7_50b9169b");
+	big_uint_load(&b, "0x2b711343_220d672b");
+	big_uint_load(&exp, "0x02af49fc_61d06471_d053c29c_c30e2909");
+	big_uint_load(&res, "0x00000000_00000000_00000000_00000000_00000000");
+	big_uint_mult(&res, &a, &b);
+
+	expect(tester, big_uint_equals(&res, &exp));
+
     log_tests(tester);
 }
 
