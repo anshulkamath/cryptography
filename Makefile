@@ -14,7 +14,7 @@ OBJ_FILES = $(addprefix obj/,$(SRC_FILES:=.o))
 CYAN =\x1b[36m
 WHITE=\x1b[0m
 
-MAIN = sha2 main benchmark
+MAIN = sha2 main benchmark big-int
 MAIN_BINS = $(addprefix bin/, $(MAIN))
 TEST_BINS = $(addprefix bin/test-, $(SRC_FILES))
 

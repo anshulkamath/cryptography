@@ -99,15 +99,56 @@ void big_uint_sprint(char *dest, const big_uint_t *value) {
 
     for (uint16_t i = len - 1; i < len; i--) {
         if (i == len - 1) sprintf(&dest[0], "%08x", arr[i]);
-        else              sprintf(&dest[9 * (len - 1 - i) - 1], " %08x", arr[i]);
+        else              sprintf(&dest[9 * (len - 1 - i) - 1], "_%08x", arr[i]);
     }
 }
 
-void big_uint_print_helper(const big_uint_t *value) {
+void big_uint_print(const big_uint_t *value) {
     char str[9 * value->len];
     big_uint_sprint(str, value);
     printf("%s\n", str);
 }
+
+void big_uint_spprint(char *dest, const big_uint_t *value) {
+    uint16_t len = value->len;
+    
+    char str[9 * len];
+    big_uint_sprint(str, value);
+
+    uint32_t i = 0;
+
+    while (str[i] != 0 && (str[i] == '0' || str[i] == '_')) {
+        i++;
+    }
+
+    dest[0] = '0';
+    dest[1] = 'x';
+
+    // if the first digit is non-zero, then return the full string
+    if (i == 0) {
+        memcpy(&dest[2], str, 9 * len);
+        return;
+    }
+
+    // if all the characters are leading 0s, return "0x0"
+    if (str[i] == 0) {
+        dest[2] = '0';
+        dest[3] = 0;
+        return;
+    }
+
+    memcpy(&dest[2], &str[i], 9 * len - i);
+}
+
+void big_uint_pprint(const big_uint_t *value) {
+    char str[9 * value->len];
+    big_uint_spprint(str, value);
+    printf("%s\n", str);
+}
+
+/****************************************/
+/*        COMPARISON OPERATIONS         */
+/****************************************/
 
 uint8_t big_uint_equals(const big_uint_t *a, const big_uint_t *b) {
     // if they are the same pointer, they are the same
@@ -135,10 +176,6 @@ uint8_t big_uint_equals(const big_uint_t *a, const big_uint_t *b) {
 
     return res;
 }
-
-/****************************************/
-/*        COMPARISON OPERATIONS         */
-/****************************************/
 
 int8_t big_uint_cmp(const big_uint_t *a, const big_uint_t *b) {
     uint16_t len_a = a->len;
@@ -283,70 +320,6 @@ void big_uint_shl(big_uint_t *result, const big_uint_t *x, uint32_t n, uint8_t s
 /*    ARITHMETIC OPERATIONS HELPERS     */
 /****************************************/
 
-/* performs addition for different length integers */
-static void _big_uint_add_diff(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) {
-    uint64_t a_val, b_val, c_val;
-    uint64_t overflow = 0;
-    
-    for (uint16_t i = 0; i < result->len; i++) {
-        a_val = i < a->len ? a->arr[i] : 0;
-        b_val = i < b->len ? b->arr[i] : 0;
-        c_val = a_val + b_val + overflow;
-
-        result->arr[i] = c_val & (~1ull >> UINT_BITS);
-        overflow = !!(c_val >> UINT_BITS);
-    }
-}
-
-/* performs addition for same length integers */
-static void _big_uint_add_same(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) {
-    uint64_t a_val, b_val, c_val;
-    uint64_t overflow = 0;
-
-    for (uint16_t i = 0; i < result->len; i++) {
-        a_val = a->arr[i];
-        b_val = b->arr[i];
-        c_val = a_val + b_val + overflow;
-
-        result->arr[i] = c_val & (~1ull >> UINT_BITS);
-        overflow = !!(c_val >> UINT_BITS);
-    }
-}
-
-/* performs subtraction for different length integers */
-static void _big_uint_sub_diff(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) {
-    uint64_t a_val, b_val, c_val;
-    uint64_t underflow = 0;
-    
-    // allow for different length integers to be subtracted
-    for (uint16_t i = 0; i < result->len; i++) {
-        // if out of range for a or b, use 0 instead
-        a_val = i < a->len ? a->arr[i] : 0;
-        b_val = i < b->len ? b->arr[i] : 0;
-        c_val = a_val - b_val - underflow;
-
-        result->arr[i] = c_val & (~1ull >> UINT_BITS);
-        underflow = !!(c_val >> UINT_BITS);
-    }
-}
-
-/* performs subtraction for same length integers */
-static void _big_uint_sub_same(big_uint_t *result, const big_uint_t *a, const big_uint_t *b) {
-    uint64_t a_val, b_val, c_val;
-    uint64_t underflow = 0;
-
-    // allow for different length integers to be subtracted
-    for (uint16_t i = 0; i < result->len; i++) {
-        // if out of range for a or b, use 0 instead
-        a_val = a->arr[i];
-        b_val = b->arr[i];
-        c_val = a_val - b_val - underflow;
-
-        result->arr[i] = c_val & (~1ull >> UINT_BITS);
-        underflow = !!(c_val >> UINT_BITS);
-    }
-}
-
 /* returns the i-th bit of x */
 static uint8_t _get_bit(const big_uint_t *x, uint16_t i) {
     uint64_t limb = i / UINT_BITS;
@@ -362,25 +335,33 @@ static uint8_t _get_bit(const big_uint_t *x, uint16_t i) {
 /****************************************/
 
 void big_uint_add(big_uint_t *c, const big_uint_t *a, const big_uint_t *b) {
-    // offers small optimization if integers are same length
-    if (a->len == b->len) {
-        _big_uint_add_same(c, a, b);
-        return;
-    } 
+    uint64_t a_val, b_val, c_val;
+    uint64_t overflow = 0;
+    
+    for (uint16_t i = 0; i < c->len; i++) {
+        a_val = i < a->len ? a->arr[i] : 0;
+        b_val = i < b->len ? b->arr[i] : 0;
+        c_val = a_val + b_val + overflow;
 
-    // allow for different length integers to be summed
-    _big_uint_add_diff(c, a, b);
+        c->arr[i] = c_val & (~1ull >> UINT_BITS);
+        overflow = !!(c_val >> UINT_BITS);
+    }
 }
 
 void big_uint_sub(big_uint_t *c, const big_uint_t *a, const big_uint_t *b) {
-    // offers small optimization if integers are same length
-    if (a->len == b->len) {
-        _big_uint_sub_same(c, a, b);
-        return;
-    }
-
+    uint64_t a_val, b_val, c_val;
+    uint64_t underflow = 0;
+    
     // allow for different length integers to be subtracted
-    _big_uint_sub_diff(c, a, b);
+    for (uint16_t i = 0; i < c->len; i++) {
+        // if out of range for a or b, use 0 instead
+        a_val = i < a->len ? a->arr[i] : 0;
+        b_val = i < b->len ? b->arr[i] : 0;
+        c_val = a_val - b_val - underflow;
+
+        c->arr[i] = c_val & (~1ull >> UINT_BITS);
+        underflow = !!(c_val >> UINT_BITS);
+    }
 }
 
 void big_uint_mult(big_uint_t *c, const big_uint_t *a, const big_uint_t *b) {

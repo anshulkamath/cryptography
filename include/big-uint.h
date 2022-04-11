@@ -94,9 +94,6 @@
  */
 #define big_uint_loadi(dest, num, size) _BU_HELPER_5(dest, num, size, __COUNTER__)
 
-// alias for big_uint_print_helper to allow passing of literal big_uint_t
-#define big_uint_print(x) big_uint_print_helper(&x)
-
 /****************************************/
 /*            BITWISE MACROS            */
 /****************************************/
@@ -251,12 +248,31 @@ void big_uint_sprint(char *dest, const big_uint_t *value);
 
 /**
  * @brief Prints out the hex representation of the big integer in big endian.
- * NOTE:  Prefer calling big_uint_print() instead of this function
  * TODO:  Add support for little endianness
  * 
  * @param value The big integer to print
  */
-void big_uint_print_helper(const big_uint_t *value);
+void big_uint_print(const big_uint_t *value);
+
+/**
+ * @brief Writes the pretty version of the hex representation of the big integer
+ *        in big endian (pretty print removes extraneous non-significant digits)
+ * EXAMPLE:
+ *        pprint(0x0000001 23456789) -> 0x1 23456789
+ * 
+ * @param value The big integer to print
+ */
+void big_uint_spprint(char *dest, const big_uint_t *value);
+
+/**
+ * @brief Pretty prints out the hex representation of the big integer in big endian.
+ * TODO:  Add support for little endianness
+  * EXAMPLE:
+ *        pprint(0x0000001 23456789) -> 0x1 23456789
+ * 
+ * @param value The big integer to print
+ */
+void big_uint_pprint(const big_uint_t *value);
 
 /****************************************/
 /*        COMPARISON OPERATIONS         */
