@@ -8,7 +8,7 @@ CFLAGS = -g -Wall -Wextra -pedantic -std=c17 -Wno-unused-command-line-argument -
 # use for benchmarking purposes
 # CFLAGS = -Ofast -pedantic -std=c17 -std=c17 $(INCLUDES) $(LIBS)
 
-SRC_FILES = sha256 big-uint
+SRC_FILES = sha256 big-uint mod
 OBJ_FILES = $(addprefix obj/,$(SRC_FILES:=.o))
 
 CYAN =\x1b[36m

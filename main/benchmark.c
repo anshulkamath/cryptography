@@ -1,8 +1,10 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "big-uint.h"
+#include "mod.h"
 
 #define GRN     "\x1b[32m"
 #define RESET   "\x1b[0m"
@@ -13,6 +15,7 @@ big_uint_t A;
 big_uint_t B;
 big_uint_t C;
 big_uint_t D;
+big_uint_t P;
 
 #define STRINGIFY(x) #x
 #define BENCHMARK(func, aux, batch) benchmark(STRINGIFY(func), func, aux, batch)
@@ -66,12 +69,19 @@ void benchmark_big_uint_gcd() { big_uint_gcd(&C, &A, &B); }
 
 void benchmark_big_uint_gcd_extended() { big_uint_gcd_extended(&D, &C, &A, &B); }
 
+void benchmark_mod_add(void *aux) { mod_add(&C, &A, &B, (mod_t*) aux); }
+
+void benchmark_mod_sub(void *aux) { mod_sub(&C, &A, &B, (mod_t*) aux); }
+
+void benchmark_mod_mult(void *aux) { mod_mult(&C, &A, &B, (mod_t*) aux); }
+
 int main() {
     // initialize global variables
     big_uint_load(&A, "0x6409b613_c5e7c7e9_27f9d2c4_1b56af5e_a49ec282_77c71eb1_2223a2cf_f01135d7");
     big_uint_load(&B, "0x1a74c20e_80b9aa12_2b748f72_3ad25ba0_6018dd1d_7933c61d_3df4ec16_860c5a0f");
     big_uint_load(&C, "0x00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000");
     big_uint_load(&D, "0x00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000");
+    big_uint_load(&P, "0x8c307598_fd51fb73_2b33dddb_02ddc885_d3b78759_d6b1c165_b39bba8d_f4a5a691");
 
     // arithmetic benchmark
     printf(CYAN"\nRunning benchmarks on arithmetic operations (ops/sec):\n"RESET);
@@ -91,6 +101,13 @@ int main() {
     BENCHMARK(benchmark_big_uint_div, NULL, 100);
     BENCHMARK(benchmark_big_uint_gcd, NULL, 100);
     BENCHMARK(benchmark_big_uint_gcd_extended, NULL, 100);
+
+    mod_t mod;
+    mod_create(&mod, &P);
+
+    BENCHMARK(benchmark_mod_add, &mod, 100);
+    BENCHMARK(benchmark_mod_sub, &mod, 100);
+    BENCHMARK(benchmark_mod_mult, &mod, 100);
 
     printf("\n");
     return 0;
