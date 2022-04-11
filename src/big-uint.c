@@ -414,10 +414,6 @@ void big_uint_mult(big_uint_t *c, const big_uint_t *a, const big_uint_t *b) {
             res[i + b->len] += overflow;
     }
 
-    // if c can store the previous overflow, put it in
-    if (a->len + b->len < c->len)
-        res[a->len + b->len] += overflow;
-
     // flatten array of `uint64_t`s into `uint32_t`s, accounting for overflow
     uint64_t val, carry = 0;
     for (uint16_t i = 0; i < c->len; i++) {
