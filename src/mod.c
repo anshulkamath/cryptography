@@ -8,37 +8,6 @@
 uint32_t ZERO_ARR[] = { 0 };
 big_uint_t ZERO = { .arr = (uint32_t *) &ZERO_ARR, .len = 1 };
 
-void mod_big_uint(big_uint_t *res, const big_uint_t *x, const big_uint_t *p) {
-	big_uint_t q;
-	big_uint_create(&q, x->len);
-
-	big_uint_div(&q, res, x, p);
-}
-
-void mod_add(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const big_uint_t *p) {
-	big_uint_add(res, a, b);
-
-	// if we are above the prime, calculate the corresponding residue class
-	if (big_uint_cmp(res, p) > 0) {
-		big_uint_sub(res, res, p);
-		return;
-	}
-	
-	big_uint_sub(res, res, &ZERO);
-}
-
-void mod_sub(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const big_uint_t *p) {
-	big_uint_sub(res, a, b);
-
-	// if we are above the prime, calculate the corresponding residue class
-	if (big_uint_cmp(res, p) > 0) {
-		big_uint_add(res, res, p);
-		return;
-	}
-
-	big_uint_add(res, res, &ZERO);
-}
-
 /* Performs Barrett reduction and populates the given mod_t struct */
 void _barrett_reduction(mod_t *res) {
 	uint32_t k = big_uint_log2(res->p, LOG_2_LIMB) + 1;
@@ -59,6 +28,37 @@ void mod_init(mod_t *res, const big_uint_t *p, big_uint_t *r) {
 	res->r = r;
 
 	_barrett_reduction(res);
+}
+
+void mod_big_uint(big_uint_t *res, const big_uint_t *x, const mod_t *mod) {
+	big_uint_t q;
+	big_uint_create(&q, x->len);
+
+	big_uint_div(&q, res, x, mod->p);
+}
+
+void mod_add(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const mod_t *mod) {
+	big_uint_add(res, a, b);
+
+	// if we are above the prime, calculate the corresponding residue class
+	if (big_uint_cmp(res, mod->p) > 0) {
+		big_uint_sub(res, res, mod->p);
+		return;
+	}
+	
+	big_uint_sub(res, res, &ZERO);
+}
+
+void mod_sub(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const mod_t *mod) {
+	big_uint_sub(res, a, b);
+
+	// if we are above the prime, calculate the corresponding residue class
+	if (big_uint_cmp(res, mod->p) > 0) {
+		big_uint_add(res, res, mod->p);
+		return;
+	}
+
+	big_uint_add(res, res, &ZERO);
 }
 
 void mod_mult(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const mod_t *mod) {
