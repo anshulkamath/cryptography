@@ -9,12 +9,13 @@ void big_add(char *a_str, char *b_str) {
 
     big_uint_load(&a, a_str);
     big_uint_load(&b, b_str);
-    big_uint_create(&res, a.len + b.len);
+    
+    uint16_t max_len = a.len > b.len ? a.len : b.len;
+    big_uint_create(&res, max_len + 1);
 
     big_uint_add(&res, &a, &b);
     
-    fprintf(stdout, "%s + %s = 0x", a_str, b_str);
-    big_uint_print(res);
+    big_uint_pprint(&res);
 }
 
 void big_sub(char *a_str, char *b_str) {
@@ -22,12 +23,13 @@ void big_sub(char *a_str, char *b_str) {
 
     big_uint_load(&a, a_str);
     big_uint_load(&b, b_str);
-    big_uint_create(&res, a.len + b.len);
+
+    uint16_t max_len = a.len > b.len ? a.len : b.len;
+    big_uint_create(&res, max_len + 1);
 
     big_uint_sub(&res, &a, &b);
-    
-    fprintf(stdout, "%s - %s = 0x", a_str, b_str);
-    big_uint_print(res);
+
+    big_uint_pprint(&res);
 }
 
 void big_mult(char *a_str, char *b_str) {
@@ -39,8 +41,7 @@ void big_mult(char *a_str, char *b_str) {
 
     big_uint_mult(&res, &a, &b);
     
-    fprintf(stdout, "%s * %s = 0x", a_str, b_str);
-    big_uint_print(res);
+    big_uint_pprint(&res);
 }
 
 void big_div(char *u_str, char *v_str) {
@@ -64,8 +65,8 @@ void big_div(char *u_str, char *v_str) {
 
     big_uint_div(&q, &r, &u, &v);
     
-    big_uint_sprint(&q_str[2], &q);
-    big_uint_sprint(&r_str[2], &r);
+    big_uint_spprint(&q_str[2], &q);
+    big_uint_spprint(&r_str[2], &r);
     
     fprintf(stdout, "%s / %s = %s remainder %s", u_str, v_str, q_str, r_str);
 }
@@ -82,7 +83,7 @@ int well_formatted(char *argv[]) {
         case '-':
             big_sub(num1, num2);
             break;
-        case '*':
+        case 'x':
             big_mult(num1, num2);
             break;
         case '/':
