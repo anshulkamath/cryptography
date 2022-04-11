@@ -4,6 +4,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+void usage() {
+    fprintf(stdout, "Usage: big-int [num1] [+|-|x|/] [num2]\n");
+}
+
 void big_add(char *a_str, char *b_str) {
     big_uint_t res, a, b;
 
@@ -97,5 +101,7 @@ int main(int argc, char *argv[]) {
     if (argc == 4)
         return well_formatted(argv);
 
-    return 0;
+    usage();
+
+    return 1;
 }
