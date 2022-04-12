@@ -981,12 +981,16 @@ void test_big_uint_shl() {
     // Test 3b
     big_uint_load(&x, "0x00000000_0000000f");
     big_uint_load(&exp, "0x0000000f_00000000");
+    big_uint_load(&res, "0x00000000_00000000");
+    
     big_uint_shl(&res, &x, 1, SHIFT_LIMB);
     expect(tester, big_uint_equals(&res, &exp));
 
     // Test 3c
     big_uint_load(&x, "0x00000000_0f000000");
     big_uint_load(&exp, "0x1e000000_00000000");
+    big_uint_load(&res, "0x00000000_00000000");
+    
     big_uint_shl(&res, &x, 33, SHIFT_BIT);
     expect(tester, big_uint_equals(&res, &exp));
 

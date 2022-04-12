@@ -1,5 +1,6 @@
 #include "big-uint.h"
 
+#include <assert.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -275,20 +276,24 @@ void big_uint_shr(big_uint_t *result, const big_uint_t *x, uint32_t n, uint8_t s
         memset(result->arr, 0, result->len * UINT_SIZE);
         return;
     }
-    
-    // temporary variable to allow for operator assignment
-    uint32_t res[result->len];
+
+    assert(x->len - limbs <= result->len);
+    memmove(result->arr, x->arr + limbs, (x->len - limbs) * UINT_SIZE);
+    memset(result->arr + (x->len - limbs), 0, limbs + UINT_SIZE);
+
+    // if we do not have to move bits, then return
+    if (!bits) return;
     
     // move offset x limb in result array, shift to account for sub-limb shifts
     uint32_t shift = 0, elem;
     for (uint16_t i = result->len - 1; i < result->len; i--) {
-        elem = (i + limbs) < x->len ? x->arr[i + limbs] : 0;
-        res[i] = shift | (elem >> bits);
+        elem = result->arr[i];
+        result->arr[i] = shift | (elem >> bits);
         shift = (elem << (UINT_BITS - bits)) * !!bits;
     }
 
     // copy the result into the destination
-    memcpy(result->arr, res, result->len * UINT_SIZE);    
+    // memcpy(result->arr, res, result->len * UINT_SIZE);    
 }
 
 void big_uint_shl(big_uint_t *result, const big_uint_t *x, uint32_t n, uint8_t shift_t) {
@@ -303,18 +308,20 @@ void big_uint_shl(big_uint_t *result, const big_uint_t *x, uint32_t n, uint8_t s
         return;
     }
 
-    uint32_t res[result->len];
+    assert(result->len - limbs <= x->len);
+    memmove(result->arr + limbs, x->arr, (result->len - limbs) * UINT_SIZE);
+    memset(result->arr, 0, limbs * UINT_SIZE);
+
+    // if we do not have to move bits, then return
+    if (!bits) return;
     
     // move offset x limb in result array, shift to account for sub-limb shifts
     uint32_t shift = 0, elem;
     for (uint16_t i = 0; i < result->len; i++) {
-        // must cast due to integral promotion
-        elem = (uint16_t) (i - limbs) < x->len ? x->arr[i - limbs] : 0;
-        res[i] = (elem << bits) | shift;
+        elem = result->arr[i];
+        result->arr[i] = (elem << bits) | shift;
         shift = (elem >> (UINT_BITS - bits)) * !!bits;
     }
-
-    memcpy(result->arr, res, result->len * UINT_SIZE);
 }
 
 /****************************************/
