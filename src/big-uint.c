@@ -1,5 +1,6 @@
 #include "big-uint.h"
 
+#include <assert.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -97,10 +98,10 @@ void big_uint_sprint(char *dest, const big_uint_t *value) {
     uint16_t len = value->len;
     const uint32_t *arr = value->arr;
 
-    for (uint16_t i = len - 1; i < len; i--) {
-        if (i == len - 1) sprintf(&dest[0], "%08x", arr[i]);
-        else              sprintf(&dest[9 * (len - 1 - i) - 1], "_%08x", arr[i]);
-    }
+    for (uint16_t i = len - 1; i < len; i--)
+        sprintf(&dest[9 * (len - 1 - i)], "%08x_", arr[i]);
+    
+    dest[9 * len - 1] = '\0';
 }
 
 void big_uint_print(const big_uint_t *value) {
@@ -117,7 +118,8 @@ void big_uint_spprint(char *dest, const big_uint_t *value) {
 
     uint32_t i = 0;
 
-    while (str[i] != 0 && (str[i] == '0' || str[i] == '_')) {
+    // find first index of significant digit (ignore leading 0s and _s)
+    while (str[i] != '\0' && (str[i] == '0' || str[i] == '_')) {
         i++;
     }
 
@@ -133,7 +135,7 @@ void big_uint_spprint(char *dest, const big_uint_t *value) {
     // if all the characters are leading 0s, return "0x0"
     if (str[i] == 0) {
         dest[2] = '0';
-        dest[3] = 0;
+        dest[3] = '\0';
         return;
     }
 
@@ -274,20 +276,24 @@ void big_uint_shr(big_uint_t *result, const big_uint_t *x, uint32_t n, uint8_t s
         memset(result->arr, 0, result->len * UINT_SIZE);
         return;
     }
-    
-    // temporary variable to allow for operator assignment
-    uint32_t res[result->len];
+
+    assert(x->len - limbs <= result->len);
+    memmove(result->arr, x->arr + limbs, (x->len - limbs) * UINT_SIZE);
+    memset(result->arr + (x->len - limbs), 0, limbs + UINT_SIZE);
+
+    // if we do not have to move bits, then return
+    if (!bits) return;
     
     // move offset x limb in result array, shift to account for sub-limb shifts
-    uint32_t shift = 0;
+    uint32_t shift = 0, elem;
     for (uint16_t i = result->len - 1; i < result->len; i--) {
-        uint32_t elem = (i + limbs) < x->len ? x->arr[i + limbs] : 0;
-        res[i] = shift | (elem >> bits);
+        elem = result->arr[i];
+        result->arr[i] = shift | (elem >> bits);
         shift = (elem << (UINT_BITS - bits)) * !!bits;
     }
 
     // copy the result into the destination
-    memcpy(result->arr, res, result->len * UINT_SIZE);    
+    // memcpy(result->arr, res, result->len * UINT_SIZE);    
 }
 
 void big_uint_shl(big_uint_t *result, const big_uint_t *x, uint32_t n, uint8_t shift_t) {
@@ -302,18 +308,20 @@ void big_uint_shl(big_uint_t *result, const big_uint_t *x, uint32_t n, uint8_t s
         return;
     }
 
-    uint32_t res[result->len];
+    assert(result->len - limbs <= x->len);
+    memmove(result->arr + limbs, x->arr, (result->len - limbs) * UINT_SIZE);
+    memset(result->arr, 0, limbs * UINT_SIZE);
+
+    // if we do not have to move bits, then return
+    if (!bits) return;
     
     // move offset x limb in result array, shift to account for sub-limb shifts
     uint32_t shift = 0, elem;
     for (uint16_t i = 0; i < result->len; i++) {
-        // must cast due to integral promotion
-        elem = (uint16_t) (i - limbs) < x->len ? x->arr[i - limbs] : 0;
-        res[i] = (elem << bits) | shift;
+        elem = result->arr[i];
+        result->arr[i] = (elem << bits) | shift;
         shift = (elem >> (UINT_BITS - bits)) * !!bits;
     }
-
-    memcpy(result->arr, res, result->len * UINT_SIZE);
 }
 
 /****************************************/

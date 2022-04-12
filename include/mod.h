@@ -20,7 +20,7 @@
 
 #define _MOD_HELPER_2(dest, p, r_id) \
     big_uint_t r_id; \
-    big_uint_create(&r_id, 2 * (big_uint_log2(p, LOG_2_LIMB) + 1) + 1); \
+    big_uint_create(&r_id, (big_uint_log2(p, LOG_2_LIMB) + 1) + 1); \
     mod_init(dest, p, &r_id);
 
 #define mod_create(dest, p) \

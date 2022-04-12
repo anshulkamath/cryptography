@@ -981,12 +981,16 @@ void test_big_uint_shl() {
     // Test 3b
     big_uint_load(&x, "0x00000000_0000000f");
     big_uint_load(&exp, "0x0000000f_00000000");
+    big_uint_load(&res, "0x00000000_00000000");
+    
     big_uint_shl(&res, &x, 1, SHIFT_LIMB);
     expect(tester, big_uint_equals(&res, &exp));
 
     // Test 3c
     big_uint_load(&x, "0x00000000_0f000000");
     big_uint_load(&exp, "0x1e000000_00000000");
+    big_uint_load(&res, "0x00000000_00000000");
+    
     big_uint_shl(&res, &x, 33, SHIFT_BIT);
     expect(tester, big_uint_equals(&res, &exp));
 
@@ -1594,6 +1598,18 @@ void test_big_uint_div() {
     expect(tester, big_uint_equals(&q, &exp_q));
     expect(tester, big_uint_equals(&r, &exp_r));
 
+    // 1 digit number over itself
+    big_uint_load(&a, "0x12345678");
+    big_uint_load(&b, "0x12345678");
+    big_uint_load(&exp_q, "0x00000001");
+    big_uint_load(&exp_r, "0x00000000");
+    big_uint_load(&q, "0x00000000");
+    big_uint_load(&r, "0x00000000");
+    big_uint_div(&q, &r, &a, &b);
+
+    expect(tester, big_uint_equals(&q, &exp_q));
+    expect(tester, big_uint_equals(&r, &exp_r));
+
     // 2 digit division (no truncation)
     big_uint_load(&a, "0x00000009_00000000");
     big_uint_load(&b, "0x00000000_00000002");
@@ -1618,6 +1634,18 @@ void test_big_uint_div() {
     expect(tester, big_uint_equals(&q, &exp_q));
     expect(tester, big_uint_equals(&r, &exp_r));
 
+    // large number over itself
+    big_uint_load(&a, "0xffffffff_ffffffff");
+    big_uint_load(&b, "0xffffffff_ffffffff");
+    big_uint_load(&exp_q, "0x00000000_00000001");
+    big_uint_load(&exp_r, "0x00000000_00000000");
+    big_uint_load(&q, "0x00000000_00000000");
+    big_uint_load(&r, "0x00000000_00000000");
+    big_uint_div(&q, &r, &a, &b);
+
+    expect(tester, big_uint_equals(&q, &exp_q));
+    expect(tester, big_uint_equals(&r, &exp_r));
+    
     // large number over itself + 1
     big_uint_load(&a, "0xffffffff_fffffffe");
     big_uint_load(&b, "0xffffffff_ffffffff");

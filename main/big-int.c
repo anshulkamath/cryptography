@@ -50,12 +50,13 @@ void big_mult(char *a_str, char *b_str) {
 
 void big_div(char *u_str, char *v_str) {
     big_uint_t q, r, u, v;
-    
-    char q_str[9 * u.len];
-    char r_str[9 * v.len];
 
     big_uint_load(&u, u_str);
     big_uint_load(&v, v_str);
+    
+    char q_str[9 * u.len + 2];
+    char r_str[9 * v.len + 2];
+    
     big_uint_create(&q, u.len);
     big_uint_create(&r, v.len);
 
@@ -64,7 +65,7 @@ void big_div(char *u_str, char *v_str) {
     big_uint_spprint(q_str, &q);
     big_uint_spprint(r_str, &r);
 
-    fprintf(stdout, "%s / %s = %s remainder %s\n", u_str, v_str, q_str, r_str);
+    fprintf(stdout, "%s remainder %s\n", q_str, r_str);
 }
 
 int well_formatted(char *argv[]) {
