@@ -280,9 +280,9 @@ void big_uint_shr(big_uint_t *result, const big_uint_t *x, uint32_t n, uint8_t s
     uint32_t res[result->len];
     
     // move offset x limb in result array, shift to account for sub-limb shifts
-    uint32_t shift = 0;
+    uint32_t shift = 0, elem;
     for (uint16_t i = result->len - 1; i < result->len; i--) {
-        uint32_t elem = (i + limbs) < x->len ? x->arr[i + limbs] : 0;
+        elem = (i + limbs) < x->len ? x->arr[i + limbs] : 0;
         res[i] = shift | (elem >> bits);
         shift = (elem << (UINT_BITS - bits)) * !!bits;
     }

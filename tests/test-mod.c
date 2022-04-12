@@ -21,7 +21,7 @@ void test_mod_init() {
 	expect(tester, 
 		res.p == &p &&
 		big_uint_equals(res.r, &exp_r) &&
-		res.r->len == 2 * res.k + 1
+		res.r->len == res.k + 1
 	);
 
 	// Test 2
@@ -33,7 +33,7 @@ void test_mod_init() {
 	expect(tester, 
 		res.p == &p &&
 		big_uint_equals(res.r, &exp_r) &&
-		res.r->len == 2 * res.k + 1
+		res.r->len == res.k + 1
 	);
 
 	// Test 3
@@ -45,7 +45,7 @@ void test_mod_init() {
 	expect(tester, 
 		res.p == &p &&
 		big_uint_equals(res.r, &exp_r) &&
-		res.r->len == 2 * res.k + 1
+		res.r->len == res.k + 1
 	);
 
 	// Test 4
@@ -57,7 +57,7 @@ void test_mod_init() {
 	expect(tester, 
 		res.p == &p &&
 		big_uint_equals(res.r, &exp_r) &&
-		res.r->len == 2 * res.k + 1
+		res.r->len == res.k + 1
 	);
 
 	// Test 5
@@ -69,7 +69,7 @@ void test_mod_init() {
 	expect(tester, 
 		res.p == &p &&
 		big_uint_equals(res.r, &exp_r) &&
-		res.r->len == 2 * res.k + 1
+		res.r->len == res.k + 1
 	);
 
 	// Test 6
@@ -81,7 +81,7 @@ void test_mod_init() {
 	expect(tester, 
 		res.p == &p &&
 		big_uint_equals(res.r, &exp_r) &&
-		res.r->len == 2 * res.k + 1
+		res.r->len == res.k + 1
 	);
 
 	// Test 7
@@ -93,7 +93,7 @@ void test_mod_init() {
 	expect(tester, 
 		res.p == &p &&
 		big_uint_equals(res.r, &exp_r) &&
-		res.r->len == 2 * res.k + 1
+		res.r->len == res.k + 1
 	);
 
 	// Test 8
@@ -105,7 +105,7 @@ void test_mod_init() {
 	expect(tester, 
 		res.p == &p &&
 		big_uint_equals(res.r, &exp_r) &&
-		res.r->len == 2 * res.k + 1
+		res.r->len == res.k + 1
 	);
 
 	// Test 9
@@ -117,7 +117,7 @@ void test_mod_init() {
 	expect(tester, 
 		res.p == &p &&
 		big_uint_equals(res.r, &exp_r) &&
-		res.r->len == 2 * res.k + 1
+		res.r->len == res.k + 1
 	);
 
 	// Test 10
@@ -129,7 +129,7 @@ void test_mod_init() {
 	expect(tester, 
 		res.p == &p &&
 		big_uint_equals(res.r, &exp_r) &&
-		res.r->len == 2 * res.k + 1
+		res.r->len == res.k + 1
 	);
 
 	// Test 11
@@ -141,7 +141,7 @@ void test_mod_init() {
 	expect(tester, 
 		res.p == &p &&
 		big_uint_equals(res.r, &exp_r) &&
-		res.r->len == 2 * res.k + 1
+		res.r->len == res.k + 1
 	);
 
 	log_tests(tester);
@@ -279,7 +279,8 @@ void test_mod_big_uint() {
 void test_mod_add() {
 	testing_logger_t *tester = create_tester();
 	big_uint_t a, b, p;
-	big_uint_t exp, res; mod_t mod;
+	big_uint_t exp, res;
+	mod_t mod;
 
 	// Test 1
 	big_uint_load(&a, "0x00000008");
@@ -419,7 +420,8 @@ void test_mod_add() {
 void test_mod_sub() {
 	testing_logger_t *tester = create_tester();
 	big_uint_t a, b, p;
-	big_uint_t exp, res; mod_t mod;
+	big_uint_t exp, res;
+	mod_t mod;
 
 	// Test 1
 	big_uint_load(&a, "0x00000000");

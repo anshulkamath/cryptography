@@ -19,8 +19,7 @@ void _barrett_reduction(mod_t *res) {
 
 	temp.arr[2 * k] = 1;
 
-	big_uint_div(&quo, NULL, &temp, res->p);
-	big_uint_copy(res->r, &quo);
+	big_uint_div(res->r, NULL, &temp, res->p);
 }
 
 void mod_init(mod_t *res, const big_uint_t *p, big_uint_t *r) {
@@ -62,17 +61,12 @@ void mod_sub(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const mo
 }
 
 void mod_mult(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const mod_t *mod) {
-	// totla number of limbs in any intermediate product
-	uint32_t prod_len = 
-		2 * (a->len > b->len ? a->len : b->len) + 
-		mod->r->len + 
-		mod->p->len;
-	
 	// create var to hold intermediate product
 	big_uint_t x, temp;
-	big_uint_create(&x, prod_len);
-	big_uint_create(&temp, prod_len);
+	big_uint_create(&x, 2 * mod->k);
+	big_uint_create(&temp, 3 * mod->k + 1);
 
+	// calculate t = x - floor(xr / p) * p
 	big_uint_mult(&x, a, b);
 	big_uint_mult(&temp, &x, mod->r);
 	big_uint_shr(&temp, &temp, 2 * mod->k, LOG_2_LIMB);
