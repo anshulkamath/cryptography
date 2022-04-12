@@ -50,12 +50,13 @@ void big_mult(char *a_str, char *b_str) {
 
 void big_div(char *u_str, char *v_str) {
     big_uint_t q, r, u, v;
-    
-    char q_str[9 * u.len];
-    char r_str[9 * v.len];
 
     big_uint_load(&u, u_str);
     big_uint_load(&v, v_str);
+    
+    char q_str[9 * u.len + 2];
+    char r_str[9 * v.len + 2];
+    
     big_uint_create(&q, u.len);
     big_uint_create(&r, v.len);
 

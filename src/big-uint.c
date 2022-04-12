@@ -97,10 +97,10 @@ void big_uint_sprint(char *dest, const big_uint_t *value) {
     uint16_t len = value->len;
     const uint32_t *arr = value->arr;
 
-    for (uint16_t i = len - 1; i < len; i--) {
-        if (i == len - 1) sprintf(&dest[0], "%08x", arr[i]);
-        else              sprintf(&dest[9 * (len - 1 - i) - 1], "_%08x", arr[i]);
-    }
+    for (uint16_t i = len - 1; i < len; i--)
+        sprintf(&dest[9 * (len - 1 - i)], "%08x_", arr[i]);
+    
+    dest[9 * len - 1] = '\0';
 }
 
 void big_uint_print(const big_uint_t *value) {
@@ -117,7 +117,8 @@ void big_uint_spprint(char *dest, const big_uint_t *value) {
 
     uint32_t i = 0;
 
-    while (str[i] != 0 && (str[i] == '0' || str[i] == '_')) {
+    // find first index of significant digit (ignore leading 0s and _s)
+    while (str[i] != '\0' && (str[i] == '0' || str[i] == '_')) {
         i++;
     }
 
@@ -133,7 +134,7 @@ void big_uint_spprint(char *dest, const big_uint_t *value) {
     // if all the characters are leading 0s, return "0x0"
     if (str[i] == 0) {
         dest[2] = '0';
-        dest[3] = 0;
+        dest[3] = '\0';
         return;
     }
 
