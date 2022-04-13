@@ -599,6 +599,43 @@ void test_big_uint_is_zero() {
     log_tests(tester);
 }
 
+void test_big_uint_choose() {
+    // Define variables to be tested with
+    testing_logger_t *tester = create_tester();
+    big_uint_t a, b;
+
+    big_uint_load(&a, "0xffffffff");
+    big_uint_load(&b, "0x12345678");
+
+    big_uint_choose(&a, &b, 0);  // should put 0 in a
+    expect(tester, big_uint_is_zero(&a));
+
+    big_uint_choose(&a, &b, 1);  // should put b in a
+    expect(tester, big_uint_equals(&a, &b));
+
+    // dest has more limbs than val
+    big_uint_load(&a, "0xffffffff_ffffffff");
+    big_uint_load(&b, "0x12345678");
+
+    big_uint_choose(&a, &b, 0);  // should put 0 in a
+    expect(tester, big_uint_is_zero(&a));
+
+    big_uint_choose(&a, &b, 1);  // should put b in a
+    expect(tester, big_uint_equals(&a, &b));
+
+    // val has more limbs than dest
+    big_uint_load(&a, "0xffffffff");
+    big_uint_load(&b, "0x12345678_12345678");
+
+    big_uint_choose(&a, &b, 0);  // should put 0 in a
+    expect(tester, big_uint_is_zero(&a));
+
+    big_uint_choose(&a, &b, 1);  // should put b in a
+    expect(tester, a.arr[0] == 0x12345678);
+
+    log_tests(tester);
+}
+
 void test_big_uint_or() {
     // Define variables to be tested with
     testing_logger_t *tester = create_tester();
@@ -2193,6 +2230,7 @@ int main() {
     test_big_uint_max();
     test_big_uint_min();
     test_big_uint_is_zero();
+    test_big_uint_choose();
     
     test_big_uint_or();
     test_big_uint_and();
