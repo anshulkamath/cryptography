@@ -62,18 +62,20 @@ void mod_sub(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const mo
 
 void mod_mult(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const mod_t *mod) {
 	// create var to hold intermediate product
-	big_uint_t x, temp;
+	big_uint_t x, temp1, temp2, temp3;
 	big_uint_create(&x, 2 * mod->k);
-	big_uint_create(&temp, 3 * mod->k + 1);
+	big_uint_create(&temp1, 3 * mod->k + 1);
+	big_uint_create(&temp2, mod->k + 1);
+	big_uint_create(&temp3, 2 * mod->k + 1);
 
-	// calculate t = x - floor(xr / p) * p
+	// calculate res = x - floor(xr / p) * p
 	big_uint_mult(&x, a, b);
-	big_uint_mult(&temp, &x, mod->r);
-	big_uint_shr(&temp, &temp, 2 * mod->k, LOG_2_LIMB);
-	big_uint_mult(&temp, &temp, mod->p);
-	big_uint_sub(res, &x, &temp);
+	big_uint_mult(&temp1, &x, mod->r);
+	big_uint_shr(&temp2, &temp1, 2 * mod->k, LOG_2_LIMB);
+	big_uint_mult(&temp3, &temp2, mod->p);
+	big_uint_sub(res, &x, &temp3);
 	
 	// subtract mod->p from res iff res > mod->p
-	big_uint_choose(&temp, mod->p, big_uint_cmp(res, mod->p) > 0);
-	big_uint_sub(res, res, &temp);
+	big_uint_choose(&temp3, mod->p, big_uint_cmp(res, mod->p) > 0);
+	big_uint_sub(res, res, &temp3);
 }
