@@ -977,6 +977,21 @@ void test_big_uint_shr() {
     big_uint_shr(&res, &x, 3, SHIFT_BIT);
     expect(tester, big_uint_equals(&res, &exp));
 
+    // Test 8 - shifting into smaller integer
+    big_uint_load(&x, "0x12345678_00000000_00000000");
+    big_uint_load(&exp, "0x12345678");
+    big_uint_load(&res, "0xffffffff");
+
+    big_uint_shr(&res, &x, 2, SHIFT_LIMB);
+    expect(tester, big_uint_equals(&res, &exp));
+
+    big_uint_load(&x, "0x0385fa40_4208bbb0_622bf4ba_92aeb931_96e97b18_faa8f31c");
+    big_uint_load(&exp, "0x00000000_00000000_00000000_00000000_0385fa40_4208bbb0");
+    big_uint_load(&res, "0x00000000_00000000_00000000_00000000_00000000_00000000");
+
+    big_uint_shr(&x, &x, 4, SHIFT_LIMB);
+    expect(tester, big_uint_equals(&x, &exp));
+
     log_tests(tester);
 }
 
@@ -1072,6 +1087,20 @@ void test_big_uint_shl() {
 
     big_uint_shl(&res, &x, 3, SHIFT_BIT);
     expect(tester, big_uint_equals(&res, &exp));
+
+    // Test 8 - shifting into smaller integer
+    big_uint_load(&x, "0x12345678");
+    big_uint_load(&exp, "0x12345678_00000000_00000000");
+    big_uint_load(&res, "0x00000000_00000000_00000000");
+
+    big_uint_shl(&res, &x, 2, SHIFT_LIMB);
+    expect(tester, big_uint_equals(&res, &exp));
+
+    big_uint_load(&x, "0x00000000_00000000_00000000_00000000_0385fa40_4208bbb0");
+    big_uint_load(&exp, "0x0385fa40_4208bbb0_00000000_00000000_00000000_00000000");
+
+    big_uint_shl(&x, &x, 4, SHIFT_LIMB);
+    expect(tester, big_uint_equals(&x, &exp));
 
     log_tests(tester);
 }

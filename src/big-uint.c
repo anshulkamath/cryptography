@@ -279,14 +279,14 @@ void big_uint_shr(big_uint_t *result, const big_uint_t *x, uint32_t n, uint8_t s
     uint16_t bits  = total_bits % UINT_BITS;
 
     // prevent overshifting
-    if (total_bits >= result->len * UINT_BITS) {
+    if (total_bits >= x->len * UINT_BITS) {
         memset(result->arr, 0, result->len * UINT_SIZE);
         return;
     }
 
     assert(x->len - limbs <= result->len);
     memmove(result->arr, x->arr + limbs, (x->len - limbs) * UINT_SIZE);
-    memset(result->arr + (x->len - limbs), 0, limbs + UINT_SIZE);
+    memset(result->arr + (x->len - limbs), 0, limbs * UINT_SIZE);
 
     // if we do not have to move bits, then return
     if (!bits) return;
@@ -421,8 +421,8 @@ static uint8_t _get_bit(const big_uint_t *x, uint16_t i) {
 /****************************************/
 
 void big_uint_add(big_uint_t *c, const big_uint_t *a, const big_uint_t *b) {
-    // offers small optimization if integers are same length
-    if (a->len == b->len) {
+    // offers small optimization if a and b can fit in result
+    if (c->len <= a->len && c->len <= b->len) {
         _big_uint_add_same(c, a, b);
         return;
     } 
@@ -432,8 +432,8 @@ void big_uint_add(big_uint_t *c, const big_uint_t *a, const big_uint_t *b) {
 }
 
 void big_uint_sub(big_uint_t *c, const big_uint_t *a, const big_uint_t *b) {
-    // offers small optimization if integers are same length
-    if (a->len == b->len) {
+    // offers small optimization if a and b can fit in result
+    if (c->len <= a->len && c->len <= b->len) {
         _big_uint_sub_same(c, a, b);
         return;
     }
