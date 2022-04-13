@@ -71,10 +71,9 @@ void mod_mult(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const m
 	big_uint_mult(&temp, &x, mod->r);
 	big_uint_shr(&temp, &temp, 2 * mod->k, LOG_2_LIMB);
 	big_uint_mult(&temp, &temp, mod->p);
-	big_uint_sub(&x, &x, &temp);
-
-	if (big_uint_cmp(&x, mod->p) > 0)
-		big_uint_sub(&x, &x, mod->p);
-
-	big_uint_copy(res, &x);
+	big_uint_sub(res, &x, &temp);
+	
+	// subtract mod->p from res iff res > mod->p
+	big_uint_choose(&temp, mod->p, big_uint_cmp(res, mod->p) > 0);
+	big_uint_sub(res, res, &temp);
 }
