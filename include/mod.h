@@ -80,4 +80,8 @@ void mod_sub(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const mo
  */
 void mod_mult(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const mod_t *mod);
 
+#include <time.h>
+/** DELETE THIS. FOR BENCHMARKING ONLY */
+void mod_mult_bench(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const mod_t *mod, time_t arr[7]);
+
 #endif

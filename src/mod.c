@@ -79,3 +79,45 @@ void mod_mult(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const m
 	big_uint_choose(&temp3, mod->p, big_uint_cmp(res, mod->p) > 0);
 	big_uint_sub(res, res, &temp3);
 }
+
+void mod_mult_bench(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const mod_t *mod, time_t arr[7]) {
+	// create var to hold intermediate product
+	big_uint_t x, temp1, temp2, temp3;
+	big_uint_create(&x, 2 * mod->k);
+	big_uint_create(&temp1, 3 * mod->k + 1);
+	big_uint_create(&temp2, mod->k + 1);
+	big_uint_create(&temp3, 2 * mod->k + 1);
+
+	// benchmarking vars
+	time_t start;
+
+	// calculate res = x - floor(xr / p) * p
+	start = clock();
+	big_uint_mult(&x, a, b);
+	arr[0] += clock() - start;
+
+	start = clock();
+	big_uint_mult(&temp1, &x, mod->r);
+	arr[1] += clock() - start;
+
+	start = clock();
+	big_uint_shr(&temp2, &temp1, 2 * mod->k, LOG_2_LIMB);
+	arr[2] += clock() - start;
+
+	start = clock();
+	big_uint_mult(&temp3, &temp2, mod->p);
+	arr[3] += clock() - start;
+
+	start = clock();
+	big_uint_sub(res, &x, &temp3);
+	arr[4] += clock() - start;
+	
+	// subtract mod->p from res iff res > mod->p
+	start = clock();
+	big_uint_choose(&temp3, mod->p, big_uint_cmp(res, mod->p) > 0);
+	arr[5] += clock() - start;
+
+	start = clock();
+	big_uint_sub(res, res, &temp3);
+	arr[6] += clock() - start;
+}

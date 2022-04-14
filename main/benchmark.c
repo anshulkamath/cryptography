@@ -47,6 +47,8 @@ void benchmark_big_uint_min() { big_uint_min(&A, &B); }
 
 void benchmark_big_uint_is_zero() { big_uint_is_zero(&A); }
 
+void benchmark_big_choose(void *aux) { big_uint_choose(&A, 0, &B); }
+
 void benchmark_big_uint_or() { big_uint_or(&C, &A, &B); }
 
 void benchmark_big_uint_and() { big_uint_and(&C, &A, &B); }
@@ -75,6 +77,36 @@ void benchmark_mod_sub(void *aux) { mod_sub(&C, &A, &B, (mod_t*) aux); }
 
 void benchmark_mod_mult(void *aux) { mod_mult(&C, &A, &B, (mod_t*) aux); }
 
+void bench_mod_mult(void *aux, time_t arr[7]) { mod_mult_bench(&C, &A, &B, (mod_t*) aux, arr); }
+
+void benchmark_b(void* aux, size_t batch) {
+    size_t count = 0;
+
+    time_t arr[7] = { 0 };
+
+    time_t start = clock(), end;
+    while (1) {
+        for (size_t i = 0; i < batch; i++) bench_mod_mult(aux, arr);
+        end = clock();
+        count += batch;
+        
+        if (end - start > CLOCKS_PER_SEC) {
+            size_t ops = count * CLOCKS_PER_SEC / (end - start);
+            printf(GRN"[%s]"RESET": "RED"%lu\n"RESET, "mod_mult", ops);
+            break;
+        }
+    }
+
+    printf("Time for each operation:\n");
+    printf("\tmult 1: %ld\n", count * CLOCKS_PER_SEC / arr[0]);
+    printf("\tmult 2: %ld\n", count * CLOCKS_PER_SEC / arr[1]);
+    printf("\tshr   : %ld\n", count * CLOCKS_PER_SEC / arr[2]);
+    printf("\tmult 3: %ld\n", count * CLOCKS_PER_SEC / arr[3]);
+    printf("\tsub  1: %ld\n", count * CLOCKS_PER_SEC / arr[4]);
+    printf("\tchoose: %ld\n", count * CLOCKS_PER_SEC / arr[5]);
+    printf("\tsub  2: %ld\n", count * CLOCKS_PER_SEC / arr[6]);
+}
+
 int main() {
     // initialize global variables
     big_uint_load(&A, "0x6409b613_c5e7c7e9_27f9d2c4_1b56af5e_a49ec282_77c71eb1_2223a2cf_f01135d7");
@@ -85,29 +117,31 @@ int main() {
 
     // arithmetic benchmark
     printf(CYAN"\nRunning benchmarks on arithmetic operations (ops/sec):\n"RESET);
-    BENCHMARK(benchmark_big_uint_equals, NULL, 100);
-    BENCHMARK(benchmark_big_uint_cmp, NULL, 100);
-    BENCHMARK(benchmark_big_uint_max, NULL, 100);
-    BENCHMARK(benchmark_big_uint_min, NULL, 100);
-    BENCHMARK(benchmark_big_uint_is_zero, NULL, 100);
-    BENCHMARK(benchmark_big_uint_or, NULL, 100);
-    BENCHMARK(benchmark_big_uint_and, NULL, 100);
-    BENCHMARK(benchmark_big_uint_xor, NULL, 100);
-    BENCHMARK(benchmark_big_uint_shl, NULL, 100);
-    BENCHMARK(benchmark_big_uint_shr, NULL, 100);
-    BENCHMARK(benchmark_big_uint_add, NULL, 100);
-    BENCHMARK(benchmark_big_uint_sub, NULL, 100);
+    // BENCHMARK(benchmark_big_uint_equals, NULL, 100);
+    // BENCHMARK(benchmark_big_uint_cmp, NULL, 100);
+    // BENCHMARK(benchmark_big_uint_max, NULL, 100);
+    // BENCHMARK(benchmark_big_uint_min, NULL, 100);
+    // BENCHMARK(benchmark_big_uint_is_zero, NULL, 100);
+    // BENCHMARK(benchmark_big_choose, NULL, 100);
+    // BENCHMARK(benchmark_big_uint_or, NULL, 100);
+    // BENCHMARK(benchmark_big_uint_and, NULL, 100);
+    // BENCHMARK(benchmark_big_uint_xor, NULL, 100);
+    // BENCHMARK(benchmark_big_uint_shl, NULL, 100);
+    // BENCHMARK(benchmark_big_uint_shr, NULL, 100);
+    // BENCHMARK(benchmark_big_uint_add, NULL, 100);
+    // BENCHMARK(benchmark_big_uint_sub, NULL, 100);
     BENCHMARK(benchmark_big_uint_mult, NULL, 100);
-    BENCHMARK(benchmark_big_uint_div, NULL, 100);
-    BENCHMARK(benchmark_big_uint_gcd, NULL, 100);
-    BENCHMARK(benchmark_big_uint_gcd_extended, NULL, 100);
+    // BENCHMARK(benchmark_big_uint_div, NULL, 100);
+    // BENCHMARK(benchmark_big_uint_gcd, NULL, 100);
+    // BENCHMARK(benchmark_big_uint_gcd_extended, NULL, 100);
 
     mod_t mod;
     mod_create(&mod, &P);
 
-    BENCHMARK(benchmark_mod_add, &mod, 100);
-    BENCHMARK(benchmark_mod_sub, &mod, 100);
-    BENCHMARK(benchmark_mod_mult, &mod, 100);
+    // BENCHMARK(benchmark_mod_add, &mod, 100);
+    // BENCHMARK(benchmark_mod_sub, &mod, 100);
+    // BENCHMARK(benchmark_mod_mult, &mod, 100);
+    benchmark_b(&mod, 100);
 
     printf("\n");
     return 0;
