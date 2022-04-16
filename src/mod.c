@@ -79,3 +79,26 @@ void mod_mult(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const m
 	big_uint_choose(&temp3, mod->p, big_uint_cmp(res, mod->p) > 0);
 	big_uint_sub(res, res, &temp3);
 }
+
+void mod_exp(big_uint_t *res, const big_uint_t *x, const big_uint_t *n, const mod_t *mod) {
+	big_uint_t x_res;
+	big_uint_loadi(&x_res, 1, res->len);
+
+	// square and multiply method: represent the exponent as a bit string
+	// use square to shift the exponent left, and multiply by x to add
+	//	one to the exponent.
+	for (int32_t i = n->len - 1; i >= 0; i--) {
+		uint32_t curr = n->arr[i];
+		for (int32_t j = UINT_BITS - 1; j >= 0; j--) {
+			// square every iteration
+			mod_mult(&x_res, &x_res, &x_res, mod);
+
+			// if this bit of the exponent is set, then multiply by x
+			// to `add one` to the exponent
+			if ((curr >> j) & 1)
+				mod_mult(&x_res, &x_res, x, mod);
+		}
+	}
+
+	memcpy(res->arr, x_res.arr, res->len * UINT_SIZE);
+}

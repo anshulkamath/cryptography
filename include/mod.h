@@ -80,4 +80,14 @@ void mod_sub(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const mo
  */
 void mod_mult(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const mod_t *mod);
 
+/**
+ * @brief Computes `x^n (mod p)` and stores the result in `res`
+ * 
+ * @param res Where to store the resulting exponent
+ * @param x   Pointer to the base of the exponent
+ * @param n   Pointer to the power by which to raise the base
+ * @param mod Pointer to the mod type that contains the Barrett precomputed factor for `p`
+ */
+void mod_exp(big_uint_t *res, const big_uint_t *x, const big_uint_t *n, const mod_t *mod);
+
 #endif
