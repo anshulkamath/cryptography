@@ -112,3 +112,7 @@ void mod_inv(big_uint_t *res, const big_uint_t *x, const mod_t *mod) {
 
 	mod_exp(res, x, &p_prime, mod);
 }
+
+void mod_neg(big_uint_t *res, const big_uint_t *x, const mod_t *mod) {
+	mod_sub(res, &ZERO, x, mod);
+}
