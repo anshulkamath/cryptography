@@ -771,6 +771,183 @@ void test_mod_mult() {
 	log_tests(tester);
 }
 
+void test_mod_exp() {
+	testing_logger_t *tester = create_tester();
+	big_uint_t x, n, p;
+	big_uint_t res, exp;
+	mod_t mod;
+
+	// Test 1
+	big_uint_load(&x, "0x00000008");
+	big_uint_load(&n, "0x00000004");
+	big_uint_load(&p, "0x0000000d");
+	big_uint_load(&exp, "0x00000001");
+	big_uint_load(&res, "0x00000000");
+	mod_create(&mod, &p);
+
+	mod_exp(&res, &x, &n, &mod);
+
+	expect(tester, big_uint_equals(&res, &exp));
+
+	// Test 2
+	big_uint_load(&x, "0x00000000_00000004");
+	big_uint_load(&n, "0x00000000_00000005");
+	big_uint_load(&p, "0x00000000_0000000d");
+	big_uint_load(&exp, "0x00000000_0000000a");
+	big_uint_load(&res, "0x00000000_00000000");
+	mod_create(&mod, &p);
+
+	mod_exp(&res, &x, &n, &mod);
+
+	expect(tester, big_uint_equals(&res, &exp));
+
+	// Test 3
+	big_uint_load(&x, "0x00000000_00000000_0000000a");
+	big_uint_load(&n, "0x00000000_00000000_0000000c");
+	big_uint_load(&p, "0x00000000_00000000_0000000d");
+	big_uint_load(&exp, "0x00000000_00000000_00000001");
+	big_uint_load(&res, "0x00000000_00000000_00000000");
+	mod_create(&mod, &p);
+
+	mod_exp(&res, &x, &n, &mod);
+
+	expect(tester, big_uint_equals(&res, &exp));
+
+	// Test 4
+	big_uint_load(&x, "0x24fe23c8_f81a73cc");
+	big_uint_load(&n, "0x045078a2_c3768f0f");
+	big_uint_load(&p, "0x3cfaf13b_4c3eb41f");
+	big_uint_load(&exp, "0x377d3ae1_f6fd591f");
+	big_uint_load(&res, "0x00000000_00000000");
+	mod_create(&mod, &p);
+
+	mod_exp(&res, &x, &n, &mod);
+
+	expect(tester, big_uint_equals(&res, &exp));
+
+	// Test 5
+	big_uint_load(&x, "0x00000000_0b720033_239f108c");
+	big_uint_load(&n, "0x00000000_39ef56ad_1cd40184");
+	big_uint_load(&p, "0x00000000_3cfaf13b_4c3eb41f");
+	big_uint_load(&exp, "0x00000000_068ef9a6_2de39238");
+	big_uint_load(&res, "0x00000000_00000000_00000000");
+	mod_create(&mod, &p);
+
+	mod_exp(&res, &x, &n, &mod);
+
+	expect(tester, big_uint_equals(&res, &exp));
+
+	// Test 6
+	big_uint_load(&x, "0x00000000_0108031f_03f161e2");
+	big_uint_load(&n, "0x00000000_238ef8a0_0719d671");
+	big_uint_load(&p, "0x00000000_3cfaf13b_4c3eb41f");
+	big_uint_load(&exp, "0x00000000_2024305e_9e503fec");
+	big_uint_load(&res, "0x00000000_00000000_00000000");
+	mod_create(&mod, &p);
+
+	mod_exp(&res, &x, &n, &mod);
+
+	expect(tester, big_uint_equals(&res, &exp));
+
+	// Test 7
+	big_uint_load(&x, "0x00000000_00000000_33850486_0efd220e");
+	big_uint_load(&n, "0x00000000_00000000_1ac678d8_ea1695ce");
+	big_uint_load(&p, "0x00000000_00000000_3cfaf13b_4c3eb41f");
+	big_uint_load(&exp, "0x00000000_00000000_25c0b21b_33565359");
+	big_uint_load(&res, "0x00000000_00000000_00000000_00000000");
+	mod_create(&mod, &p);
+
+	mod_exp(&res, &x, &n, &mod);
+
+	expect(tester, big_uint_equals(&res, &exp));
+
+	// Test 8
+	big_uint_load(&x, "0x420a4323_2be893f4");
+	big_uint_load(&n, "0x6317fed7_1d2a4cb5");
+	big_uint_load(&p, "0x72ff2c08_4822fae5");
+	big_uint_load(&exp, "0x2eab9d7b_f7c19af2");
+	big_uint_load(&res, "0x00000000_00000000");
+	mod_create(&mod, &p);
+
+	mod_exp(&res, &x, &n, &mod);
+
+	expect(tester, big_uint_equals(&res, &exp));
+
+	// Test 9
+	big_uint_load(&x, "0x00000000_6ab76b1e_0cd311de");
+	big_uint_load(&n, "0x00000000_6b8fdf15_60f89a06");
+	big_uint_load(&p, "0x00000000_72ff2c08_4822fae5");
+	big_uint_load(&exp, "0x00000000_075de947_90c3bf40");
+	big_uint_load(&res, "0x00000000_00000000_00000000");
+	mod_create(&mod, &p);
+
+	mod_exp(&res, &x, &n, &mod);
+
+	expect(tester, big_uint_equals(&res, &exp));
+
+	// Test 10
+	big_uint_load(&x, "0x00000000_47eaf205_f1c31001");
+	big_uint_load(&n, "0x00000000_52ddbb24_8c35ddd6");
+	big_uint_load(&p, "0x00000000_72ff2c08_4822fae5");
+	big_uint_load(&exp, "0x00000000_6cf558eb_482ee859");
+	big_uint_load(&res, "0x00000000_00000000_00000000");
+	mod_create(&mod, &p);
+
+	mod_exp(&res, &x, &n, &mod);
+
+	expect(tester, big_uint_equals(&res, &exp));
+
+	// Test 11
+	big_uint_load(&x, "0x00000000_00000000_2142fbbd_64a1f040");
+	big_uint_load(&n, "0x00000000_00000000_4f093df5_af3e5dbf");
+	big_uint_load(&p, "0x00000000_00000000_72ff2c08_4822fae5");
+	big_uint_load(&exp, "0x00000000_00000000_6ab002dc_d6250eed");
+	big_uint_load(&res, "0x00000000_00000000_00000000_00000000");
+	mod_create(&mod, &p);
+
+	mod_exp(&res, &x, &n, &mod);
+
+	expect(tester, big_uint_equals(&res, &exp));
+
+	// Test 12a
+	// Operator assignment
+	big_uint_load(&x, "0x00000006");
+	big_uint_load(&n, "0x0000000a");
+	big_uint_load(&p, "0x0000000d");
+	big_uint_load(&exp, "0x00000004");
+	mod_create(&mod, &p);
+
+	mod_exp(&x, &x, &n, &mod);
+
+	expect(tester, big_uint_equals(&x, &exp));
+
+	// Test 13a
+	// Operator assignment
+	big_uint_load(&x, "0x216788a0_9460293b");
+	big_uint_load(&n, "0x34fd616f_279a8cd0");
+	big_uint_load(&p, "0x3cfaf13b_4c3eb41f");
+	big_uint_load(&exp, "0x15aa555c_36e2df4f");
+	mod_create(&mod, &p);
+
+	mod_exp(&x, &x, &n, &mod);
+
+	expect(tester, big_uint_equals(&x, &exp));
+
+	// Test 14a
+	// Operator assignment
+	big_uint_load(&x, "0x3e4c3dd4_0455ccc6");
+	big_uint_load(&n, "0x342f22ba_e20cea4a");
+	big_uint_load(&p, "0x72ff2c08_4822fae5");
+	big_uint_load(&exp, "0x67a065fa_a8c5d5a3");
+	mod_create(&mod, &p);
+
+	mod_exp(&x, &x, &n, &mod);
+
+	expect(tester, big_uint_equals(&x, &exp));
+
+	log_tests(tester);
+}
+
 int main() {
 	// Calling all tests:
 	test_mod_init();
@@ -778,6 +955,7 @@ int main() {
 	test_mod_add();
 	test_mod_sub();
 	test_mod_mult();
+	test_mod_exp();
 
 	return 1;
 }
