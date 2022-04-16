@@ -102,3 +102,13 @@ void mod_exp(big_uint_t *res, const big_uint_t *x, const big_uint_t *n, const mo
 
 	memcpy(res->arr, x_res.arr, res->len * UINT_SIZE);
 }
+
+void mod_inv(big_uint_t *res, const big_uint_t *x, const mod_t *mod) {
+	// store p - 2
+	big_uint_t p_prime;
+	big_uint_create(&p_prime, mod->p->len);
+	big_uint_copy(&p_prime, mod->p);
+	big_uint_subi(&p_prime, &p_prime, 2);
+
+	mod_exp(res, x, &p_prime, mod);
+}
