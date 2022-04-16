@@ -90,4 +90,16 @@ void mod_mult(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const m
  */
 void mod_exp(big_uint_t *res, const big_uint_t *x, const big_uint_t *n, const mod_t *mod);
 
+/**
+ * @brief Computes `x^{-1} (mod p)` and stores the result in `res.`
+ *        Does so using the special case of Euler's Theorem (Fermat's Little Theorem),
+ *        which states that
+ *                    a^p = a (mod p)   ==>   a^{p-2} = a^{-1} (mod p)
+ * 
+ * @param res Where to store the resulting exponent
+ * @param x   Pointer to the base of the exponent (the number we are trying to invert)
+ * @param mod Pointer to the mod type that contains the Barrett precomputed factor for `p`
+ */
+void mod_inv(big_uint_t *res, const big_uint_t *x, const mod_t *mod);
+
 #endif
