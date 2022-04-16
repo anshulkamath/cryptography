@@ -325,6 +325,15 @@ big_uint_t big_uint_min(const big_uint_t *a, const big_uint_t *b);
  */
 uint8_t big_uint_is_zero(const big_uint_t *a);
 
+/**
+ * @brief Sets dest to val if and only if cmp == 1; else sets val to 0
+ * 
+ * @param dest Where to store the result of the function
+ * @param val  The value to fill with if cmp is 1
+ * @param cmp  The boolean to use as comparison (0 -> 0; 1 -> val)
+ */
+void big_uint_choose(big_uint_t *dest,const big_uint_t *val, uint32_t cmp);
+
 /****************************************/
 /*          BITWISE OPERATIONS          */
 /****************************************/
