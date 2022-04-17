@@ -79,6 +79,8 @@ void benchmark_mod_exp(void *aux) { mod_exp(&C, &A, &B, (mod_t*) aux); }
 
 void benchmark_mod_inv(void *aux) { mod_inv(&C, &A, (mod_t*) aux); }
 
+void benchmark_mod_neg(void *aux) { mod_neg(&C, &A, (mod_t*) aux); }
+
 int main() {
     // initialize global variables
     big_uint_load(&A, "0x6409b613_c5e7c7e9_27f9d2c4_1b56af5e_a49ec282_77c71eb1_2223a2cf_f01135d7");
@@ -114,6 +116,7 @@ int main() {
     BENCHMARK(benchmark_mod_mult, &mod, 100);
     BENCHMARK(benchmark_mod_exp, &mod, 10);
     BENCHMARK(benchmark_mod_inv, &mod, 10);
+    BENCHMARK(benchmark_mod_neg, &mod, 100);
 
     printf("\n");
     return 0;
