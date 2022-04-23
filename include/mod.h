@@ -111,4 +111,13 @@ void mod_inv(big_uint_t *res, const big_uint_t *x, const mod_t *mod);
  */
 void mod_neg(big_uint_t *res, const big_uint_t *x, const mod_t *mod);
 
+/**
+ * @brief Computes the modular square root `res^2 = x (mod p)` and stores the result in `res.`
+ * 
+ * @param res Where to store the resulting pointer
+ * @param x   Pointer to the number we are trying to find the square root of
+ * @param mod Pointer to the mod type that contains the Barrett precomputed factor for `p`
+ */
+void mod_sqrt(big_uint_t *res, const big_uint_t *x, const mod_t *mod);
+
 #endif
