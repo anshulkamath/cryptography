@@ -30,6 +30,13 @@ void mod_init(mod_t *res, const big_uint_t *p, big_uint_t *r) {
 	_barrett_reduction(res);
 }
 
+uint8_t mod_equals(const mod_t *m1, const mod_t *m2) {
+	return 
+		big_uint_equals(m1->p, m2->p) && 
+		big_uint_equals(m1->r, m2->r) && 
+		m1->k == m2->k;
+}
+
 void mod_big_uint(big_uint_t *res, const big_uint_t *x, const mod_t *mod) {
 	big_uint_t q;
 	big_uint_create(&q, x->len);

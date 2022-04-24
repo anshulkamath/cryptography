@@ -26,7 +26,7 @@
 #define mod_create(dest, p) \
     _MOD_HELPER_1(dest, p, __COUNTER__)
     
-typedef struct mod {
+typedef struct {
     const big_uint_t *p;  // pointer to the prime number
     big_uint_t *r;        // r-value in barrett reduction
     uint32_t    k;        // k-value in barrett reduction
@@ -40,6 +40,15 @@ typedef struct mod {
  * @param r   Pointer to the precomputed factor `r`
  */
 void mod_init(mod_t *res, const big_uint_t *p, big_uint_t *r);
+
+/**
+ * @brief Returns true if and only if the two mod types are equal
+ * 
+ * @param m1 Pointer to the first mod type to compare
+ * @param m2 Pointer to the second mod type to compare
+ * @return uint8_t 
+ */
+uint8_t mod_equals(const mod_t *m1, const mod_t *m2);
 
 /**
  * @brief Takes in a big integer `x` and puts `x mod p` into res
