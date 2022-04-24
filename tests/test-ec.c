@@ -36,7 +36,6 @@ void test_point_create() {
     log_tests(tester);
 }
 
-
 void test_point_equals() {
     testing_logger_t *tester = create_tester();
     point_t p1, p2;
@@ -53,10 +52,32 @@ void test_point_equals() {
     log_tests(tester);
 }
 
+void test_point_is_identity() {
+    testing_logger_t *tester = create_tester();
+    point_t p;
+
+    // should be equal
+    point_create(&p, "0x0", "0x0");
+    expect(tester, point_is_identity(&p));
+    
+    // should not be equal
+    point_create(&p, "0x1", "0x0");
+    expect(tester, !point_is_identity(&p));
+
+    point_create(&p, "0x0", "0x1");
+    expect(tester, !point_is_identity(&p));
+
+    point_create(&p, "0x1", "0x1");
+    expect(tester, !point_is_identity(&p));
+
+    log_tests(tester);
+}
+
 int main() {
     test_point_init();
     test_point_create();
     test_point_equals();
+    test_point_is_identity();
 
     return 0;
 }
