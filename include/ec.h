@@ -13,10 +13,38 @@
 
 #include "big-uint.h"
 
+/****************************************/
+/*            HELPER MACROS             */
+/****************************************/
+
+#define _PT_HELPER_1(dest, x_str, y_str, count) \
+    _PT_HELPER_2(dest, x_str, y_str, CONCAT(_x_int, count), CONCAT(_y_int, count))
+
+#define _PT_HELPER_2(dest, x_str, y_str, x_id, y_id) \
+    big_uint_t x_id, y_id; \
+    big_uint_load(&x_id, x_str); \
+    big_uint_load(&y_id, y_str); \
+    point_init(dest, &x_id, &y_id);
+
+/****************************************/
+/*             INIT MACROS              */
+/****************************************/
+
+#define point_create(dest, x_str, y_str) \
+    _PT_HELPER_1(dest, x_str, y_str, __COUNTER__)
+
+/****************************************/
+/*              INTERFACE               */
+/****************************************/
+
 typedef struct {
     big_uint_t *x;
     big_uint_t *y;
 } point_t;
+
+/****************************************/
+/*          POINT DEFINITIONS           */
+/****************************************/
 
 /**
  * @brief Initializes a point type using the given coordinates
