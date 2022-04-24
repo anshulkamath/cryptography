@@ -1,15 +1,15 @@
 /**
- * @file ec.h
+ * @file point.h
  * @author Anshul Kamath
- * @brief An elliptic curve library
+ * @brief An point library
  * @version 0.1
  * @date 2022-04-23
  * 
  * @copyright Copyright (c) 2022
  * 
  */
-#ifndef EC_H
-#define EC_H
+#ifndef POINT_H
+#define POINT_H
 
 #include <assert.h>
 #include "big-uint.h"

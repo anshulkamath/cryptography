@@ -1,4 +1,4 @@
-#include "ec.h"
+#include "point.h"
 
 #include <assert.h>
 #include "big-uint.h"
