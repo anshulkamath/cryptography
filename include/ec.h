@@ -54,11 +54,7 @@ typedef struct {
  * @param x     A pointer to the x coordinate to use
  * @param y     A pointer to the y coordinate to use
  */
-inline void point_init(point_t *dest, big_uint_t *x, big_uint_t *y) {
-    // ensure that x and y have the same number of limbs to simplify point rep.
-    assert(x->len == y->len);
-    dest->x = x; dest->y = y;
-}
+void point_init(point_t *dest, big_uint_t *x, big_uint_t *y);
 
 /**
  * @brief Prints the given point to stdout
@@ -74,8 +70,14 @@ void point_print(const point_t *pt);
  * @param p2 The second point to compare
  * @return uint8_t 
  */
-inline uint8_t point_equals(const point_t *p1, const point_t *p2) {
-    return big_uint_equals(p1->x, p2->x) && big_uint_equals(p1->y, p2->y);
-}
+uint8_t point_equals(const point_t *p1, const point_t *p2);
+
+/**
+ * @brief Returns true if and only if the point `p` is identity (0, 0)
+ * 
+ * @param p The point `p` to check
+ * @return uint8_t 
+ */
+uint8_t point_is_identity(const point_t *p);
 
 #endif

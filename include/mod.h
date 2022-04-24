@@ -109,8 +109,7 @@ void mod_inv(big_uint_t *res, const big_uint_t *x, const mod_t *mod);
  * @param x   Pointer to the number we are trying to find the additive inverse of
  * @param mod Pointer to the mod type that contains the Barrett precomputed factor for `p`
  */
-inline void mod_neg(big_uint_t *res, const big_uint_t *x, const mod_t *mod)
-    { big_uint_sub(res, mod->p, x); }
+void mod_neg(big_uint_t *res, const big_uint_t *x, const mod_t *mod);
 
 /**
  * @brief Computes the modular square root `res^2 = x (mod p)` and stores the result in `res.`
