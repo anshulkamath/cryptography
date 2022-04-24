@@ -55,4 +55,11 @@ typedef struct {
  */
 void point_init(point_t *dest, big_uint_t *x, big_uint_t *y);
 
+/**
+ * @brief Prints the given point to stdout
+ * 
+ * @param pt A pointer to the point to print
+ */
+void point_print(const point_t *pt);
+
 #endif
