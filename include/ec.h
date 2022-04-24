@@ -11,6 +11,7 @@
 #ifndef EC_H
 #define EC_H
 
+#include <assert.h>
 #include "big-uint.h"
 
 /****************************************/
@@ -53,7 +54,11 @@ typedef struct {
  * @param x     A pointer to the x coordinate to use
  * @param y     A pointer to the y coordinate to use
  */
-void point_init(point_t *dest, big_uint_t *x, big_uint_t *y);
+inline void point_init(point_t *dest, big_uint_t *x, big_uint_t *y) {
+    // ensure that x and y have the same number of limbs to simplify point rep.
+    assert(x->len == y->len);
+    dest->x = x; dest->y = y;
+}
 
 /**
  * @brief Prints the given point to stdout
@@ -61,5 +66,16 @@ void point_init(point_t *dest, big_uint_t *x, big_uint_t *y);
  * @param pt A pointer to the point to print
  */
 void point_print(const point_t *pt);
+
+/**
+ * @brief Returns 1 or 0 if p1 == p2 or not (respectively)
+ * 
+ * @param p1 The first point to compare
+ * @param p2 The second point to compare
+ * @return uint8_t 
+ */
+inline uint8_t point_equals(const point_t *p1, const point_t *p2) {
+    return big_uint_equals(p1->x, p2->x) && big_uint_equals(p1->y, p2->y);
+}
 
 #endif
