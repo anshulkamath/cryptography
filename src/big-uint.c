@@ -346,8 +346,10 @@ static void _big_uint_add_diff(big_uint_t *result, const big_uint_t *a, const bi
     uint64_t overflow = 0;
     
     for (uint16_t i = 0; i < result->len; i++) {
-        a_val = i < a->len ? a->arr[i] : 0;
-        b_val = i < b->len ? b->arr[i] : 0;
+        // if out of range for a or b, use 0 instead
+        // use short-circuit to circumvent conditionals
+        (a_val = i < a->len) && (a_val = a->arr[i]);
+        (b_val = i < b->len) && (b_val = b->arr[i]);
         c_val = a_val + b_val + overflow;
 
         result->arr[i] = c_val & (~1ull >> UINT_BITS);
@@ -384,8 +386,9 @@ static void _big_uint_sub_diff(big_uint_t *result, const big_uint_t *a, const bi
     // allow for different length integers to be subtracted
     for (uint16_t i = 0; i < result->len; i++) {
         // if out of range for a or b, use 0 instead
-        a_val = i < a->len ? a->arr[i] : 0;
-        b_val = i < b->len ? b->arr[i] : 0;
+        // use short-circuit to circumvent conditionals
+        (a_val = i < a->len) && (a_val = a->arr[i]);
+        (b_val = i < b->len) && (b_val = b->arr[i]);
         c_val = a_val - b_val - underflow;
 
         result->arr[i] = c_val & (~1ull >> UINT_BITS);
