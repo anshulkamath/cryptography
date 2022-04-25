@@ -89,3 +89,21 @@ void ec_add(point_t *res, const point_t *p1, const point_t *p2, const ec_t *ec) 
     big_uint_copy(res->y, &y);
 }
 
+void ec_mult(point_t *res, const big_uint_t *k, const point_t *pt, const ec_t *ec) {
+    point_t res_int;
+    point_touch(&res_int, res->x->len);
+    point_copy(&res_int, point_get_identity());
+    
+    for (int32_t i = k->len - 1; i >= 0; i--) {
+        for (int32_t j = UINT_BITS - 1; j >= 0; --j) {
+            // double the point each iteration
+            ec_add(&res_int, &res_int, &res_int, ec);
+
+            // if the bit is set here, add the point
+            if ((k->arr[i] >> j) & 1)
+                ec_add(&res_int, &res_int, pt, ec);
+        }
+    }
+
+    point_copy(res, &res_int);
+}

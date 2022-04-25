@@ -119,4 +119,14 @@ uint8_t ec_is_inv(const point_t *p1, const point_t *p2, const ec_t *ec);
  */
 void ec_add(point_t *res, const point_t *p1, const point_t *p2, const ec_t *ec);
 
+/**
+ * @brief Multiplies a point `pt` by a scalar `k` using repeated addition
+ * 
+ * @param res   Where to store the resultant point
+ * @param k     A pointer to the scalar big integer to multiply by
+ * @param p1    A pointer to the point to multiply
+ * @param ec    A pointer to the elliptic curve instance to use
+ */
+void ec_mult(point_t *res, const big_uint_t *k, const point_t *pt, const ec_t *ec);
+
 #endif
