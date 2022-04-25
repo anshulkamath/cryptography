@@ -52,19 +52,66 @@ void test_point_equals() {
     log_tests(tester);
 }
 
+void test_point_touch() {
+    // Define variables to be tested with
+    testing_logger_t *tester = create_tester();
+    point_t res;
+
+    point_touch(&res, 8);
+
+    expect(tester, 
+        big_uint_is_zero(res.x) &&
+        big_uint_is_zero(res.y) && 
+        res.x->len == 8 && 
+        res.y->len == 8
+    );
+
+    log_tests(tester);
+}
+
 void test_point_copy() {
+	// Define variables to be tested with
+    testing_logger_t *tester = create_tester();
+    point_t p;
+	point_t res, exp;
+
+    point_create(&p, "0x1", "0x2");
+    point_touch(&res, 1);
+    point_copy(&res, &p);
+
+    expect(tester, point_equals(&res, &p));
+
+    point_create(&p, "0x12345678_87654321", "0x12345678_87654321");
+    point_create(&exp, "0x87654321", "0x87654321");
+    point_touch(&res, 1);
+    point_copy(&res, &p);
+
+    expect(tester, point_equals(&res, &exp));
+
+    point_create(&p, "0x0", "0x0");
+    point_create(&exp, "0x00000000_00000000", "0x00000000_00000000");
+    point_create(&res, "0x12345678_87654321", "0x12345678_87654321");
+    point_copy(&res, &p);
+
+    expect(tester, point_equals(&res, &exp));
+
+    log_tests(tester);
+}
+
+void test_point_copyi() {
 	// Define variables to be tested with
     testing_logger_t *tester = create_tester();
     point_t p;
 	point_t res;
 
     point_create(&p, "0x1", "0x2");
-    point_copy(&res, &p);
+    point_copyi(&res, &p);
 
     expect(tester, point_equals(&res, &p));
 
     log_tests(tester);
 }
+
 
 void test_point_is_identity() {
     testing_logger_t *tester = create_tester();
@@ -87,12 +134,23 @@ void test_point_is_identity() {
     log_tests(tester);
 }
 
+void test_point_get_identity() {
+    testing_logger_t *tester = create_tester();
+    
+    expect(tester, point_is_identity(point_get_identity()));
+
+    log_tests(tester);
+}
+
 int main() {
     test_point_init();
     test_point_create();
     test_point_equals();
+    test_point_touch();
     test_point_copy();
+    test_point_copyi();
     test_point_is_identity();
+    test_point_get_identity();
 
     return 0;
 }

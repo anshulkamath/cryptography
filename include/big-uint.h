@@ -326,6 +326,13 @@ big_uint_t big_uint_min(const big_uint_t *a, const big_uint_t *b);
 uint8_t big_uint_is_zero(const big_uint_t *a);
 
 /**
+ * @brief Returns a pointer to a big uint representing zero
+ * 
+ * @return const big_uint_t* 
+ */
+const big_uint_t* big_uint_get_zero();
+
+/**
  * @brief Sets dest to val if and only if cmp == 1; else sets val to 0
  * 
  * @param dest Where to store the result of the function

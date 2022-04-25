@@ -6,6 +6,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+// constant zero
+static uint32_t ZERO_ARR[] = { 0 };
+static big_uint_t ZERO = { .arr = (uint32_t *) &ZERO_ARR, .len = 1 };
+
 /****************************************/
 /*       BIG UINT INITIALIZATION        */
 /****************************************/
@@ -222,6 +226,10 @@ uint8_t big_uint_is_zero(const big_uint_t *a) {
         res &= a->arr[i] == 0;
 
     return res;
+}
+
+const big_uint_t* big_uint_get_zero() {
+    return &ZERO;
 }
 
 void big_uint_choose(big_uint_t *dest, const big_uint_t *val, uint32_t cmp) {

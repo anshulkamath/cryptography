@@ -38,6 +38,15 @@
     big_uint_copy(&y_id, (src)->y); \
     point_init(dest, &x_id, &y_id);
 
+#define _PT_HELPER_5(dest, size, count) \
+    _PT_HELPER_6(dest, size, CONCAT(_x_int, count), CONCAT(_y_int, count))
+
+#define _PT_HELPER_6(dest, size, x_id, y_id) \
+    big_uint_t x_id, y_id; \
+    big_uint_create(&x_id, (size)); \
+    big_uint_create(&y_id, (size)); \
+    point_init(dest, &x_id, &y_id);
+
 /****************************************/
 /*             INIT MACROS              */
 /****************************************/
@@ -45,8 +54,12 @@
 #define point_create(dest, x_str, y_str) \
     _PT_HELPER_1(dest, x_str, y_str, __COUNTER__)
 
-#define point_copy(dest, src) \
+/* Copies into an unintialized point_t */
+#define point_copyi(dest, src) \
     _PT_HELPER_3(dest, src, __COUNTER__)
+
+#define point_touch(dest, size) \
+    _PT_HELPER_5(dest, size, __COUNTER__)
 
 /****************************************/
 /*              INTERFACE               */
@@ -87,11 +100,28 @@ void point_print(const point_t *pt);
 uint8_t point_equals(const point_t *p1, const point_t *p2);
 
 /**
+ * @brief Copies the contents of `src` to `dest`.
+ * NOTE:  `dest` must be initialized. If it is not, consider using `point_copyi`,
+ *        but note that this initializes a point ONLY in the current stack frame
+ * 
+ * @param dest  An initialized point where we can store the `src` point
+ * @param src   A pointer to the point we want to copy
+ */
+void point_copy(point_t *dest, const point_t *src);
+
+/**
  * @brief Returns true if and only if the point `p` is identity (0, 0)
  * 
  * @param p The point `p` to check
  * @return uint8_t 
  */
 uint8_t point_is_identity(const point_t *p);
+
+/**
+ * @brief Returns a constant pointer to the identity element
+ * 
+ * @return point_t* 
+ */
+const point_t* point_get_identity();
 
 #endif
