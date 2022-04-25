@@ -129,7 +129,7 @@ void mod_neg(big_uint_t *res, const big_uint_t *x, const mod_t *mod) {
 	big_uint_sub(res, mod->p, x);
 }
 
-uint8_t _check_euler_criterion(const big_uint_t *x, const mod_t *mod) {
+static uint8_t _check_euler_criterion(const big_uint_t *x, const mod_t *mod) {
 	big_uint_t x_i, p_i, one;
 	big_uint_create(&x_i, mod->p->len);
 	big_uint_copy(&x_i, x);
