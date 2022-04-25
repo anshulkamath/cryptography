@@ -140,7 +140,7 @@ static void _simple_sqrt_case(big_uint_t *res, const big_uint_t *x, const mod_t 
 
 	// (p + 1) // 4
 	big_uint_addi(&p_i, mod->p, 1);
-	big_uint_shr(&p_i, mod->p, 2, LOG_2_BIT);
+	big_uint_shr(&p_i, &p_i, 2, LOG_2_BIT);
 
 	// x^{(p + 1) // 4}
 	mod_exp(res, x, &p_i, mod);
@@ -165,10 +165,10 @@ static uint32_t _get_first_sig_bit(big_uint_t *res) {
 
 void mod_sqrt(big_uint_t *res, const big_uint_t *n, const mod_t *mod) {
 	big_uint_t one;
-	big_uint_loadi(&one, 1, 1);
+	big_uint_loadi(&one, 1, mod->p->len);
 
 	big_uint_t two;
-	big_uint_loadi(&two, 2, 1);
+	big_uint_loadi(&two, 2, mod->p->len);
 
 	// check simple cases
 	if (_check_euler_criterion(n, mod)) {
@@ -183,7 +183,7 @@ void mod_sqrt(big_uint_t *res, const big_uint_t *n, const mod_t *mod) {
 		big_uint_copy(res, mod->p);
 		return;
 	}
-	else if (n->arr[0] % 4 == 3) {
+	else if (mod->p->arr[0] % 4 == 3) {
 		_simple_sqrt_case(res, n, mod);
 		return;
 	}
