@@ -8,7 +8,7 @@ CFLAGS = -g -Wall -Wextra -pedantic -std=c17 -Wno-unused-command-line-argument -
 # use for benchmarking purposes
 # CFLAGS = -Ofast -pedantic -std=c17 -std=c17 $(INCLUDES) $(LIBS)
 
-SRC_FILES = sha256 big-uint mod
+SRC_FILES = sha256 big-uint mod point ec
 OBJ_FILES = $(addprefix obj/,$(SRC_FILES:=.o))
 
 CYAN =\x1b[36m
@@ -22,9 +22,9 @@ all: $(MAIN_BINS) $(TEST_BINS)
 
 # Directory targets
 obj:
-	mkdir obj
+	@mkdir obj
 bin:
-	mkdir bin
+	@mkdir bin
 
 # Binary targets
 bin/%: main/%.c $(OBJ_FILES) | bin
@@ -44,8 +44,8 @@ obj/%.o: tests/%.c | obj
 	$(CC) -c $(CFLAGS) $^ -o $@
 
 clean:
-	rm -rf bin
-	rm -rf obj
+	@rm -rf bin
+	@rm -rf obj
 
 test: $(TEST_BINS)
 	@echo && for f in $(TEST_BINS); do echo "$(CYAN)$$f$(WHITE)"; ASAN_OPTIONS=detect_leaks=1 $$f; echo; done

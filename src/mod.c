@@ -129,9 +129,10 @@ void mod_neg(big_uint_t *res, const big_uint_t *x, const mod_t *mod) {
 	big_uint_sub(res, mod->p, x);
 }
 
-static uint8_t _check_euler_criterion(const big_uint_t *x, const mod_t *mod) {
+uint8_t _check_euler_criterion(const big_uint_t *x, const mod_t *mod) {
 	big_uint_t x_i, p_i, one;
-	big_uint_create(&x_i, x->len);
+	big_uint_create(&x_i, mod->p->len);
+	big_uint_copy(&x_i, x);
 	big_uint_create(&p_i, mod->p->len);
 	big_uint_loadi(&one, 1, mod->p->len);
 
@@ -142,7 +143,7 @@ static uint8_t _check_euler_criterion(const big_uint_t *x, const mod_t *mod) {
 	// x^{(p - 1) // 2}
 	mod_exp(&x_i, x, &p_i, mod);
 
-	return big_uint_equals(&p_i, &one);
+	return big_uint_equals(&x_i, &one);
 }
 
 static void _simple_sqrt_case(big_uint_t *res, const big_uint_t *x, const mod_t *mod) {
@@ -182,7 +183,7 @@ void mod_sqrt(big_uint_t *res, const big_uint_t *n, const mod_t *mod) {
 	big_uint_loadi(&two, 2, mod->p->len);
 
 	// check simple cases
-	if (_check_euler_criterion(n, mod)) {
+	if (!_check_euler_criterion(n, mod)) {
 		big_uint_copy(res, big_uint_get_zero());
 		return;
 	}
@@ -212,7 +213,7 @@ void mod_sqrt(big_uint_t *res, const big_uint_t *n, const mod_t *mod) {
 	// find the square root of n
 	big_uint_t a;
 	big_uint_loadi(&a, 2, 1);
-	while (_check_euler_criterion(&a, mod))	++a.arr[0];	// TODO: this may need to be updated
+	while (_check_euler_criterion(&a, mod))	++a.arr[0];
 
 	// defining variables for loop
 	big_uint_t x, t, b, g, temp;

@@ -25,6 +25,7 @@
 #include "big-uint.h"
 #include "mod.h"
 #include "point.h"
+#include "secp256k1.c"
 
 /****************************************/
 /*            HELPER MACROS             */
