@@ -44,7 +44,7 @@ void mod_add(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const mo
 	big_uint_add(res, a, b);
 
 	// if we are above the prime, calculate the corresponding residue class
-	if (big_uint_cmp(res, mod->p) > 0) {
+	if (big_uint_cmp(res, mod->p) >= 0) {
 		big_uint_sub(res, res, mod->p);
 		return;
 	}
@@ -56,7 +56,7 @@ void mod_sub(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const mo
 	big_uint_sub(res, a, b);
 
 	// if we are above the prime, calculate the corresponding residue class
-	if (big_uint_cmp(res, mod->p) > 0) {
+	if (big_uint_cmp(res, mod->p) >= 0) {
 		big_uint_add(res, res, mod->p);
 		return;
 	}

@@ -15,6 +15,10 @@
 #include "big-uint.h"
 #include <stdint.h>
 
+/****************************************/
+/*            HELPER MACROS             */
+/****************************************/
+
 #define _MOD_HELPER_1(dest, p, count) \
     _MOD_HELPER_2(dest, p, CONCAT(_r, count));
 
@@ -23,14 +27,46 @@
     big_uint_create(&r_id, (big_uint_log2(p, LOG_2_LIMB) + 1) + 1); \
     mod_init(dest, p, &r_id);
 
+#define _MOD_HELPER_3(res, num, imm, mod, func, count) \
+    _MOD_HELPER_4(res, num, imm, mod, func, CONCAT(_imm, count))
+
+#define _MOD_HELPER_4(res, num, imm, mod, func, imm_id) \
+    big_uint_t imm_id; \
+    big_uint_loadi(&imm_id, imm, 1); \
+    func(res, num, &imm_id, mod);
+
+/****************************************/
+/*               MACROS                 */
+/****************************************/
+
 #define mod_create(dest, p) \
     _MOD_HELPER_1(dest, p, __COUNTER__)
-    
+
+#define mod_addi(res, num, imm, mod) \
+    _MOD_HELPER_3(res, num, imm, mod, mod_add, __COUNTER__)
+
+#define mod_subi(res, num, imm, mod) \
+    _MOD_HELPER_3(res, num, imm, mod, mod_sub, __COUNTER__)
+
+#define mod_multi(res, num, imm, mod) \
+    _MOD_HELPER_3(res, num, imm, mod, mod_mult, __COUNTER__)
+
+#define mod_expi(res, num, imm, mod) \
+    _MOD_HELPER_3(res, num, imm, mod, mod_exp, __COUNTER__)
+
+/****************************************/
+/*              INTERFACE               */
+/****************************************/
+
 typedef struct mod {
     const big_uint_t *p;  // pointer to the prime number
     big_uint_t *r;        // r-value in barrett reduction
     uint32_t    k;        // k-value in barrett reduction
 } mod_t;
+
+/****************************************/
+/*                STUBS                 */
+/****************************************/
 
 /**
  * @brief Creates a mod type with the precomputed factor `r` using Barrett Reduction
