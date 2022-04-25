@@ -99,7 +99,7 @@ typedef struct ec {
 void ec_init(ec_t *dest, const big_uint_t *a, const big_uint_t *b, const mod_t *mod_p, const mod_t *mod_n, const point_t *g);
 
 /**
- * @brief Returns true if and only if p1 and p2 are inverses on the given curve
+ * @brief Returns true if and only if p1 and p2 are additive inverses on the given curve
  * 
  * @param ec The curve to use to determine if p1 and p2 are inverses
  * @param p1 The first point to compare
@@ -107,5 +107,16 @@ void ec_init(ec_t *dest, const big_uint_t *a, const big_uint_t *b, const mod_t *
  * @return uint8_t 
  */
 uint8_t ec_is_inv(const point_t *p1, const point_t *p2, const ec_t *ec);
+
+/**
+ * @brief Adds two points together on the given elliptic curve using the relevant
+ *        group operation of points on an elliptic curve
+ * 
+ * @param res Where to store the resulting point
+ * @param p1  A pointer to the first point to add
+ * @param p2  A pointer to the second point to add
+ * @param ec  A pointer to the elliptic curve instance to use
+ */
+void ec_add(point_t *res, const point_t *p1, const point_t *p2, const ec_t *ec);
 
 #endif
