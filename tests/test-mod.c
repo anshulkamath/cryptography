@@ -578,6 +578,19 @@ void test_mod_sub() {
 
 	expect(tester, big_uint_equals(&res, &exp));
 
+	// Test 12
+	// Test modding via underflow
+	big_uint_load(&a, "0x3fc2e6133bca391985e5a304644787df5f138b26babd6581059e8b157368ba4e");
+	big_uint_load(&b, "0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798");
+	big_uint_load(&p, "0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f");
+	big_uint_load(&exp, "0xc6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5");
+	big_uint_load(&res, "0x0000000000000000000000000000000000000000000000000000000000000000");
+	mod_create(&mod, &p);
+
+	mod_sub(&res, &a, &b, &mod);
+
+	expect(tester, big_uint_equals(&res, &exp));
+
 	log_tests(tester);
 }
 

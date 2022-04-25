@@ -41,27 +41,35 @@ void mod_big_uint(big_uint_t *res, const big_uint_t *x, const mod_t *mod) {
 }
 
 void mod_add(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const mod_t *mod) {
-	big_uint_add(res, a, b);
+	// artifically add a limb to prevent mod-via-overflow
+	big_uint_t res_int;
+	big_uint_create(&res_int, (a->len > b->len ? a->len: b->len) + 1);
+	
+	big_uint_add(&res_int, a, b);
 
 	// if we are above the prime, calculate the corresponding residue class
-	if (big_uint_cmp(res, mod->p) >= 0) {
-		big_uint_sub(res, res, mod->p);
+	if (big_uint_cmp(&res_int, mod->p) >= 0) {
+		big_uint_sub(res, &res_int, mod->p);
 		return;
 	}
 	
-	big_uint_sub(res, res, big_uint_get_zero());
+	big_uint_sub(res, &res_int, big_uint_get_zero());
 }
 
 void mod_sub(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const mod_t *mod) {
-	big_uint_sub(res, a, b);
+	// artifically add a limb to prevent mod-via-underflow
+	big_uint_t res_int;
+	big_uint_create(&res_int, (a->len > b->len ? a->len: b->len) + 1);
+	
+	big_uint_sub(&res_int, a, b);
 
 	// if we are above the prime, calculate the corresponding residue class
-	if (big_uint_cmp(res, mod->p) >= 0) {
-		big_uint_add(res, res, mod->p);
+	if (big_uint_cmp(&res_int, mod->p) >= 0) {
+		big_uint_add(res, &res_int, mod->p);
 		return;
 	}
 
-	big_uint_add(res, res, big_uint_get_zero());
+	big_uint_add(res, &res_int, big_uint_get_zero());
 }
 
 void mod_mult(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const mod_t *mod) {
