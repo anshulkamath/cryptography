@@ -5,10 +5,6 @@
 #include <stdint.h>
 #include <string.h>
 
-// constant zero
-uint32_t ZERO_ARR[] = { 0 };
-big_uint_t ZERO = { .arr = (uint32_t *) &ZERO_ARR, .len = 1 };
-
 /* Performs Barrett reduction and populates the given mod_t struct */
 void _barrett_reduction(mod_t *res) {
 	uint32_t k = big_uint_log2(res->p, LOG_2_LIMB) + 1;
@@ -53,7 +49,7 @@ void mod_add(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const mo
 		return;
 	}
 	
-	big_uint_sub(res, res, &ZERO);
+	big_uint_sub(res, res, big_uint_get_zero());
 }
 
 void mod_sub(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const mod_t *mod) {
@@ -65,7 +61,7 @@ void mod_sub(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const mo
 		return;
 	}
 
-	big_uint_add(res, res, &ZERO);
+	big_uint_add(res, res, big_uint_get_zero());
 }
 
 void mod_mult(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const mod_t *mod) {
@@ -179,11 +175,11 @@ void mod_sqrt(big_uint_t *res, const big_uint_t *n, const mod_t *mod) {
 
 	// check simple cases
 	if (_check_euler_criterion(n, mod)) {
-		big_uint_copy(res, &ZERO);
+		big_uint_copy(res, big_uint_get_zero());
 		return;
 	}
 	else if (big_uint_is_zero(n)) {
-		big_uint_copy(res, &ZERO);
+		big_uint_copy(res, big_uint_get_zero());
 		return;
 	}
 	else if (big_uint_equals(mod->p, &two)) {

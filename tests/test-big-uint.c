@@ -636,6 +636,14 @@ void test_big_uint_choose() {
     log_tests(tester);
 }
 
+void test_big_uint_get_zero() {
+    testing_logger_t *tester = create_tester();
+
+    expect(tester, big_uint_is_zero(big_uint_get_zero()));
+
+    log_tests(tester);
+}
+
 void test_big_uint_or() {
     // Define variables to be tested with
     testing_logger_t *tester = create_tester();
@@ -2259,6 +2267,7 @@ int main() {
     test_big_uint_max();
     test_big_uint_min();
     test_big_uint_is_zero();
+    test_big_uint_get_zero();
     test_big_uint_choose();
     
     test_big_uint_or();

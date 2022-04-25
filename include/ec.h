@@ -71,7 +71,8 @@
 /*              CONSTANTS               */
 /****************************************/
 
-#define SECP256k1 SECP256K1
+#define SECP256k1       _SECP256k1  // prefix of constants in file
+#define SECP256k1_SIZE           8  // number of limbs in constants
 
 /****************************************/
 /*              INTERFACE               */
@@ -105,6 +106,6 @@ void ec_init(ec_t *dest, const big_uint_t *a, const big_uint_t *b, const mod_t *
  * @param p2 The second point to compare
  * @return uint8_t 
  */
-uint8_t ec_is_inv(const ec_t *ec, const point_t *p1, const point_t *p2);
+uint8_t ec_is_inv(const point_t *p1, const point_t *p2, const ec_t *ec);
 
 #endif
