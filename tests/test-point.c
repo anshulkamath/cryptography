@@ -52,6 +52,20 @@ void test_point_equals() {
     log_tests(tester);
 }
 
+void test_point_copy() {
+	// Define variables to be tested with
+    testing_logger_t *tester = create_tester();
+    point_t p;
+	point_t res;
+
+    point_create(&p, "0x1", "0x2");
+    point_copy(&res, &p);
+
+    expect(tester, point_equals(&res, &p));
+
+    log_tests(tester);
+}
+
 void test_point_is_identity() {
     testing_logger_t *tester = create_tester();
     point_t p;
@@ -77,6 +91,7 @@ int main() {
     test_point_init();
     test_point_create();
     test_point_equals();
+    test_point_copy();
     test_point_is_identity();
 
     return 0;

@@ -63,6 +63,7 @@
 /****************************************/
 /*            INIT FUNCTIONS            */
 /****************************************/
+
 #define ec_create(dest, curve) \
     _EC_HELPER_1(dest, curve)
 
@@ -70,7 +71,7 @@
 /*              CONSTANTS               */
 /****************************************/
 
-#define SECP_256K1 SECP256K1
+#define SECP256k1 SECP256K1
 
 /****************************************/
 /*              INTERFACE               */
@@ -95,5 +96,15 @@ typedef struct ec {
  * @param g     Pointer to the generator point of the curve `g`
  */
 void ec_init(ec_t *dest, const big_uint_t *a, const big_uint_t *b, const mod_t *mod_p, const mod_t *mod_n, const point_t *g);
+
+/**
+ * @brief Returns true if and only if p1 and p2 are inverses on the given curve
+ * 
+ * @param ec The curve to use to determine if p1 and p2 are inverses
+ * @param p1 The first point to compare
+ * @param p2 The second point to compare
+ * @return uint8_t 
+ */
+uint8_t ec_is_inv(const ec_t *ec, const point_t *p1, const point_t *p2);
 
 #endif
