@@ -26,7 +26,7 @@
 #define mod_create(dest, p) \
     _MOD_HELPER_1(dest, p, __COUNTER__)
     
-typedef struct {
+typedef struct mod {
     const big_uint_t *p;  // pointer to the prime number
     big_uint_t *r;        // r-value in barrett reduction
     uint32_t    k;        // k-value in barrett reduction

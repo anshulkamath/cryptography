@@ -185,7 +185,7 @@
 /*              INTERFACE               */
 /****************************************/
 
-typedef struct {
+typedef struct big_uint {
     uint32_t   *arr;  // a pointer to the big integer
     uint16_t    len;  // the number of limbs in the big integer
 } big_uint_t;

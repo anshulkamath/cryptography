@@ -38,7 +38,7 @@
 /*              INTERFACE               */
 /****************************************/
 
-typedef struct {
+typedef struct point {
     big_uint_t *x;
     big_uint_t *y;
 } point_t;
