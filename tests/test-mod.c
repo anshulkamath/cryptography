@@ -147,6 +147,29 @@ void test_mod_init() {
 	log_tests(tester);
 }
 
+void test_mod_equals() {
+	testing_logger_t *tester = create_tester();
+	big_uint_t p1, p2;
+	mod_t m1, m2;
+
+	// Test 1
+	big_uint_load(&p1, "0x0000000d");
+	big_uint_load(&p2, "0x0000000d");
+
+	mod_create(&m1, &p1);
+	mod_create(&m2, &p2);
+
+	expect(tester, mod_equals(&m1, &m2));
+
+	// Test 2
+	big_uint_load(&p2, "0x00000007");
+	mod_create(&m2, &p2);
+
+	expect(tester, !mod_equals(&m1, &m2));
+
+	log_tests(tester);
+}
+
 void test_mod_big_uint() {
 	testing_logger_t *tester = create_tester();
 	big_uint_t a, p;
@@ -1434,6 +1457,7 @@ void test_mod_sqrt() {
 int main() {
 	// Calling all tests:
 	test_mod_init();
+	test_mod_equals();
 	test_mod_big_uint();
 	test_mod_add();
 	test_mod_sub();
