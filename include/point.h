@@ -27,12 +27,26 @@
     big_uint_load(&y_id, y_str); \
     point_init(dest, &x_id, &y_id);
 
+#define _PT_HELPER_3(dest, src, count) \
+    _PT_HELPER_4(dest, src, CONCAT(_x_int, count), CONCAT(_y_int, count))
+
+#define _PT_HELPER_4(dest, src, x_id, y_id) \
+    big_uint_t x_id, y_id; \
+    big_uint_create(&x_id, (src)->x->len); \
+    big_uint_create(&y_id, (src)->y->len); \
+    big_uint_copy(&x_id, (src)->x); \
+    big_uint_copy(&y_id, (src)->y); \
+    point_init(dest, &x_id, &y_id);
+
 /****************************************/
 /*             INIT MACROS              */
 /****************************************/
 
 #define point_create(dest, x_str, y_str) \
     _PT_HELPER_1(dest, x_str, y_str, __COUNTER__)
+
+#define point_copy(dest, src) \
+    _PT_HELPER_3(dest, src, __COUNTER__)
 
 /****************************************/
 /*              INTERFACE               */
