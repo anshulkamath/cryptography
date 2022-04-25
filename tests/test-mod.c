@@ -1464,6 +1464,16 @@ void test_mod_sqrt() {
 
 	expect(tester, big_uint_equals(&x, &exp));
 
+	// Test 15
+	big_uint_load(&x, "0x6409b613_c5e7c7e9_27f9d2c4_1b56af5e_a49ec282_77c71eb1_2223a2cf_f01135d7");
+	big_uint_load(&p, "0x8c307598_fd51fb73_2b33dddb_02ddc885_d3b78759_d6b1c165_b39bba8d_f4a5a691");
+	big_uint_load(&exp, "0x4e29d93c_c9c3bb38_6705875f_282434ef_c59022db_7955ffd8_5ff53057_c3ca45cc");
+	mod_create(&mod, &p);
+
+	mod_sqrt(&x, &x, &mod);
+
+	expect(tester, big_uint_equals(&x, &exp));
+
 	log_tests(tester);
 }
 
