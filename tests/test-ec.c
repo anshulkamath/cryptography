@@ -338,11 +338,95 @@ void test_ec_add() {
 	log_tests(tester);
 }
 
+void test_ec_mult() {
+	testing_logger_t *tester = create_tester();
+	ec_t ec;
+	big_uint_t k;
+	point_t p;
+	point_t res, exp;
+	
+	ec_create(&ec, SECP256k1);
+	point_touch(&res, SECP256k1_SIZE);
+
+	// Test 1
+	big_uint_load(&k, "0x00000000");
+	point_create(&p,
+		"0x79be667e_f9dcbbac_55a06295_ce870b07_029bfcdb_2dce28d9_59f2815b_16f81798",
+		"0x483ada77_26a3c465_5da4fbfc_0e1108a8_fd17b448_a6855419_9c47d08f_fb10d4b8"
+	);
+	point_create(&exp,
+		"0x00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000",
+		"0x00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000"
+	);
+	ec_mult(&res, &k, &p, &ec);
+
+	expect(tester, point_equals(&res, &exp));
+
+	// Test 2
+	big_uint_load(&k, "0x00000001");
+	point_create(&p,
+		"0x79be667e_f9dcbbac_55a06295_ce870b07_029bfcdb_2dce28d9_59f2815b_16f81798",
+		"0x483ada77_26a3c465_5da4fbfc_0e1108a8_fd17b448_a6855419_9c47d08f_fb10d4b8"
+	);
+	point_create(&exp,
+		"0x79be667e_f9dcbbac_55a06295_ce870b07_029bfcdb_2dce28d9_59f2815b_16f81798",
+		"0x483ada77_26a3c465_5da4fbfc_0e1108a8_fd17b448_a6855419_9c47d08f_fb10d4b8"
+	);
+	ec_mult(&res, &k, &p, &ec);
+
+	expect(tester, point_equals(&res, &exp));
+
+	// Test 3
+	big_uint_load(&k, "0x00000002");
+	point_create(&p,
+		"0x79be667e_f9dcbbac_55a06295_ce870b07_029bfcdb_2dce28d9_59f2815b_16f81798",
+		"0x483ada77_26a3c465_5da4fbfc_0e1108a8_fd17b448_a6855419_9c47d08f_fb10d4b8"
+	);
+	point_create(&exp,
+		"0xc6047f94_41ed7d6d_3045406e_95c07cd8_5c778e4b_8cef3ca7_abac09b9_5c709ee5",
+		"0x1ae168fe_a63dc339_a3c58419_466ceaee_f7f63265_3266d0e1_236431a9_50cfe52a"
+	);
+	ec_mult(&res, &k, &p, &ec);
+
+	expect(tester, point_equals(&res, &exp));
+
+	// Test 4
+	big_uint_load(&k, "0x00000059");
+	point_create(&p,
+		"0x79be667e_f9dcbbac_55a06295_ce870b07_029bfcdb_2dce28d9_59f2815b_16f81798",
+		"0x483ada77_26a3c465_5da4fbfc_0e1108a8_fd17b448_a6855419_9c47d08f_fb10d4b8"
+	);
+	point_create(&exp,
+		"0xd3cc30ad_6b483e4b_c79ce2c9_dd8bc549_93e947eb_8df787b4_42943d3f_7b527eaf",
+		"0x8b378a22_d827278d_89c5e9be_8f9508ae_3c2ad462_90358630_afb34db0_4eede0a4"
+	);
+	ec_mult(&res, &k, &p, &ec);
+
+	expect(tester, point_equals(&res, &exp));
+
+	// Test 5
+	big_uint_load(&k, "0xf72f2bb8_3586fca7_fa0b8518_8296f5ea_baeb41a5_e65a8149_40e2a20a_1bd7ce74");
+	point_create(&p,
+		"0x79be667e_f9dcbbac_55a06295_ce870b07_029bfcdb_2dce28d9_59f2815b_16f81798",
+		"0x483ada77_26a3c465_5da4fbfc_0e1108a8_fd17b448_a6855419_9c47d08f_fb10d4b8"
+	);
+	point_create(&exp,
+		"0xfe5d83ca_5b2f7cc3_557195eb_00ebd930_c3543939_34ea60a1_681d4233_ae0b0cec",
+		"0x5d34d224_b4e87eb9_ccf86bdc_fbb56969_e846da33_f5f896ca_7eb72160_86550e85"
+	);
+	ec_mult(&res, &k, &p, &ec);
+
+	expect(tester, point_equals(&res, &exp));
+
+	log_tests(tester);
+}
+
 int main () {
     test_ec_init();
     test_ec_create();
     test_ec_is_inv();
 	test_ec_add();
+	test_ec_mult();
     
     return 0;
 }
