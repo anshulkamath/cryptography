@@ -456,9 +456,6 @@ void test_ec_keygen() {
 	ec_keygen(&pu_key, &pr_key, &ec);
 	ec_mult(&exp_key, &pr_key, ec.g, &ec);
 	expect(tester, point_equals(&pu_key, &exp_key));
-	big_uint_print(&pr_key);
-	point_print(&pu_key);
-	printf("\n");
 
 	log_tests(tester);
 }

@@ -131,7 +131,6 @@ void ec_keygen(point_t *pu_key, big_uint_t *pr_key, const ec_t *ec) {
 
     // create an intermediate buffer for k (the private key)
     uint32_t k_arr[SIZE];
-    uint32_t buf;
 
     for (uint32_t i = 0; i < SIZE; i++) {
         #if DEBUG
@@ -144,10 +143,11 @@ void ec_keygen(point_t *pu_key, big_uint_t *pr_key, const ec_t *ec) {
         #endif
     }
 
+    // copy the randomly generated integer to the private key
     big_uint_t k;
     big_uint_init(&k, k_arr, SIZE);
-    big_uint_copy(pr_key, &k);
-    mod_sub(&k, &k, big_uint_get_zero(), ec->mod_p);
+    mod_sub(pr_key, &k, big_uint_get_zero(), ec->mod_p);
     
+    // generate the public key using the private key
     ec_mult(pu_key, pr_key, ec->g, ec);
 }
