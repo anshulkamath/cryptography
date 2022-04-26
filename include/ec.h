@@ -58,7 +58,7 @@
     big_uint_load(&n_iid, n_var); \
     mod_create(&p_id, &p_iid); \
     mod_create(&n_id, &n_iid); \
-    point_create(&g_id, x_var, y_var); \
+    point_load(&g_id, x_var, y_var); \
     ec_init(dest, &a_id, &b_id, &p_id, &n_id, &g_id);
 
 /****************************************/

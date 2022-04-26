@@ -95,7 +95,7 @@ void ec_add(point_t *res, const point_t *p1, const point_t *p2, const ec_t *ec) 
 
 void ec_mult(point_t *res, const big_uint_t *k, const point_t *pt, const ec_t *ec) {
     point_t res_int;
-    point_touch(&res_int, res->x->len);
+    point_create(&res_int, res->x->len);
     point_copy(&res_int, point_get_identity());
     
     for (int32_t i = k->len - 1; i >= 0; i--) {
