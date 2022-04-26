@@ -130,4 +130,14 @@ void ec_add(point_t *res, const point_t *p1, const point_t *p2, const ec_t *ec);
  */
 void ec_mult(point_t *res, const big_uint_t *k, const point_t *pt, const ec_t *ec);
 
+/**
+ * @brief Generates a public/private key pair on the given elliptic curve and
+ *        stores them in the given parameters
+ * 
+ * @param pu_key  Pointer to where to store the public key point
+ * @param pr_key  Pointer to where to store the private key generator number
+ * @param ec      Pointer to the ec instance to use
+ */
+void ec_keygen(point_t *pu_key, big_uint_t *pr_key, const ec_t *ec);
+
 #endif

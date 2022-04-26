@@ -421,12 +421,55 @@ void test_ec_mult() {
 	log_tests(tester);
 }
 
+void test_ec_keygen() {
+	testing_logger_t *tester = create_tester();
+	ec_t ec;
+	point_t pu_key, exp_key;
+	big_uint_t pr_key;
+
+	ec_create(&ec, SECP256k1);
+	point_touch(&pu_key, SECP256k1_SIZE);
+	point_touch(&exp_key, SECP256k1_SIZE);
+	big_uint_create(&pr_key, SECP256k1_SIZE);
+
+	// Test 1
+	ec_keygen(&pu_key, &pr_key, &ec);
+	ec_mult(&exp_key, &pr_key, ec.g, &ec);
+	expect(tester, point_equals(&pu_key, &exp_key));
+
+	// Test 2
+	ec_keygen(&pu_key, &pr_key, &ec);
+	ec_mult(&exp_key, &pr_key, ec.g, &ec);
+	expect(tester, point_equals(&pu_key, &exp_key));
+
+	// Test 3
+	ec_keygen(&pu_key, &pr_key, &ec);
+	ec_mult(&exp_key, &pr_key, ec.g, &ec);
+	expect(tester, point_equals(&pu_key, &exp_key));
+
+	// Test 4
+	ec_keygen(&pu_key, &pr_key, &ec);
+	ec_mult(&exp_key, &pr_key, ec.g, &ec);
+	expect(tester, point_equals(&pu_key, &exp_key));
+
+	// Test 5
+	ec_keygen(&pu_key, &pr_key, &ec);
+	ec_mult(&exp_key, &pr_key, ec.g, &ec);
+	expect(tester, point_equals(&pu_key, &exp_key));
+	big_uint_print(&pr_key);
+	point_print(&pu_key);
+	printf("\n");
+
+	log_tests(tester);
+}
+
 int main () {
     test_ec_init();
     test_ec_create();
     test_ec_is_inv();
 	test_ec_add();
 	test_ec_mult();
+	test_ec_keygen();
     
     return 0;
 }
