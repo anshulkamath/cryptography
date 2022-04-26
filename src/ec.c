@@ -136,7 +136,7 @@ void ec_keygen(point_t *pu_key, big_uint_t *pr_key, const ec_t *ec) {
         #if DEBUG
         k_arr[i] = (rand() & 0xff) << 24 | (rand() & 0xff) << 16 | (rand() & 0xff) << 8 | (rand() & 0xff);
         #else
-        if (fread(&k_arr[i], sizeof(char), BYTES_PER_UINT, file) != BYTES_PER_UINT) {
+        if (fread(&k_arr[i], sizeof(uint32_t), 1, file) != 1) {
             fprintf(stderr, "Error while generating random private key.\n");
             return;
         }
