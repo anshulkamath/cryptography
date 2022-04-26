@@ -132,16 +132,16 @@ void ec_keygen(point_t *pu_key, big_uint_t *pr_key, const ec_t *ec) {
     // create an intermediate buffer for k (the private key)
     uint32_t k_arr[SIZE];
 
+    #if DEBUG
     for (uint32_t i = 0; i < SIZE; i++) {
-        #if DEBUG
         k_arr[i] = (rand() & 0xff) << 24 | (rand() & 0xff) << 16 | (rand() & 0xff) << 8 | (rand() & 0xff);
-        #else
-        if (fread(&k_arr[i], sizeof(uint32_t), 1, file) != 1) {
-            fprintf(stderr, "Error while generating random private key.\n");
-            return;
-        }
-        #endif
     }
+    #else
+    if (fread(k_arr, sizeof(uint32_t), SIZE, file) != SIZE) {
+        fprintf(stderr, "Error while generating random private key.\n");
+        return;
+    }
+    #endif
 
     // copy the randomly generated integer to the private key
     big_uint_t k;
