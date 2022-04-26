@@ -477,4 +477,13 @@ void big_uint_gcd(big_uint_t* d, const big_uint_t *a, const big_uint_t*b);
  */
 void big_uint_gcd_extended(big_uint_t* x, big_uint_t *y, const big_uint_t *a, const big_uint_t *b);
 
+/**
+ * @brief Generates a cryptographically-secure random number and puts it in `dest.`
+ * NOTE:  If the PRNG macro is non-zero, then the number is pseudo-random. (For 
+ *        testing purposes)
+ * 
+ * @param dest A pointer to an initialized big integer
+ */
+void big_uint_rand(big_uint_t *dest);
+
 #endif

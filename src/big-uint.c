@@ -635,3 +635,25 @@ void big_uint_gcd_extended(big_uint_t *x, big_uint_t *y, const big_uint_t *a, co
 
     _big_uint_gcd_extended_helper(x, y, &max, &min, len);
 }
+
+void big_uint_rand(big_uint_t *dest) {
+    // use /dev/urandom to generate cryptographically-secure, random numbers
+    FILE *file = fopen("/dev/urandom", "r");
+    const uint16_t SIZE = dest->len;
+
+    if (file == NULL) {
+        fprintf(stderr, "Error while opening /dev/urandom");
+        return;
+    }
+
+    #if PRNG
+    for (uint32_t i = 0; i < SIZE; i++) {
+        dest->arr[i] = (rand() & 0xff) << 24 | (rand() & 0xff) << 16 | (rand() & 0xff) << 8 | (rand() & 0xff);
+    }
+    #else
+    if (fread(dest->arr, sizeof(uint32_t), SIZE, file) != SIZE) {
+        fprintf(stderr, "Error while generating random private key.\n");
+        return;
+    }
+    #endif
+}

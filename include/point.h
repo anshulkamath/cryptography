@@ -51,14 +51,14 @@
 /*             INIT MACROS              */
 /****************************************/
 
-#define point_create(dest, x_str, y_str) \
+#define point_load(dest, x_str, y_str) \
     _PT_HELPER_1(dest, x_str, y_str, __COUNTER__)
 
 /* Copies into an unintialized point_t */
 #define point_copyi(dest, src) \
     _PT_HELPER_3(dest, src, __COUNTER__)
 
-#define point_touch(dest, size) \
+#define point_create(dest, size) \
     _PT_HELPER_5(dest, size, __COUNTER__)
 
 /****************************************/

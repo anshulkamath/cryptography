@@ -21,14 +21,14 @@ void test_point_init() {
     log_tests(tester);
 }
 
-void test_point_create() {
+void test_point_load() {
     testing_logger_t *tester = create_tester();
     big_uint_t exp_x, exp_y;
     point_t res;
 
     big_uint_load(&exp_x, "0x12345678");
     big_uint_load(&exp_y, "0x87654321");
-    point_create(&res, "0x12345678", "0x87654321");
+    point_load(&res, "0x12345678", "0x87654321");
 
     expect(tester, big_uint_equals(res.x, &exp_x));
     expect(tester, big_uint_equals(res.y, &exp_y));
@@ -41,23 +41,23 @@ void test_point_equals() {
     point_t p1, p2;
 
     // should be equal
-    point_create(&p1, "0x12345678", "0x87654321");
-    point_create(&p2, "0x12345678", "0x87654321");
+    point_load(&p1, "0x12345678", "0x87654321");
+    point_load(&p2, "0x12345678", "0x87654321");
     expect(tester, point_equals(&p1, &p2));
     
     // should not be equal
-    point_create(&p2, "0x87654321", "0x12345678");
+    point_load(&p2, "0x87654321", "0x12345678");
     expect(tester, !point_equals(&p1, &p2));
 
     log_tests(tester);
 }
 
-void test_point_touch() {
+void test_point_create() {
     // Define variables to be tested with
     testing_logger_t *tester = create_tester();
     point_t res;
 
-    point_touch(&res, 8);
+    point_create(&res, 8);
 
     expect(tester, 
         big_uint_is_zero(res.x) &&
@@ -75,22 +75,22 @@ void test_point_copy() {
     point_t p;
 	point_t res, exp;
 
-    point_create(&p, "0x1", "0x2");
-    point_touch(&res, 1);
+    point_load(&p, "0x1", "0x2");
+    point_create(&res, 1);
     point_copy(&res, &p);
 
     expect(tester, point_equals(&res, &p));
 
-    point_create(&p, "0x12345678_87654321", "0x12345678_87654321");
-    point_create(&exp, "0x87654321", "0x87654321");
-    point_touch(&res, 1);
+    point_load(&p, "0x12345678_87654321", "0x12345678_87654321");
+    point_load(&exp, "0x87654321", "0x87654321");
+    point_create(&res, 1);
     point_copy(&res, &p);
 
     expect(tester, point_equals(&res, &exp));
 
-    point_create(&p, "0x0", "0x0");
-    point_create(&exp, "0x00000000_00000000", "0x00000000_00000000");
-    point_create(&res, "0x12345678_87654321", "0x12345678_87654321");
+    point_load(&p, "0x0", "0x0");
+    point_load(&exp, "0x00000000_00000000", "0x00000000_00000000");
+    point_load(&res, "0x12345678_87654321", "0x12345678_87654321");
     point_copy(&res, &p);
 
     expect(tester, point_equals(&res, &exp));
@@ -104,7 +104,7 @@ void test_point_copyi() {
     point_t p;
 	point_t res;
 
-    point_create(&p, "0x1", "0x2");
+    point_load(&p, "0x1", "0x2");
     point_copyi(&res, &p);
 
     expect(tester, point_equals(&res, &p));
@@ -118,17 +118,17 @@ void test_point_is_identity() {
     point_t p;
 
     // should be equal
-    point_create(&p, "0x0", "0x0");
+    point_load(&p, "0x0", "0x0");
     expect(tester, point_is_identity(&p));
     
     // should not be equal
-    point_create(&p, "0x1", "0x0");
+    point_load(&p, "0x1", "0x0");
     expect(tester, !point_is_identity(&p));
 
-    point_create(&p, "0x0", "0x1");
+    point_load(&p, "0x0", "0x1");
     expect(tester, !point_is_identity(&p));
 
-    point_create(&p, "0x1", "0x1");
+    point_load(&p, "0x1", "0x1");
     expect(tester, !point_is_identity(&p));
 
     log_tests(tester);
@@ -144,9 +144,9 @@ void test_point_get_identity() {
 
 int main() {
     test_point_init();
-    test_point_create();
+    test_point_load();
     test_point_equals();
-    test_point_touch();
+    test_point_create();
     test_point_copy();
     test_point_copyi();
     test_point_is_identity();
