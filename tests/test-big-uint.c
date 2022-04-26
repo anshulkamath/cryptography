@@ -2,6 +2,7 @@
 #include "testing-logger.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 void test_big_uint_init() {
@@ -2250,6 +2251,21 @@ void test_big_uint_gcd_extended() {
 	log_tests(tester);
 }
 
+void test_big_uint_rand() {
+    // Define variables to be tested with
+    testing_logger_t *tester = create_tester();
+    big_uint_t res, exp;
+    srand(1);
+
+    big_uint_create(&res, 1);
+    big_uint_rand(&res);
+    big_uint_load(&exp, "0xa7f1d92a");
+
+    expect(tester, big_uint_equals(&res, &exp));
+
+    log_tests(tester);
+}
+
 int main() {
     test_big_uint_init();
     test_big_uint_count_limbs();
@@ -2294,6 +2310,7 @@ int main() {
 
     test_big_uint_gcd();
     test_big_uint_gcd_extended();
+    test_big_uint_rand();
 
     return 0;
 }

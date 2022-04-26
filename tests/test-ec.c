@@ -4,6 +4,7 @@
 #include "big-uint.h"
 #include "mod.h"
 #include "point.h"
+#include <stdlib.h>
 #include <string.h>
 #include "testing-logger.h"
 
@@ -424,38 +425,97 @@ void test_ec_mult() {
 void test_ec_keygen() {
 	testing_logger_t *tester = create_tester();
 	ec_t ec;
-	point_t pu_key, exp_key;
-	big_uint_t pr_key;
+	point_t pu_key, exp_pu_key, exp_mult;
+	big_uint_t pr_key, exp_pr_key;
+	srand(2);
 
 	ec_create(&ec, SECP256k1);
 	point_create(&pu_key, SECP256k1_SIZE);
-	point_create(&exp_key, SECP256k1_SIZE);
+	point_create(&exp_pu_key, SECP256k1_SIZE);
+	point_create(&exp_mult, SECP256k1_SIZE);
 	big_uint_create(&pr_key, SECP256k1_SIZE);
+	big_uint_create(&exp_pr_key, SECP256k1_SIZE);
 
 	// Test 1
 	ec_keygen(&pu_key, &pr_key, &ec);
-	ec_mult(&exp_key, &pr_key, ec.g, &ec);
-	expect(tester, point_equals(&pu_key, &exp_key));
+	
+	// expected values
+	big_uint_load(&exp_pr_key, 
+		"0x100f3325_b1ebd6ad_5e235b0b_2f2230a8_19c4668f_879b30ab_0590b0fd_4ee2b354"
+	);
+	point_load(&exp_pu_key, 
+		"0x64e2cd45_1f884ed1_3884f479_acecb747_82b82b6b_1db2b539_78f4cd9d_a2f52c70",
+		"0xd52e5696_1533c272_3e8912a4_81067817_a6097457_a324c81a_e10e7848_0c6b1820"
+	);
+	ec_mult(&exp_mult, &pr_key, ec.g, &ec);
 
 	// Test 2
 	ec_keygen(&pu_key, &pr_key, &ec);
-	ec_mult(&exp_key, &pr_key, ec.g, &ec);
-	expect(tester, point_equals(&pu_key, &exp_key));
+
+	big_uint_load(&exp_pr_key, 
+		"0x5595cb90_3869b5ce_08702844_046a7302_dbc21997_be61a391_e71b47ca_9066c582"
+	);
+	point_load(&exp_pu_key, 
+		"0x6c4aca47_1e3d18f1_6effed4f_7739d0eb_860de894_ee9eb660_a72c87d9_c1d3e6cb",
+		"0xadb563de_c2ec9409_cf1cee48_8edc7618_9db0a25f_dd8a45b3_91253ea7_7ea9c6d0"
+	);
+	ec_mult(&exp_mult, &pr_key, ec.g, &ec);
+
+	expect(tester, big_uint_equals(&pr_key, &exp_pr_key));
+	expect(tester, point_equals(&pu_key, &exp_pu_key));
+	expect(tester, point_equals(&pu_key, &exp_mult));
+
+	expect(tester, big_uint_equals(&pr_key, &exp_pr_key));
+	expect(tester, point_equals(&pu_key, &exp_pu_key));
+	expect(tester, point_equals(&pu_key, &exp_mult));
 
 	// Test 3
 	ec_keygen(&pu_key, &pr_key, &ec);
-	ec_mult(&exp_key, &pr_key, ec.g, &ec);
-	expect(tester, point_equals(&pu_key, &exp_key));
+
+	big_uint_load(&exp_pr_key, 
+		"0xa2c5415d_b7f5d886_abe7b3c9_a7fcda4b_efd0430b_369b73ec_892a15ca_d38ae260"
+	);
+	point_load(&exp_pu_key, 
+		"0x4d66202e_3a7bf223_eed12671_74143a6a_732e6529_056a6518_d8946556_5ba1c539",
+		"0x281eeb5c_f234b407_719f036c_47f98dfa_927db5dc_8b95511f_00942097_3da58cd2"
+	);
+	ec_mult(&exp_mult, &pr_key, ec.g, &ec);
+
+	expect(tester, big_uint_equals(&pr_key, &exp_pr_key));
+	expect(tester, point_equals(&pu_key, &exp_pu_key));
+	expect(tester, point_equals(&pu_key, &exp_mult));
 
 	// Test 4
 	ec_keygen(&pu_key, &pr_key, &ec);
-	ec_mult(&exp_key, &pr_key, ec.g, &ec);
-	expect(tester, point_equals(&pu_key, &exp_key));
+
+	big_uint_load(&exp_pr_key, 
+		"0x56a19364_88aaf490_3c1e8158_031f8775_6da0d36f_423d33fa_dbc2fe68_18c30c30"
+	);
+	point_load(&exp_pu_key, 
+		"0x2f3ec07d_5c4315a9_5487c554_ff0e7828_39ff3279_84cb02cb_0e16f0bb_54b1982d",
+		"0x3830bf4d_414bb398_711e8ccc_c7a58b92_63637290_c3639e49_6ed5d624_08747295"
+	);
+	ec_mult(&exp_mult, &pr_key, ec.g, &ec);
+
+	expect(tester, big_uint_equals(&pr_key, &exp_pr_key));
+	expect(tester, point_equals(&pu_key, &exp_pu_key));
+	expect(tester, point_equals(&pu_key, &exp_mult));
 
 	// Test 5
 	ec_keygen(&pu_key, &pr_key, &ec);
-	ec_mult(&exp_key, &pr_key, ec.g, &ec);
-	expect(tester, point_equals(&pu_key, &exp_key));
+
+	big_uint_load(&exp_pr_key, 
+		"0x42b1531d_0eaebc8f_2e1c68c5_011cf02f_9d3fe5c2_3e10cf7b_c4999eba_bc64ed6b"
+	);
+	point_load(&exp_pu_key, 
+		"0xebcc6a99_8fe7d367_df2c11b7_e0305022_04ad3cf7_aad224c6_10c70a38_2fe0242f",
+		"0x2719e9c6_bc893137_d6903862_57eb3f64_86c4a692_43417c74_fbb9e46e_ed7eb948"
+	);
+	ec_mult(&exp_mult, &pr_key, ec.g, &ec);
+
+	expect(tester, big_uint_equals(&pr_key, &exp_pr_key));
+	expect(tester, point_equals(&pu_key, &exp_pu_key));
+	expect(tester, point_equals(&pu_key, &exp_mult));
 
 	log_tests(tester);
 }
