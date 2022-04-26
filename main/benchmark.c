@@ -140,6 +140,16 @@ void benchmark_ec_mult(void *aux) {
     ec_mult(&res, &K, &p, (ec_t*) aux);
 }
 
+void benchmark_ec_keygen(void *aux) {
+    static uint32_t resx_arr[] = { 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000 };
+    static uint32_t resy_arr[] = { 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000 };
+    static big_uint_t resx = { .arr = resx_arr, .len = 8 };
+    static big_uint_t resy = { .arr = resy_arr, .len = 8 };
+    static point_t res = { .x = &resx, .y = &resy };
+
+    ec_keygen(&res, &C, (ec_t*) aux);
+}
+
 int main() {
     // initialize global variables
     big_uint_load(&A, "0x6409b613_c5e7c7e9_27f9d2c4_1b56af5e_a49ec282_77c71eb1_2223a2cf_f01135d7");
@@ -150,7 +160,7 @@ int main() {
     big_uint_load(&K, "0x40000000_00000000_00000000_00000000_00000000_00000000_00000000_00000001");
 
     // arithmetic benchmark
-    printf(CYAN"\nRunning benchmarks on arithmetic operations (ops/sec):\n"RESET);
+    printf(CYAN"Running benchmarks on arithmetic operations (ops/sec):\n"RESET);
     BENCHMARK(benchmark_big_uint_equals, NULL, 100);
     BENCHMARK(benchmark_big_uint_cmp, NULL, 100);
     BENCHMARK(benchmark_big_uint_max, NULL, 100);
@@ -171,6 +181,7 @@ int main() {
     mod_t mod;
     mod_create(&mod, &P);
 
+    printf(CYAN"\nRunning benchmarks on modular arithmetic operations (ops/sec):\n"RESET);
     BENCHMARK(benchmark_mod_add, &mod, 100);
     BENCHMARK(benchmark_mod_sub, &mod, 100);
     BENCHMARK(benchmark_mod_mult, &mod, 100);
@@ -182,9 +193,11 @@ int main() {
     ec_t ec;
     ec_create(&ec, SECP256k1);
 
+    printf(CYAN"\nRunning benchmarks on elliptic curve operations (ops/sec):\n"RESET);
     BENCHMARK(benchmark_ec_add, &ec, 1);
     BENCHMARK(benchmark_ec_double, &ec, 1);
     BENCHMARK(benchmark_ec_mult, &ec, 1);
+    BENCHMARK(benchmark_ec_keygen, &ec, 1);
 
     printf("\n");
     return 0;
