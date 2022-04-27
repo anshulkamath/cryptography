@@ -336,6 +336,42 @@ void test_ec_add() {
 
 	expect(tester, point_equals(&res, &exp));
 
+	// Test 13
+	// Operator Assignment
+	point_load(&p1, 
+		"0x1d3b993f_79490eab_7f1a355e_526eb523_b3df44a4_7467537a_4b63e0ef_b62ac1ff",
+		"0x4c327bad_1939afe5_6c2ab124_fff35a05_976df104_ed7c89a2_81ce37b0_3d0857dc"
+	);
+	point_load(&p2, 
+		"0x4227de21_3023580c_cbd3f5e0_6bc15385_57e54acc_62f5680c_4fdf8e1a_060cea64",
+		"0xda17bc78_834584b7_6012afe5_ec30261b_de2a7c39_6c072cce_faaf4070_6af69d99"
+	);
+	point_load(&exp, 
+		"0xa85096b7_1023627c_c8bef091_b1567239_6536126a_1c27320e_43498ce5_2830fbe4",
+		"0x0d69bc7e_94e6b252_e1ef1886_6194b3ad_c08ca2ea_19cbcd2a_79a49811_9e6b9ff9"
+	);
+	ec_add(&p1, &p1, &p2, &ec);
+
+	expect(tester, point_equals(&p1, &exp));
+
+	// Test 14
+	// Operator Assignment
+	point_load(&p1, 
+		"0x1d3b993f_79490eab_7f1a355e_526eb523_b3df44a4_7467537a_4b63e0ef_b62ac1ff",
+		"0x4c327bad_1939afe5_6c2ab124_fff35a05_976df104_ed7c89a2_81ce37b0_3d0857dc"
+	);
+	point_load(&p2, 
+		"0x4227de21_3023580c_cbd3f5e0_6bc15385_57e54acc_62f5680c_4fdf8e1a_060cea64",
+		"0xda17bc78_834584b7_6012afe5_ec30261b_de2a7c39_6c072cce_faaf4070_6af69d99"
+	);
+	point_load(&exp, 
+		"0xa85096b7_1023627c_c8bef091_b1567239_6536126a_1c27320e_43498ce5_2830fbe4",
+		"0x0d69bc7e_94e6b252_e1ef1886_6194b3ad_c08ca2ea_19cbcd2a_79a49811_9e6b9ff9"
+	);
+	ec_add(&p2, &p1, &p2, &ec);
+
+	expect(tester, point_equals(&p2, &exp));
+
 	log_tests(tester);
 }
 
@@ -418,6 +454,21 @@ void test_ec_mult() {
 	ec_mult(&res, &k, &p, &ec);
 
 	expect(tester, point_equals(&res, &exp));
+
+	// Test 6
+	// Operator assignment
+	big_uint_load(&k, "0xf72f2bb8_3586fca7_fa0b8518_8296f5ea_baeb41a5_e65a8149_40e2a20a_1bd7ce74");
+	point_load(&p,
+		"0x79be667e_f9dcbbac_55a06295_ce870b07_029bfcdb_2dce28d9_59f2815b_16f81798",
+		"0x483ada77_26a3c465_5da4fbfc_0e1108a8_fd17b448_a6855419_9c47d08f_fb10d4b8"
+	);
+	point_load(&exp,
+		"0xfe5d83ca_5b2f7cc3_557195eb_00ebd930_c3543939_34ea60a1_681d4233_ae0b0cec",
+		"0x5d34d224_b4e87eb9_ccf86bdc_fbb56969_e846da33_f5f896ca_7eb72160_86550e85"
+	);
+	ec_mult(&p, &k, &p, &ec);
+
+	expect(tester, point_equals(&p, &exp));
 
 	log_tests(tester);
 }

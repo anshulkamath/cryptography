@@ -26,4 +26,16 @@
  */
 void ecdsa_sign(point_t *res, const big_uint_t *m_hash, const big_uint_t *pr_key, const ec_t *ec);
 
+/**
+ * @brief Returns true if and only if the given `signature` was created using `m_hash` and the
+ *        public key `pu_key`
+ * 
+ * @param signature A pointer to the signature point to test against
+ * @param m_hash    A pointer to the message hash
+ * @param pr_key    A pointer to the public key to check against
+ * @param ec        The elliptic curve instance to use
+ * @return uint32_t 
+ */
+uint32_t ecdsa_verify(const point_t *signature, const big_uint_t *m_hash, const point_t *pu_key, const ec_t *ec);
+
 #endif
