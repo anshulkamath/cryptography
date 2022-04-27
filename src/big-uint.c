@@ -637,6 +637,8 @@ void big_uint_gcd_extended(big_uint_t *x, big_uint_t *y, const big_uint_t *a, co
 }
 
 void big_uint_rand(big_uint_t *dest) {
+    const uint16_t SIZE = dest->len;
+    
     #if PRNG
     for (uint32_t i = 0; i < SIZE; i++) {
         dest->arr[i] = (rand() & 0xff) << 24 | (rand() & 0xff) << 16 | (rand() & 0xff) << 8 | (rand() & 0xff);
@@ -644,7 +646,6 @@ void big_uint_rand(big_uint_t *dest) {
     #else
     // use /dev/urandom to generate cryptographically-secure, random numbers
     FILE *file = fopen("/dev/urandom", "r");
-    const uint16_t SIZE = dest->len;
 
     if (file == NULL) {
         fprintf(stderr, "Error while opening /dev/urandom");
