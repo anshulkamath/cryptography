@@ -837,6 +837,19 @@ void test_mod_mult() {
 
 	expect(tester, big_uint_equals(&a, &exp));
 
+	// Test 21
+	// misc.
+	big_uint_load(&a, "0x9917cdb8_0ae04183_8e358811_4733c9fc_a6a619d6_cbe9c900_875888fc_f5d38d7f");
+	big_uint_load(&b, "0x9917cdb8_0ae04183_8e358811_4733c9fc_a6a619d6_cbe9c900_875888fc_f5d38d7f");
+	big_uint_load(&p, "0xffffffff_ffffffff_ffffffff_fffffffe_baaedce6_af48a03b_bfd25e8c_d0364141");
+	big_uint_load(&exp, "0x1fbb6ce3_5884503e_276d000a_285e8f30_079f74aa_de68977c_2f90dfe8_7550a000");
+	big_uint_load(&res, "0x00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000");
+	mod_create(&mod, &p);
+
+	mod_mult(&res, &a, &b, &mod);
+
+	expect(tester, big_uint_equals(&res, &exp));
+
 	log_tests(tester);
 }
 
@@ -1014,6 +1027,19 @@ void test_mod_exp() {
 
 	expect(tester, big_uint_equals(&x, &exp));
 
+	// Test 15
+	// misc
+	big_uint_load(&x, "0x9917cdb8_0ae04183_8e358811_4733c9fc_a6a619d6_cbe9c900_875888fc_f5d38d7f");
+	big_uint_load(&n, "0xffffffff_ffffffff_ffffffff_fffffffe_baaedce6_af48a03b_bfd25e8c_d036413f");
+	big_uint_load(&p, "0xffffffff_ffffffff_ffffffff_fffffffe_baaedce6_af48a03b_bfd25e8c_d0364141");
+	big_uint_load(&exp, "0x20f85297_59af5eec_3a9fabd8_8efeab84_5edf3f1e_351ac0a6_05338af5_1ea4aab9");
+	big_uint_load(&res, "0x00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000");
+	mod_create(&mod, &p);
+
+	mod_exp(&res, &x, &n, &mod);
+
+	expect(tester, big_uint_equals(&res, &exp));
+
 	log_tests(tester);
 }
 
@@ -1138,6 +1164,17 @@ void test_mod_inv() {
 	big_uint_load(&p, "0x00000000_00000000_72ff2c08_4822fae5");
 	big_uint_load(&exp, "0x00000000_00000000_11c81c3c_5c1b7a98");
 	big_uint_load(&res, "0x00000000_00000000_00000000_00000000");
+	mod_create(&mod, &p);
+
+	mod_inv(&res, &x, &mod);
+
+	expect(tester, big_uint_equals(&res, &exp));
+
+	// Test 12
+	big_uint_load(&x, "0x9917cdb8_0ae04183_8e358811_4733c9fc_a6a619d6_cbe9c900_875888fc_f5d38d7f");
+	big_uint_load(&p, "0xffffffff_ffffffff_ffffffff_fffffffe_baaedce6_af48a03b_bfd25e8c_d0364141");
+	big_uint_load(&exp, "0x20f85297_59af5eec_3a9fabd8_8efeab84_5edf3f1e_351ac0a6_05338af5_1ea4aab9");
+	big_uint_load(&res, "0x00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000");
 	mod_create(&mod, &p);
 
 	mod_inv(&res, &x, &mod);

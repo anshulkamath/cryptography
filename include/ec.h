@@ -140,4 +140,14 @@ void ec_mult(point_t *res, const big_uint_t *k, const point_t *pt, const ec_t *e
  */
 void ec_keygen(point_t *pu_key, big_uint_t *pr_key, const ec_t *ec);
 
+/**
+ * @brief Returns true if and only if the point `p` is on the curve defined
+ *        by `ec`
+ * 
+ * @param p  Pointer to the point to check
+ * @param ec Pointer to the elliptic curve instance to use
+ * @return uint32_t 
+ */
+uint32_t ec_is_on_curve(const point_t *p, const ec_t *ec);
+
 #endif
