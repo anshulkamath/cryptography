@@ -120,3 +120,21 @@ void ec_keygen(point_t *pu_key, big_uint_t *pr_key, const ec_t *ec) {
     // generate the public key using the private key
     ec_mult(pu_key, pr_key, ec->g, ec);
 }
+
+uint32_t ec_is_on_curve(const point_t *p, const ec_t *ec) {
+    big_uint_t rhs, lhs;
+    big_uint_create(&rhs, p->y->len);
+    big_uint_create(&lhs, p->x->len);
+    
+    // rhs = x^3 + ax + b
+    mod_mult(&rhs, p->x, p->x, ec->mod_p);
+    mod_mult(&rhs, &rhs, p->x, ec->mod_p);  // rhs = x^3
+    mod_mult(&lhs, ec->a, p->x, ec->mod_p); // temp = ax
+    mod_add(&rhs, &rhs, &lhs, ec->mod_p);   // rhs = x^3 + ax
+    mod_add(&rhs, &rhs, ec->b, ec->mod_p);  // rhs = x^3 + ax + b
+
+    // lhs = y^2
+    mod_mult(&lhs, p->y, p->y, ec->mod_p);
+
+    return big_uint_equals(&lhs, &rhs);
+}

@@ -520,6 +520,56 @@ void test_ec_keygen() {
 	log_tests(tester);
 }
 
+void test_ec_is_on_curve() {
+	testing_logger_t *tester = create_tester();
+	point_t p;
+	ec_t ec;
+
+	ec_create(&ec, SECP256k1);
+
+	// Test 1 - should be on curve
+	point_load(&p,
+		"0x81f9c1f6_6c0f3459_f79b17ae_efba91fc_803468b6_b610a9f7_f9270f4e_b8b333a9",
+		"0xb7923630_24c4d3da_65eea057_f1d21f73_ef2e6d66_891def91_ee77b919_1feb9512"
+	);
+
+	expect(tester, ec_is_on_curve(&p, &ec));
+
+	// Test 2 - should be on curve
+	point_load(&p,
+		"0x29e821a4_c74803e3_1ba16215_82283d15_a9ec0806_705fca16_1622bd79_5fec8990",
+		"0x13eabece_392fa99b_45b1460e_ea15ed96_c23ef81f_5cda751b_7ad1f35e_2a922ead"
+	);
+
+	expect(tester, ec_is_on_curve(&p, &ec));
+
+	// Test 3 - should not be on curve
+	point_load(&p,
+		"0x1d3b993f_79490eab_7f1a355e_526eb523_b3df44a4_7467537a_4b63e0ef_b62ac1ff",
+		"0x4227de21_3023580c_cbd3f5e0_6bc15385_57e54acc_62f5680c_4fdf8e1a_060cea64"
+	);
+
+	expect(tester, !ec_is_on_curve(&p, &ec));
+
+	// Test 4 - should not be on curve
+	point_load(&p,
+		"0xf72f2bb8_3586fca7_fa0b8518_8296f5ea_baeb41a5_e65a8149_40e2a20a_1bd7ce74",
+		"0x65b675cd_0492c4f5_39b21c95_055455e8_f9bddea5_d12982e4_6e80fa48_9b0bca17"
+	);
+
+	expect(tester, !ec_is_on_curve(&p, &ec));
+
+	// Test 5 - should not be on curve
+	point_load(&p,
+		"0x819d7ca7_b46108cc_721754ef_2904acec_f5bb9188_b80599e9_090b20bb_257e8455",
+		"0xa17a4340_f9c08fef_fa1b1bf1_3879399b_d50e0097_8b7199cd_6d39eb43_ad9ceddf"
+	);
+
+	expect(tester, !ec_is_on_curve(&p, &ec));
+
+	log_tests(tester);
+}
+
 int main () {
     test_ec_init();
     test_ec_create();
@@ -527,6 +577,7 @@ int main () {
 	test_ec_add();
 	test_ec_mult();
 	test_ec_keygen();
+	test_ec_is_on_curve();
     
     return 0;
 }
