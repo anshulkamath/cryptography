@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <stdint.h>
 #include <string.h>
+#include <stdio.h>
 
 /* Performs Barrett reduction and populates the given mod_t struct */
 void _barrett_reduction(mod_t *res) {
@@ -85,11 +86,11 @@ void mod_mult(big_uint_t *res, const big_uint_t *a, const big_uint_t *b, const m
 	big_uint_mult(&temp1, &x, mod->r);
 	big_uint_shr(&temp2, &temp1, 2 * mod->k, LOG_2_LIMB);
 	big_uint_mult(&temp3, &temp2, mod->p);
-	big_uint_sub(res, &x, &temp3);
+	big_uint_sub(&temp2, &x, &temp3);
 	
 	// subtract mod->p from res iff res > mod->p
-	big_uint_choose(&temp3, mod->p, big_uint_cmp(res, mod->p) > 0);
-	big_uint_sub(res, res, &temp3);
+	big_uint_choose(&temp3, mod->p, big_uint_cmp(&temp2, mod->p) > 0);
+	big_uint_sub(res, &temp2, &temp3);
 }
 
 void mod_exp(big_uint_t *res, const big_uint_t *x, const big_uint_t *n, const mod_t *mod) {
@@ -102,13 +103,22 @@ void mod_exp(big_uint_t *res, const big_uint_t *x, const big_uint_t *n, const mo
 	for (int32_t i = n->len - 1; i >= 0; i--) {
 		uint32_t curr = n->arr[i];
 		for (int32_t j = UINT_BITS - 1; j >= 0; j--) {
+			// printf("%d: ", i * UINT_BITS + j);
+			// big_uint_print(&x_res);
+
 			// square every iteration
 			mod_mult(&x_res, &x_res, &x_res, mod);
+			// printf("---  ");
+			// big_uint_print(&x_res);
 
 			// if this bit of the exponent is set, then multiply by x
 			// to `add one` to the exponent
-			if ((curr >> j) & 1)
+			if ((curr >> j) & 1) {
 				mod_mult(&x_res, &x_res, x, mod);
+				// printf("---  ");
+				// big_uint_print(&x_res);
+			}
+			// printf("\n");
 		}
 	}
 
