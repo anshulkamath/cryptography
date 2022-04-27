@@ -51,7 +51,7 @@ void test_ecdsa_verify() {
     testing_logger_t *tester = create_tester();
     big_uint_t pr_key, m_hash, bad_m_hash;
     point_t pu_key, bad_pu_key;
-    point_t sig, exp;
+    point_t sig;
     ec_t ec;
     srand(3); // use same random numbers as signature
 
