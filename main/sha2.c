@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 #include "sha256.h"
-#include "hex.h"
 
 #define MESSAGE_SIZE 256
 
@@ -19,7 +18,7 @@ int main(int argc, char **argv) {
     }
     
     // stores the result of sha2 in bits
-    uint8_t result[32];
+    uint32_t result[8];
 
     // to convert the bits of sha2 to hex
     char result_str[65];
@@ -32,7 +31,7 @@ int main(int argc, char **argv) {
     sha256(result, argv[1], len);
 
     // convert this to a string
-    to_string(result, 32, result_str);
+    sha_string(result, 32, result_str);
 
     // print the hash
     printf("SHA-2: %s\n", result_str);

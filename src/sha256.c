@@ -1,18 +1,40 @@
+#include "sha256.h"
+
+#include <arpa/inet.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
 
-#include "sha256.h"
+#if __BIG_ENDIAN__
+    # define htonll(x) (x)
+    # define ntohll(x) (x)
+#elif __APPLE
+#elif __linux__
+    # define htonll(x) (((uint64_t)htonl((x) & 0xFFFFFFFF) << 32) | htonl((x) >> 32))
+    # define ntohll(x) (((uint64_t)ntohl((x) & 0xFFFFFFFF) << 32) | ntohl((x) >> 32))
+#endif
+
+#define BYTES_PER_CHUNK (512/8)
+#define NUM_32_PER_CHUNK (512 / sizeof(uint32_t))
+
+char* sha_string(uint32_t *src, size_t len, char *dest) {
+    for (size_t i = 0; i < len; i++) {
+        sprintf(&dest[i * 8], "%08x", src[i]);
+    }
+    dest[64] = 0;
+    return dest;
+}
 
 /** Helper function to get the amount of memory (in bytes) needed for SHA-2 */
-static uint64_t get_memory_size(size_t bits) {
+static uint64_t get_memory_size(size_t bits, int *num_chunks) {
     int curr_size = bits + 1 + 64;
-    int counter = -1;
+    *num_chunks = 0;
 
-    while (curr_size > 512 * ++counter);
+    while (curr_size > 512 * ++(*num_chunks));
 
-    return 512 * counter / 8;
+    return (*num_chunks) * BYTES_PER_CHUNK;
 }
 
 /** Helper function to right rotate a number by a given value n */
@@ -20,7 +42,7 @@ static uint32_t right_rotate(uint32_t num, uint32_t n) {
     return num >> n | num << (32 - n);
 }
 
-void sha256(uint8_t *hash, const char *message, uint8_t length) {
+void sha256(uint32_t *hash, const char *message, uint8_t length) {
     // initialize hash values
     // (first 32 bits of fractional part of the square root of the first 8 primes)
     uint32_t hashes[] = {
@@ -41,7 +63,8 @@ void sha256(uint8_t *hash, const char *message, uint8_t length) {
         0x748f82eeu, 0x78a5636fu, 0x84c87814u, 0x8cc70208u, 0x90befffau, 0xa4506cebu, 0xbef9a3f7u, 0xc67178f2u
     };
 
-    const size_t total_length = get_memory_size(8 * length);
+    int num_chunks = 0;
+    const size_t total_length = get_memory_size(8 * length, &num_chunks);
 
     // pre-processing (with padding)
     // 1. copy all data to new memory
@@ -53,25 +76,28 @@ void sha256(uint8_t *hash, const char *message, uint8_t length) {
     memcpy(temp_data, message, length);
 
     // 2. append a 1 to the data
-    temp_data[length] = 128;
+    temp_data[length] = 0x80;
     cursor = length + 1;
 
     // 3. pad the rest of the data with 0s until total length is reached
     while (cursor < total_length)
         temp_data[cursor++] = 0;
 
-    // 4. set the last 8 bytes to the length of the message
-    uint64_t* last_64 = (uint64_t *) &temp_data[total_length - 8];
+    // 4. set the last 8 bytes (64 bits) to the length of the message
+    uint64_t *last_64 = (uint64_t *) &temp_data[total_length - 8];
     *last_64 = htonll((uint64_t) (8 * length));
 
     // break the data into 512 bit chunks
-    uint32_t w[64];
-    for (size_t i = 0; i < total_length; i += 64) {
-        memset(w, 0, 64 * sizeof(uint32_t));
+    for (int chunk = 0; chunk < num_chunks; chunk++) {
+        // create a 64-entry message schedule array w[0..63] of 32-bit words
+        uint32_t w[64] = { 0 };
 
-        // convert to big endian
+        // copy chunk into first 16 words w[0..15] of the message schedule array
+        // and convert to big endian
+        memcpy(w, temp_data + (chunk * BYTES_PER_CHUNK), BYTES_PER_CHUNK);
+
         for (size_t j = 0; j < 16; j++) {
-            w[j] = htonl(*((uint32_t *) (temp_data + i + j * 4)));
+            w[j] = htonl(w[j]);
         }
 
         // Extend the first 16 words into the remaining 48 words w[16..63] of the message schedule array:
@@ -119,11 +145,6 @@ void sha256(uint8_t *hash, const char *message, uint8_t length) {
         hashes[5] += f;
         hashes[6] += g;
         hashes[7] += h;
-    }
-
-    // put all hashes into an array and convert them to big endian
-    for (size_t i = 0; i < 8; i++) {
-        hashes[i] = htonl(hashes[i]);
     }
 
     // copy all the hash data into the hash casted as 32 bit integer
